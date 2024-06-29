@@ -5,9 +5,19 @@
     "build": "bun build src/index.ts --outdir dist --target bun --minify"
   },
   "dependencies": {
-    "hono": "^4.4.9"
+    "@hono/swagger-ui": "^0.3.0",
+    "@lucia-auth/adapter-drizzle": "^1.0.7",
+    "argon2": "^0.40.3",
+    "drizzle-orm": "^0.31.2",
+    "drizzle-zod": "^0.5.1",
+    "hono": "^4.4.9",
+    "lucia": "^3.2.0",
+    "pg": "^8.12.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "@types/pg": "^8.11.6",
+    "drizzle-kit": "^0.22.8"
   }
 }

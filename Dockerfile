@@ -1,7 +1,7 @@
-FROM oven/bun:1.1.13 AS base
+FROM oven/bun:1.1.17 AS base
 WORKDIR /ichack25
 COPY package.json bun.lockb **/package.json ./
-RUN bun install --production
+RUN bun install
 COPY . .
 
 FROM base AS build_server
