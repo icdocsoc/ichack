@@ -1,0 +1,19 @@
+{
+  "name": "@ichack25/monorepo",
+  "scripts": {
+    "dev:server": "bun run --cwd server dev"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "concurrently": "^8.2.2"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "workspaces": [
+    "apps/*",
+    "apps/web/*",
+    "layers/*",
+    "server"
+  ]
+}

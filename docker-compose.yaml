@@ -1,0 +1,24 @@
+services:
+  postgres_db:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: rootpasswd
+      POSTGRES_DB: ichack25
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: server
+    ports:
+      - "5000:3000"
+    depends_on:
+      - postgres_db
+
+volumes:
+  postgres_data:
