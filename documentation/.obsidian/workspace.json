@@ -1,0 +1,201 @@
+{
+  "main": {
+    "id": "12533d252697ec79",
+    "type": "split",
+    "children": [
+      {
+        "id": "fe89e335c167e9d5",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "60ab4304460af484",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Why do this?.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          }
+        ],
+        "stacked": true
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "8e3f0be86aef42a3",
+    "type": "split",
+    "children": [
+      {
+        "id": "204fb6ff636339db",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "3820aed2ad579987",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "47b93e5d49004b59",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "b6ebcf23ce033448",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "ac7551ea1ecb0a2a",
+    "type": "split",
+    "children": [
+      {
+        "id": "e681d25bc7effb45",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "763b3eed5763cce7",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Why do this?.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "e7db3384ad8bd89c",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Why do this?.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "fc92de66284b1447",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "2a9c108097f342f7",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Why do this?.md"
+              }
+            }
+          },
+          {
+            "id": "3291fc8817444c0a",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "command-palette:Open command palette": false,
+      "templater-obsidian:Templater": false,
+      "obsidian-excalidraw-plugin:Create new drawing": false
+    }
+  },
+  "active": "60ab4304460af484",
+  "lastOpenFiles": [
+    "Welcome To IC Hack '25 Documentation.md",
+    "Technologies.md",
+    "Tech Stack.md",
+    "System Architecture.md",
+    "Running the project locally.md",
+    "Techologies/Nginx.md",
+    "Techologies/GitHub Actions.md",
+    "Techologies/Docker.md",
+    "Techologies/Cloudflare.md",
+    "Tech Stack/PostgreSQL.md",
+    "Tech Stack/Nuxt.md",
+    "Tech Stack/Hono.md",
+    "Tech Stack/Bun.md",
+    "System Architecture/Subdomains.md",
+    "Reflections/Nishant.md",
+    "Directory Structure/apps/landing-page.md",
+    "Directory Structure/apps/internal.md",
+    "Directory Structure/apps/admin.md",
+    "Directory Structure/packages/base-layer.md",
+    "Directory Structure/server.md",
+    "Concepts/Cloud VM.md",
+    "Excalidraw/Internal proxies.excalidraw.md",
+    "Media/internal preview.png",
+    "Excalidraw/External Overview.excalidraw.md",
+    "Untitled.md",
+    "System Architecture",
+    "Concepts",
+    "Media",
+    "Excalidraw/Drawing 2024-07-05 02.36.23.excalidraw.md",
+    "Excalidraw",
+    "System Architecture.canvas",
+    "Directory Structure/apps/Untitled",
+    "Directory Structure/apps",
+    "Directory Structure.md",
+    "Directory Structure/packages",
+    "Directory Structure/apps",
+    "Directory Structure/server",
+    "Directory Structure"
+  ]
+}

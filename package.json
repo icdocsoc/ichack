@@ -14,8 +14,7 @@
   },
   "workspaces": [
     "apps/*",
-    "apps/web/*",
-    "layers/*",
+    "packages/*",
     "server"
   ]
 }
