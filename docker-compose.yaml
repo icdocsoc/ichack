@@ -48,6 +48,15 @@ services:
     depends_on:
       - server
 
+  admin:
+    container_name: admin
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: admin
+    ports:
+      - '3000:3000'
+
 volumes:
   postgres_data:
   pgadmin_data:

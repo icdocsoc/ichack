@@ -11,11 +11,9 @@
             "id": "60ab4304460af484",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "excalidraw",
               "state": {
-                "file": "Why do this?.md",
-                "mode": "source",
-                "source": false
+                "file": "Excalidraw/External Overview.excalidraw.md"
               }
             }
           }
@@ -86,7 +84,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Why do this?.md",
+                "file": "Excalidraw/External Overview.excalidraw.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -103,7 +101,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Why do this?.md",
+                "file": "Excalidraw/External Overview.excalidraw.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -126,7 +124,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Why do this?.md"
+                "file": "Excalidraw/External Overview.excalidraw.md"
               }
             }
           },
@@ -159,6 +157,7 @@
   },
   "active": "60ab4304460af484",
   "lastOpenFiles": [
+    "Why do this?.md",
     "Welcome To IC Hack '25 Documentation.md",
     "Technologies.md",
     "Tech Stack.md",
@@ -192,7 +191,6 @@
     "System Architecture.canvas",
     "Directory Structure/apps/Untitled",
     "Directory Structure/apps",
-    "Directory Structure.md",
     "Directory Structure/packages",
     "Directory Structure/apps",
     "Directory Structure/server",

@@ -8,6 +8,6 @@
 
 1. ❗ All PRs must reference an issue.
 2. 🗣 If there is an issue you want to work on, ask on the issue thread if you want to work on it.
-3. 🍴 Fork this repository and create a new branch `fix-[number]/[short description]` according to the issue.
+3. 🍴 Fork this repository and create a new branch `pr-[number]/[short description]` according to the issue.
 4. ✍ Fix the issue.
 5. 🎆 Open a PR and wait until a moderator merges it in.

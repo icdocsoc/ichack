@@ -2,11 +2,12 @@
   "name": "@ichack25/monorepo",
   "scripts": {
     "dev:server": "bun run --cwd server dev",
-    "build:server": "bun run --cwd server build"
+    "build:server": "bun run --cwd server build",
+    "dev:admin": "bun run --cwd apps/admin dev",
+    "build:admin": "bun run --cwd apps/admin build"
   },
   "devDependencies": {
     "@types/bun": "latest",
-    "concurrently": "^8.2.2",
     "prettier": "^3.3.2"
   },
   "peerDependencies": {
