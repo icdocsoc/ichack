@@ -1,7 +1,9 @@
 ---
-title: Welcome to IC Hack '25 Documentation
-date: 2024-07-04
+created: 2024-07-04
+authors:
+ - Nishant
 ---
+
 IC Hack is Europe's Largest Hackathon, hosted by Imperial College's DoCSoc. You will find the entire code base on [GitHub](https://github.com/icdocsoc/ichack25). This documentation will give you extensive details on the code, workflow and design choices made by our Webmasters - Nishant and Jay.
 
 ## Ways to see this documentation
@@ -17,10 +19,9 @@ IC Hack is Europe's Largest Hackathon, hosted by Imperial College's DoCSoc. You 
 1. Learn about [[Why do this?|why we did what we did]].
 2. Try out our code by [[Running the project locally]].
 3. Look at the [[Directory Structure]] and understand what is placed where.
-4. Know about our [[Tech Stack]] and [[Technologies]] and why we made this choice.
 5. Read through our team's reflections to know any major problems or decisions that were made.
-   1. [[Reflections/Nishant|Nishant]]
-   2. [[Reflections/Jay|Jay]]
+   1. [[Nishant]]
+   2. [[Jay]]
 6. Review our [code](https://github.com/icdocsoc/ichack25) and also see the available documentation and comments.
 
 ## DISCLAIMER

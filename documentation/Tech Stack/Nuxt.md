@@ -1,6 +1,7 @@
 ---
-title: Nuxt
-date: 2024-07-05
+created: 2024-07-05
+authors:
+ - Nishant
 ---
 Follow the [Nuxt](https://nuxt.com) documentation [here](https://nuxt.com/docs/getting-started/introduction). 
 

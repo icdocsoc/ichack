@@ -1,6 +1,7 @@
 ---
-title: PostgreSQL
-date: 2024-07-05
+created: 2024-07-05
+authors:
+ - Nishant
 ---
 PostgreSQL [website](https://www.postgresql.org/) but Nishant used [this](https://chatgpt.com) for the documentation.
 

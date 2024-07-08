@@ -1,7 +1,9 @@
 ---
-title: Running the project locally
-date: 2024-07-04
+created: 2024-07-04
+authors:
+ - Nishant
 ---
+
 ## System Requirements
 
 This is not an exhaustive list.

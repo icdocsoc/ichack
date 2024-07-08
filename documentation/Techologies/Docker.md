@@ -1,6 +1,7 @@
 ---
-title: Docker
-date: 2024-07-05
+created: 2024-07-05
+authors:
+ - Nishant
 ---
 Docker [website](https://www.docker.com) and [Docker Hub](https://hub.docker.com)
 

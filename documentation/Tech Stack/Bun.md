@@ -1,6 +1,7 @@
 ---
-title: Bun
-date: 2024-07-05
+created: 2024-07-05
+authors:
+ - Nishant
 ---
 Bun's [website](https://bun.sh)
 

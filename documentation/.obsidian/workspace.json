@@ -8,12 +8,14 @@
         "type": "tabs",
         "children": [
           {
-            "id": "60ab4304460af484",
+            "id": "e0e4e3f6dd750c9c",
             "type": "leaf",
             "state": {
-              "type": "excalidraw",
+              "type": "markdown",
               "state": {
-                "file": "Excalidraw/External Overview.excalidraw.md"
+                "file": "Why do this?.md",
+                "mode": "source",
+                "source": false
               }
             }
           }
@@ -84,7 +86,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Excalidraw/External Overview.excalidraw.md",
+                "file": "Why do this?.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -101,7 +103,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Excalidraw/External Overview.excalidraw.md",
+                "file": "Why do this?.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -124,7 +126,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Excalidraw/External Overview.excalidraw.md"
+                "file": "Why do this?.md"
               }
             }
           },
@@ -155,15 +157,22 @@
       "obsidian-excalidraw-plugin:Create new drawing": false
     }
   },
-  "active": "60ab4304460af484",
+  "active": "e0e4e3f6dd750c9c",
   "lastOpenFiles": [
-    "Why do this?.md",
-    "Welcome To IC Hack '25 Documentation.md",
-    "Technologies.md",
-    "Tech Stack.md",
-    "System Architecture.md",
-    "Running the project locally.md",
+    "Concepts/DNS record management.md",
+    "Directory Structure/server/Routes.md",
+    "Directory Structure/apps/admin/What it is?.md",
+    "Directory Structure/packages/base-layer.md",
+    "Directory Structure/apps/admin",
+    "Directory Structure/apps/Untitled.md",
+    "Directory Structure/server/How it works?.md",
+    "Directory Structure/server/Schemas.md",
+    "Directory Structure/server/Entrypoint.md",
+    "Templates/00-New Note.md",
+    "Templates/01-details snippet.md",
     "Techologies/Nginx.md",
+    "Concepts/Reverse Proxy.md",
+    "Techologies/Lucia.md",
     "Techologies/GitHub Actions.md",
     "Techologies/Docker.md",
     "Techologies/Cloudflare.md",
@@ -171,29 +180,22 @@
     "Tech Stack/Nuxt.md",
     "Tech Stack/Hono.md",
     "Tech Stack/Bun.md",
-    "System Architecture/Subdomains.md",
+    "Techologies/Drizzle.md",
+    "Concepts/ORM.md",
     "Reflections/Nishant.md",
-    "Directory Structure/apps/landing-page.md",
-    "Directory Structure/apps/internal.md",
-    "Directory Structure/apps/admin.md",
-    "Directory Structure/packages/base-layer.md",
-    "Directory Structure/server.md",
+    "Directory Structure/server",
+    "Directory Structure/Untitled.md",
+    "System Architecture.md",
     "Concepts/Cloud VM.md",
-    "Excalidraw/Internal proxies.excalidraw.md",
     "Media/internal preview.png",
-    "Excalidraw/External Overview.excalidraw.md",
-    "Untitled.md",
     "System Architecture",
     "Concepts",
     "Media",
-    "Excalidraw/Drawing 2024-07-05 02.36.23.excalidraw.md",
     "Excalidraw",
     "System Architecture.canvas",
-    "Directory Structure/apps/Untitled",
     "Directory Structure/apps",
     "Directory Structure/packages",
     "Directory Structure/apps",
-    "Directory Structure/server",
-    "Directory Structure"
+    "Directory Structure/server"
   ]
 }

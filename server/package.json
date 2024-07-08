@@ -2,7 +2,10 @@
   "name": "server",
   "scripts": {
     "dev": "bun run --hot src/index.ts",
-    "build": "bun build src/index.ts --outdir dist --target bun --minify"
+    "build": "bun build src/index.ts --outdir dist --target bun --minify",
+    "migrate:generate": "drizzle-kit generate",
+    "migrate:execute": "bun run scripts/migrate.mjs",
+    "migrate": "bun run migrate:generate && bun run migrate:execute"
   },
   "dependencies": {
     "@hono/swagger-ui": "^0.3.0",
