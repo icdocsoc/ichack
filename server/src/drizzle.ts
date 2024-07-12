@@ -1,4 +1,3 @@
-import schema from '@schema';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
 
@@ -10,4 +9,4 @@ export const pool = new Pool({
   port: +(process.env.PG_PORT || 5432)
 });
 
-export const db = drizzle(pool, { schema });
+export const db = drizzle(pool);

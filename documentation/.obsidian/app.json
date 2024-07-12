@@ -3,5 +3,6 @@
   "showLineNumber": true,
   "showIndentGuide": true,
   "showUnsupportedFiles": true,
-  "alwaysUpdateLinks": true
+  "alwaysUpdateLinks": true,
+  "vimMode": true
 }

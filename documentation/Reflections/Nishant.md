@@ -14,3 +14,10 @@ I should probably add testing and inline documentation for the server code since
 
 Had a good meeting with Jay and the rest of the 24-25 committee regarding ICHack goals and plan of execution of the tech side. Created a schema of the main features we need to build a hackathon today, gonna ask for Jay's review when he's free. Documenting this a bit right now. That's it.
 </details>
+<details>
+<summary>13th July 2024</summary>
+1. Initialised websockets.
+2. setup directory structure for a modular server build.
+3. wrote and modified changed documentation.
+4. rethought the new version (v2) of the system architecture.
+</details>

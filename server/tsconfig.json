@@ -3,10 +3,6 @@
     "strict": true,
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx",
-    "paths": {
-      "@schema": ["./db/schema/index"],
-      "@schema/*": ["./db/schema/*"]
-    }
   },
   "extends": "../tsconfig.base.json"
 }

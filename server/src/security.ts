@@ -1,6 +1,5 @@
 import type { Context, Next } from 'hono';
 import { verifyRequestOrigin } from 'lucia';
-import { customLogger } from './logger';
 
 export const validateOriginAndHost = () => async (c: Context, next: Next) => {
   if (c.req.method == 'GET')

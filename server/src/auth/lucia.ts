@@ -1,10 +1,10 @@
 import { DrizzlePostgreSQLAdapter } from '@lucia-auth/adapter-drizzle';
-import { userSession, users } from '@schema/users';
+import { userSession, users } from './schema';
 import { Lucia, TimeSpan } from 'lucia';
-import { db } from './db';
-import type { InferSelectModel } from 'drizzle-orm';
+import { db } from '../drizzle';
 import { hash, type Options } from 'argon2';
 import { generateRandomString } from '../utils';
+import { roles } from '../types';
 
 const adapter = new DrizzlePostgreSQLAdapter(db, userSession, users);
 
@@ -17,7 +17,7 @@ export const lucia = new Lucia(adapter, {
   },
   getUserAttributes(databaseUserAttributes) {
     return {
-      email: databaseUserAttributes.email
+      role: databaseUserAttributes.role
     };
   }
 });
@@ -37,6 +37,9 @@ export const getDummyPassword = async (): Promise<string> => {
 declare module 'lucia' {
   interface Register {
     Lucia: typeof lucia;
-    DatabaseUserAttributes: InferSelectModel<typeof users>;
+    DatabaseUserAttributes: DatabaseUserAttributes;
+  }
+  interface DatabaseUserAttributes {
+    role: (typeof roles)[number];
   }
 }

@@ -11,11 +11,9 @@
             "id": "e0e4e3f6dd750c9c",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "excalidraw",
               "state": {
-                "file": "Why do this?.md",
-                "mode": "source",
-                "source": false
+                "file": "Excalidraw/External Overview v2.excalidraw.md"
               }
             }
           }
@@ -86,7 +84,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Why do this?.md",
+                "file": "Excalidraw/External Overview v2.excalidraw.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -103,7 +101,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Why do this?.md",
+                "file": "Excalidraw/External Overview v2.excalidraw.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -126,7 +124,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Why do this?.md"
+                "file": "Excalidraw/External Overview v2.excalidraw.md"
               }
             }
           },
@@ -146,7 +144,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -159,35 +158,36 @@
   },
   "active": "e0e4e3f6dd750c9c",
   "lastOpenFiles": [
-    "Concepts/DNS record management.md",
+    "Excalidraw/External Overview.excalidraw.md",
+    "Excalidraw/External Overview v2.excalidraw.md",
     "Directory Structure/server/Routes.md",
-    "Directory Structure/apps/admin/What it is?.md",
-    "Directory Structure/packages/base-layer.md",
-    "Directory Structure/apps/admin",
-    "Directory Structure/apps/Untitled.md",
+    "System Architecture/Version 2.md",
+    "System Architecture/Version 1.md",
     "Directory Structure/server/How it works?.md",
+    "Directory Structure/server/Modules.md",
+    "Reflections/Nishant.md",
+    "Directory Structure/server/Access Map.md",
     "Directory Structure/server/Schemas.md",
-    "Directory Structure/server/Entrypoint.md",
-    "Templates/00-New Note.md",
-    "Templates/01-details snippet.md",
-    "Techologies/Nginx.md",
-    "Concepts/Reverse Proxy.md",
-    "Techologies/Lucia.md",
+    "Why do this?.md",
+    "IC Hack '25 Documentation.md",
+    "Tech Stack/Bun.md",
+    "Media/internal preview.png",
+    "Tech Stack/Nuxt.md",
+    "Techologies/Lucia Auth.md",
+    "System Architecture",
     "Techologies/GitHub Actions.md",
+    "Techologies/Nginx.md",
+    "Techologies/Drizzle.md",
     "Techologies/Docker.md",
     "Techologies/Cloudflare.md",
-    "Tech Stack/PostgreSQL.md",
-    "Tech Stack/Nuxt.md",
-    "Tech Stack/Hono.md",
-    "Tech Stack/Bun.md",
-    "Techologies/Drizzle.md",
-    "Concepts/ORM.md",
-    "Reflections/Nishant.md",
+    "Templates/01-details snippet.md",
+    "Templates/00-New Note.md",
+    "Directory Structure.md",
+    "Running the project locally.md",
+    "Concepts/DNS record management.md",
+    "Directory Structure/apps/admin/What it is?.md",
+    "Directory Structure/apps/admin",
     "Directory Structure/server",
-    "Directory Structure/Untitled.md",
-    "System Architecture.md",
-    "Concepts/Cloud VM.md",
-    "Media/internal preview.png",
     "System Architecture",
     "Concepts",
     "Media",
@@ -195,7 +195,6 @@
     "System Architecture.canvas",
     "Directory Structure/apps",
     "Directory Structure/packages",
-    "Directory Structure/apps",
-    "Directory Structure/server"
+    "Directory Structure/apps"
   ]
 }

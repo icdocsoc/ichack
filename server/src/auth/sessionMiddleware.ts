@@ -1,9 +1,8 @@
 import type { Context, Next } from 'hono';
-import type { SessionContext } from '../etc/context';
 import { getCookie } from 'hono/cookie';
-import { lucia } from '../etc/auth';
+import { lucia } from './lucia';
 
-export const session = () => async (c: Context<SessionContext>, next: Next) => {
+export default () => async (c: Context, next: Next) => {
   const sessionId = getCookie(c, lucia.sessionCookieName) ?? null;
   if (!sessionId) {
     // No session cookie

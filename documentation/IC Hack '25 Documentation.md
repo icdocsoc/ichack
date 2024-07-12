@@ -3,7 +3,6 @@ created: 2024-07-04
 authors:
  - Nishant
 ---
-
 IC Hack is Europe's Largest Hackathon, hosted by Imperial College's DoCSoc. You will find the entire code base on [GitHub](https://github.com/icdocsoc/ichack25). This documentation will give you extensive details on the code, workflow and design choices made by our Webmasters - Nishant and Jay.
 
 ## Ways to see this documentation

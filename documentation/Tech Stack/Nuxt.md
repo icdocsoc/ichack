@@ -18,7 +18,7 @@ Nuxt 4 is practically out at this time of writing. However, it is in beta build 
 - Poor Documentation - although the framework is great, the documentation sucks (at time of writing). Nishant has reported it constantly on Reddit and on LinkedIn to the Nuxt team, but at the time of writing, the beginner stuff is well documented; but not the advance stuff. 
 - Forced to use a server - Unlike Nextjs or Vue or Svelte etc, Nuxt is a **full-stack framework**, not a frontend framework. Nuxt server uses [Nitro](https://nitro.unjs.io/) server as it's backend (which is a wrapper around [h3](https://h3.unjs.io/)). Nuxt comes forced with this so we have to proxy this to our own backend.
 	- So why not use Nitro to build the backend? Because Nitro's documentation is poor.
-	- How to solve this issue? See [[System Architecture]].
+	- How to solve this issue? See [[Version 1|System Architecture v1]].
 
 ## So why not Vue?
 
