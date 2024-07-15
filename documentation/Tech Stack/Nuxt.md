@@ -11,7 +11,7 @@ Nishant and Jay worked with Nuxt 3 for IC Hack '24 and this made total sense to 
 
 ## Why not Nuxt 4?
 
-Nuxt 4 is practically out at this time of writing. However, it is in beta build right now and we don't wish to experiment, especially since we were experimenting with the backend (See [[Why do this?]]). Additionally, Nuxt 4 is not very different than Nuxt 3, apart from a few breaking changes. So it doesn't matter much anyway.
+Nuxt 4 is practically out at this time of writing. However, it is in beta build right now and we don't wish to experiment, especially since we were experimenting with the backend (See [[Why do this]]). Additionally, Nuxt 4 is not very different than Nuxt 3, apart from a few breaking changes. So it doesn't matter much anyway.
 
 ## Bad things about Nuxt.
 

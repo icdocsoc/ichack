@@ -11,9 +11,11 @@
             "id": "e0e4e3f6dd750c9c",
             "type": "leaf",
             "state": {
-              "type": "excalidraw",
+              "type": "markdown",
               "state": {
-                "file": "Excalidraw/External Overview v2.excalidraw.md"
+                "file": "Why do this.md",
+                "mode": "source",
+                "source": false
               }
             }
           }
@@ -84,7 +86,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Excalidraw/External Overview v2.excalidraw.md",
+                "file": "Why do this.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -101,7 +103,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Excalidraw/External Overview v2.excalidraw.md",
+                "file": "Why do this.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -124,7 +126,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Excalidraw/External Overview v2.excalidraw.md"
+                "file": "Why do this.md"
               }
             }
           },
@@ -158,8 +160,8 @@
   },
   "active": "e0e4e3f6dd750c9c",
   "lastOpenFiles": [
-    "Excalidraw/External Overview.excalidraw.md",
     "Excalidraw/External Overview v2.excalidraw.md",
+    "Excalidraw/External Overview.excalidraw.md",
     "Directory Structure/server/Routes.md",
     "System Architecture/Version 2.md",
     "System Architecture/Version 1.md",
@@ -168,7 +170,7 @@
     "Reflections/Nishant.md",
     "Directory Structure/server/Access Map.md",
     "Directory Structure/server/Schemas.md",
-    "Why do this?.md",
+    "Why do this.md",
     "IC Hack '25 Documentation.md",
     "Tech Stack/Bun.md",
     "Media/internal preview.png",
