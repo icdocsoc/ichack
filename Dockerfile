@@ -1,10 +1,14 @@
 FROM oven/bun:1.1.17 AS base
 WORKDIR /ichack25
-COPY package.json bun.lockb **/package.json ./
+COPY package.json bun.lockb ./
+COPY packages/base-layer/package.json ./packages/base-layer/
+COPY apps/admin/package.json ./apps/admin/
+COPY server/package.json ./server/
 RUN bun install
 COPY . .
 
 FROM base AS build_server
+RUN bun install
 RUN bun run build:server
 
 FROM base AS server
@@ -13,7 +17,7 @@ COPY --from=build_server /ichack25/server/dist .
 CMD ["bun", "run", "index.js"]
 
 FROM base AS build_admin
-RUN bun run build:server
+RUN bun run build:admin
 
 FROM base AS admin
 WORKDIR /prod/admin

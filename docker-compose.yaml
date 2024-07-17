@@ -44,6 +44,17 @@ services:
     ports:
       - '3000:3000'
 
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - '80:80'
+    depends_on:
+      - server
+      - admin
+
 volumes:
   postgres_data:
   pgadmin_data:

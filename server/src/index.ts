@@ -29,10 +29,8 @@ app.use(sessionMiddleware());
 installModule(app, auth);
 installModule(app, profile);
 
-Bun.serve({
+export default {
+  port: 3000,
   fetch: app.fetch,
-  port: process.env.PORT || 3000,
   websocket
-});
-
-export default app;
+};
