@@ -1,4 +1,10 @@
-import { pgTable, primaryKey, serial, text } from 'drizzle-orm/pg-core';
+import {
+  integer,
+  pgTable,
+  primaryKey,
+  serial,
+  text
+} from 'drizzle-orm/pg-core';
 import { categories } from '../category/schema';
 import { users } from '../auth/schema';
 
@@ -18,7 +24,7 @@ export const teams = pgTable('teams', {
 export const teamInvites = pgTable(
   'team_invites',
   {
-    teamId: text('team_id')
+    teamId: integer('team_id')
       .notNull()
       .references(() => teams.id),
     userId: text('user_id')
@@ -35,7 +41,7 @@ export const userTeam = pgTable('user_team', {
     .primaryKey()
     .notNull()
     .references(() => users.id),
-  teamId: text('team_id')
+  teamId: integer('team_id')
     .notNull()
     .references(() => teams.id)
 });

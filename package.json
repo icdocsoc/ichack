@@ -4,7 +4,8 @@
     "dev:server": "bun run --cwd server dev",
     "build:server": "bun run --cwd server build",
     "dev:admin": "bun run --cwd apps/admin dev",
-    "build:admin": "bun run --cwd apps/admin build"
+    "build:admin": "bun run --cwd apps/admin build",
+    "test:server": "bun run --cwd server test"
   },
   "devDependencies": {
     "@types/bun": "latest",
