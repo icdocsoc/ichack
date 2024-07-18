@@ -10,56 +10,44 @@ enum Level {
 }
 
 export const apiLogger = {
-  debug(c: Context, name: string, ...messages: any[]): void {
+  debug(c: Context, name: string, ...messages: [any, ...any[]]): void {
     const date = new Date();
     const level = Level.DEBUG;
 
     console.log(
       pc.yellow(date.toUTCString()),
       pc.bgBlue(level),
-      name,
-      '--',
-      messages,
-      JSON.stringify(c)
+      [name, ...messages].join(' -- ')
     );
   },
-  info(c: Context, name: string, ...messages: any[]): void {
+  info(c: Context, name: string, ...messages: [any, ...any[]]): void {
     const date = new Date();
     const level = Level.INFO;
 
     console.log(
       pc.yellow(date.toUTCString()),
       pc.bgWhite(level),
-      name,
-      '--',
-      messages,
-      JSON.stringify(c)
+      [name, ...messages].join(' -- ')
     );
   },
-  warn(c: Context, name: string, ...messages: any[]): void {
+  warn(c: Context, name: string, ...messages: [any, ...any[]]): void {
     const date = new Date();
     const level = Level.WARN;
 
     console.log(
       pc.yellow(date.toUTCString()),
       pc.bgYellow(level),
-      name,
-      '--',
-      messages,
-      JSON.stringify(c)
+      [name, ...messages].join(' -- ')
     );
   },
-  error(c: Context, name: string, ...messages: any[]): void {
+  error(c: Context, name: string, ...messages: [any, ...any[]]): void {
     const date = new Date();
     const level = Level.ERROR;
 
     console.log(
       pc.yellow(date.toUTCString()),
       pc.bgRed(level),
-      name,
-      '--',
-      messages,
-      JSON.stringify(c)
+      [name, ...messages].join(' -- ')
     );
   }
 };

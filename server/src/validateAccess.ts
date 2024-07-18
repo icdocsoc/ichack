@@ -23,7 +23,7 @@ export default (...roles: [AccessPermission, ...AccessPermission[]]) => {
       );
       return c.text(
         `You must be logged in to access ${c.req.method} ${c.req.path}`,
-        401
+        403
       );
     }
 

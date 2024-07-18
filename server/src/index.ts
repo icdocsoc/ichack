@@ -10,9 +10,10 @@ import announcement from './announcement';
 import category from './category';
 import event from './event';
 import profile from './profile';
+import type { Env } from './context';
 import team from './team';
 
-const app = new Hono()
+const app = new Hono<Env>()
   .use(logger())
   .use(secureHeaders())
   .use(
