@@ -2,10 +2,6 @@ import type { Context, Next } from 'hono';
 import { verifyRequestOrigin } from 'lucia';
 
 export const validateOriginAndHost = () => async (c: Context, next: Next) => {
-  if (c.req.method == 'GET')
-    // Allow all GET requests
-    return next();
-
   const originHeader = c.req.header('Origin') ?? null;
   const hostHeader = c.req.header('Host') ?? null;
   if (

@@ -5,7 +5,4 @@ export const roles = [
   'sponsor',
   'volunteer'
 ] as const;
-export type AccessPermission =
-  | (typeof roles)[number]
-  | 'public'
-  | 'authenticated';
+export type AccessPermission = (typeof roles)[number] | 'authenticated';

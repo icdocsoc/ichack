@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Why do this.md",
+                "file": "Directory Structure/apps/admin/What it is.md",
                 "mode": "source",
                 "source": false
               }
@@ -86,7 +86,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Why do this.md",
+                "file": "Directory Structure/apps/admin/What it is.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -103,7 +103,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Why do this.md",
+                "file": "Directory Structure/apps/admin/What it is.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -126,7 +126,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Why do this.md"
+                "file": "Directory Structure/apps/admin/What it is.md"
               }
             }
           },
@@ -160,31 +160,34 @@
   },
   "active": "e0e4e3f6dd750c9c",
   "lastOpenFiles": [
-    "Excalidraw/External Overview v2.excalidraw.md",
-    "Excalidraw/External Overview.excalidraw.md",
+    "Directory Structure/server/Schemas.md",
     "Directory Structure/server/Routes.md",
-    "System Architecture/Version 2.md",
-    "System Architecture/Version 1.md",
     "Directory Structure/server/Modules.md",
+    "Directory Structure/server/How it works.md",
     "Reflections/Nishant.md",
     "Directory Structure/server/Access Map.md",
-    "Directory Structure/server/Schemas.md",
-    "Why do this.md",
-    "IC Hack '25 Documentation.md",
-    "Tech Stack/Bun.md",
     "Media/internal preview.png",
+    "Excalidraw/External Overview v1.excalidraw.md",
+    "System Architecture/Version 1.md",
+    "Excalidraw/External Overview v2.excalidraw.md",
+    "Tech Stack/Bun.md",
+    "System Architecture/Version 2.md",
+    "Tech Stack/Hono.md",
     "Tech Stack/Nuxt.md",
-    "Techologies/Lucia Auth.md",
-    "System Architecture",
-    "Techologies/GitHub Actions.md",
-    "Techologies/Nginx.md",
-    "Techologies/Drizzle.md",
-    "Techologies/Docker.md",
+    "Tech Stack/PostgreSQL.md",
     "Techologies/Cloudflare.md",
+    "Techologies/Docker.md",
+    "Techologies/Drizzle.md",
+    "Techologies/GitHub Actions.md",
+    "Techologies/Lucia Auth.md",
+    "Techologies/Nginx.md",
+    "Directory Structure.md",
+    "IC Hack '25 Documentation.md",
+    "Running the project locally.md",
+    "Why do this.md",
+    "System Architecture",
     "Templates/01-details snippet.md",
     "Templates/00-New Note.md",
-    "Running the project locally.md",
-    "Concepts/DNS record management.md",
     "Directory Structure/apps/admin",
     "Directory Structure/server",
     "System Architecture",

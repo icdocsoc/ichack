@@ -4,7 +4,7 @@ COPY package.json bun.lockb ./
 COPY packages/base-layer/package.json ./packages/base-layer/
 COPY apps/admin/package.json ./apps/admin/
 COPY server/package.json ./server/
-RUN bun install
+RUN bun install --frozen-lockfile
 COPY . .
 
 FROM base AS build_server

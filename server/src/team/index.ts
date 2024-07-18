@@ -1,12 +1,5 @@
 import { Hono } from 'hono';
-import type { Module } from '../module';
-import { AccessMap } from '../accessMap';
-import routes from './routes';
 
-const accessMap = new AccessMap();
+const team = new Hono();
 
-export default <Module>{
-  name: 'team',
-  accessMap,
-  routes
-};
+export default team;

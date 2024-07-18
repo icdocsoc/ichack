@@ -21,3 +21,8 @@ Had a good meeting with Jay and the rest of the 24-25 committee regarding ICHack
 3. wrote and modified changed documentation.
 4. rethought the new version (v2) of the system architecture.
 </details>
+<details>
+<summary>18th July 2024</summary>
+Yeah fuck the new version. For an app that only 700-800 users would use, it is certainly not required to do anything.
+Also, fuck accessMap and urlTrieMap, it's complicated.. we can add a middleware for every route to restrict access.
+</details>
