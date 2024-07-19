@@ -1,14 +1,8 @@
 CALL_DIR=$(pwd)
-testCmd=""
-schemaFile=""
-if [ -f "$CALL_DIR/server/scripts/testServer.sh" ]; then
-  testCmd="test:server"
-  schemaFile="$CALL_DIR/server/data/schema.sql"
-elif [ -f "$CALL_DIR/scripts/testServer.sh" ]; then
-  testCmd="test"
-  schemaFile="$CALL_DIR/data/schema.sql"
-else
-  echo "This script must be run from the root directory or server directory."
+
+# Assert that CALL_DIR is the server directory
+if [ ! -f "$CALL_DIR/scripts/testServer.sh" ]; then
+  echo "This script must be run from the server directory."
   exit 1
 fi
 
@@ -24,10 +18,10 @@ if [ -z "$hasPsql" ]; then
   exit 1
 fi
 
-processes=$(docker ps -a --format '{{.Names}}')
-
 echo "--- Starting Postgres ---"
+
 export PGPASSWORD=test
+
 processes=$(docker ps -a --format '{{.Names}}')
 if [[ $processes == *"postgres_test"* ]]; then
   docker restart postgres_test > /dev/null
@@ -40,13 +34,21 @@ else
     postgres:16 > /dev/null
 fi
 
-while ! docker exec postgres_test pg_isready -U test; do
+while ! docker exec postgres_test pg_isready -U test > /dev/null; do
+  echo "--- Waiting for Postgres to start ---"
   sleep 1
 done
-psql -h 0.0.0.0 -p 5432 -U test -d postgres -f $schemaFile
+
+echo "--- Setting up database ---"
+if psql -h 0.0.0.0 -p 5432 -U test -d postgres -f ./data/schema.sql 2>&1 | grep error; then
+  echo "--- Database setup failed ---"
+  exit 1
+else
+  echo "--- Database setup successful ---"
+fi
 
 echo "--- Running tests ---"
-bun run $testCmd
+bun test --preload ./db.mock.ts
 
 echo "--- Killing Postgres ---"
 docker kill postgres_test > /dev/null

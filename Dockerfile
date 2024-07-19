@@ -1,4 +1,4 @@
-FROM oven/bun:1.1.17 AS base
+FROM oven/bun:1.1.18 AS base
 WORKDIR /ichack25
 COPY package.json bun.lockb ./
 COPY packages/base-layer/package.json ./packages/base-layer/

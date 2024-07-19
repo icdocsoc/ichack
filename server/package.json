@@ -6,7 +6,7 @@
     "migrate:generate": "drizzle-kit generate",
     "migrate:execute": "bun run scripts/migrate.ts",
     "migrate": "bun run migrate:generate && bun run migrate:execute",
-    "test": "bun test"
+    "test": "bash ./scripts/testServer.sh"
   },
   "dependencies": {
     "@hono/swagger-ui": "^0.3.0",
