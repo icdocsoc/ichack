@@ -49,6 +49,9 @@ fi
 
 echo "--- Running tests ---"
 bun test --preload ./db.mock.ts
+RESULT=$?
 
 echo "--- Killing Postgres ---"
-docker kill postgres_test > /dev/null
+docker stop postgres_test > /dev/null
+
+exit $RESULT

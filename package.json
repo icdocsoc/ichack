@@ -5,7 +5,9 @@
     "build:server": "bun run --cwd server build",
     "dev:admin": "bun run --cwd apps/admin dev",
     "build:admin": "bun run --cwd apps/admin build",
-    "test:server": "bun run --cwd server test"
+    "test:server": "bun run --cwd server test",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "devDependencies": {
     "@types/bun": "latest",

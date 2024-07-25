@@ -1,1 +1,4 @@
 documentation/
+.vscode/
+**/.playground/
+server/migrations/
