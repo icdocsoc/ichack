@@ -1,0 +1,74 @@
+import { describe, test, expect, beforeEach } from 'bun:test';
+import { createUserWithSession } from '../../testHelpers';
+import { testClient } from 'hono/testing';
+import app from '../..';
+import { db } from '../../drizzle';
+import { users, userSession } from '../schema';
+
+beforeEach(async () => {
+  await db.delete(userSession);
+  await db.delete(users);
+});
+
+describe('Auth Module > POST /logout', () => {
+  test('a user can logout', async () => {
+    // TEST SETUP
+    const { sessionId } = await createUserWithSession('hacker', {
+      name: 'Nishant',
+      email: 'nj421@ic.ac.uk',
+      password: 'dontheckme'
+    });
+
+    // TEST
+    const res = await testClient(app).auth.logout.$post(
+      {},
+      {
+        headers: {
+          Cookie: `auth_session=${sessionId}`
+        }
+      }
+    );
+
+    expect(res.status).toBe(204);
+  });
+
+  test('unauthenticated user cannot logout', async () => {
+    // TEST
+    const res = await testClient(app).auth.logout.$post();
+
+    // @ts-ignore this can return 403
+    expect(res.status).toBe(403);
+  });
+
+  test('user session is invalidated after logout', async () => {
+    // TEST SETUP
+    const { sessionId } = await createUserWithSession('hacker', {
+      name: 'Nishant',
+      email: 'nj421@ic.ac.uk',
+      password: 'dontheckme'
+    });
+
+    // TEST
+    await testClient(app).auth.logout.$post(
+      {},
+      {
+        headers: {
+          Cookie: `auth_session=${sessionId}`
+        }
+      }
+    );
+
+    // Logout is a protected route (for authenticated users only)
+    const res = await testClient(app).auth.logout.$post(
+      {},
+      {
+        headers: {
+          Cookie: `auth_session=${sessionId}`
+        }
+      }
+    );
+
+    // @ts-ignore this can return 403
+    expect(res.status).toBe(403);
+  });
+});

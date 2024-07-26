@@ -3,7 +3,7 @@ import { userSession, users } from './schema';
 import { Lucia, TimeSpan } from 'lucia';
 import { db } from '../drizzle';
 import { hash, type Options } from 'argon2';
-import { generateRandomString } from '../utils';
+import { generateRandomString } from '../helpers';
 import { roles } from '../types';
 
 const adapter = new DrizzlePostgreSQLAdapter(db, userSession, users);

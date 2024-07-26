@@ -6,10 +6,12 @@
     "migrate:generate": "drizzle-kit generate",
     "migrate:execute": "bun run scripts/migrate.ts",
     "migrate": "bun run migrate:generate && bun run migrate:execute",
-    "test": "bash ./scripts/testServer.sh"
+    "test": "bash ./scripts/testServer.sh",
+    "test:coverage": "bash ./scripts/testServer.sh --coverage"
   },
   "dependencies": {
     "@hono/swagger-ui": "^0.3.0",
+    "@hono/zod-validator": "^0.2.2",
     "@lucia-auth/adapter-drizzle": "^1.0.7",
     "argon2": "^0.40.3",
     "drizzle-orm": "^0.31.2",

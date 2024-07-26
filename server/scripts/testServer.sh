@@ -48,7 +48,7 @@ else
 fi
 
 echo "--- Running tests ---"
-bun test --preload ./db.mock.ts
+bun test $@
 RESULT=$?
 
 echo "--- Killing Postgres ---"

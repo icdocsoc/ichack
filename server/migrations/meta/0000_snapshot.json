@@ -1,5 +1,5 @@
 {
-  "id": "151b8aee-6fca-4527-91c3-3e33fae632fc",
+  "id": "b0042a9e-d4d0-4a33-9894-78a661b3176a",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -196,7 +196,7 @@
           "name": "password",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "role": {
           "name": "role",
@@ -230,7 +230,7 @@
           "name": "pronouns",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "meals": {
           "name": "meals",
@@ -242,12 +242,6 @@
             false,
             false
           ]
-        },
-        "state": {
-          "name": "state",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
         }
       },
       "indexes": {},
