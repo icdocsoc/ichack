@@ -1,75 +1,54 @@
-# Nuxt 3 Minimal Starter
+# Running the app locally
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+# Setup
 
-## Setup
-
-Make sure to install the dependencies:
+Make sure docker and bun are installed!
+Run bun install if necessary
+If you have pulled in new changes (perhaps the server has been updated), then make sure to build the new server image (or any other image that may have changed)
 
 ```bash
-# npm
-npm install
+# building the new server image (replace server with any other container where needed)
+docker compose up -d --build server
+```
 
-# pnpm
-pnpm install
+## Starting up the Docker containers
 
-# yarn
-yarn install
+Here we are starting up the postgres and server containers; the server requires postgres so we need to start them both up
 
-# bun
-bun install
+```bash
+# start up postgres
+# -d : detached mode; container will run in the background and the command prompt is returned to the user.
+docker compose up -d postgres
+
+# start up server in detached mode
+docker compose up -d server
 ```
 
 ## Development Server
 
-Start the development server on `http://localhost:3000`:
+Start the development server on http://localhost:3000:
 
 ```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm run dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
+# running the app in development mode + hot reload changes
+bun run dev:admin
 ```
 
-## Production
+## Checking Logs
 
-Build the application for production:
+Since we opened the containers in detached mode, if we want to view the logs, we have to run the following:
 
 ```bash
-# npm
-npm run build
+# viewing the server logs
+docker compose logs server
 
-# pnpm
-pnpm run build
-
-# yarn
-yarn build
-
-# bun
-bun run build
+# viewing the postgres logs
+docker compose logs postgres
 ```
 
-Locally preview production build:
+## Removing the Docker containers
+
+Here, we are stopping and removing the containers that were created by the up commands earlier.
 
 ```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm run preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
+docker compose down
 ```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.

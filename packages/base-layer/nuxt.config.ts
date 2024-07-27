@@ -2,6 +2,6 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
   runtimeConfig: {
-    proxyUrl: 'http://server:3000'
+    proxyUrl: process.env.SERVER_BASE_URL
   }
 });
