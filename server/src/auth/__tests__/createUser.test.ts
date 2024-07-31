@@ -9,6 +9,8 @@ import { users, userSession } from '../schema';
 
 const sessionIds: { [K in (typeof roles)[number]]?: string } = {};
 
+const client = testClient(app).api;
+
 beforeAll(async () => {
   await db.delete(userSession); // User session should be deleted first
   await db.delete(users); // Delete users second
@@ -26,7 +28,7 @@ beforeAll(async () => {
 describe('Auth Module > POST /create', () => {
   test('a god can create a user', async () => {
     // TEST
-    const res = await testClient(app).auth.create.$post(
+    const res = await client.auth.create.$post(
       {
         json: {
           name: 'test',
@@ -65,7 +67,7 @@ describe('Auth Module > POST /create', () => {
       if (role === 'god') continue;
 
       // Sign in as the role and try to create a user
-      const res = await testClient(app).auth.create.$post(
+      const res = await client.auth.create.$post(
         {
           json: {
             name: 'test',
@@ -89,7 +91,7 @@ describe('Auth Module > POST /create', () => {
 
   test('public user cannot access this route', async () => {
     // TEST
-    const res = await testClient(app).auth.create.$post({
+    const res = await client.auth.create.$post({
       json: {
         name: 'test',
         email: 'test@example.org',
@@ -107,7 +109,7 @@ describe('Auth Module > POST /create', () => {
     // TEST SETUP
 
     // Create a user with the same email
-    const res = await testClient(app).auth.create.$post(
+    const res = await client.auth.create.$post(
       {
         json: {
           // Same email as the god user
@@ -132,7 +134,7 @@ describe('Auth Module > POST /create', () => {
   });
 
   test('request body with no email is rejected', async () => {
-    const res = await testClient(app).auth.create.$post(
+    const res = await client.auth.create.$post(
       {
         // @ts-ignore email is missing for testing purposes
         json: {
@@ -154,7 +156,7 @@ describe('Auth Module > POST /create', () => {
   });
 
   test('request body with bad email is rejected', async () => {
-    const res = await testClient(app).auth.create.$post(
+    const res = await client.auth.create.$post(
       {
         json: {
           name: 'newUser',

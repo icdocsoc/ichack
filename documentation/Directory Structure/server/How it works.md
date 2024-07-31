@@ -15,7 +15,7 @@ The server's entry point is `src/index.ts`. The server is a (in gradle project t
 
 ## Middlewares
 
-It goes through multiple middlewares to make sure that the request to safe to process it. It includes defining CORS (although now unnecessary) and CSRF Protection (again also now unnecessary) and makes sure that the Origin matches that of an allowed host (again unnecessary) before it goes into the actual requests.
+It goes through multiple middlewares to make sure that the request to safe to process it. It will include defining CSRF Protection (which may be unnecessary).
 
 There are 3 other middlewares that the server uses:
 1. Session middleware - every incoming request passes through this middleware. It searches for the `auth_session` cookie and authenticates you before you go further.

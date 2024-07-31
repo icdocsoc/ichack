@@ -10,6 +10,8 @@ beforeEach(async () => {
   await db.delete(users);
 });
 
+const client = testClient(app).api;
+
 describe('Auth Module > POST /logout', () => {
   test('a user can logout', async () => {
     // TEST SETUP
@@ -20,7 +22,7 @@ describe('Auth Module > POST /logout', () => {
     });
 
     // TEST
-    const res = await testClient(app).auth.logout.$post(
+    const res = await client.auth.logout.$post(
       {},
       {
         headers: {
@@ -34,7 +36,7 @@ describe('Auth Module > POST /logout', () => {
 
   test('unauthenticated user cannot logout', async () => {
     // TEST
-    const res = await testClient(app).auth.logout.$post();
+    const res = await client.auth.logout.$post();
 
     // @ts-ignore this can return 403
     expect(res.status).toBe(403);
@@ -49,7 +51,7 @@ describe('Auth Module > POST /logout', () => {
     });
 
     // TEST
-    await testClient(app).auth.logout.$post(
+    await client.auth.logout.$post(
       {},
       {
         headers: {
@@ -59,7 +61,7 @@ describe('Auth Module > POST /logout', () => {
     );
 
     // Logout is a protected route (for authenticated users only)
-    const res = await testClient(app).auth.logout.$post(
+    const res = await client.auth.logout.$post(
       {},
       {
         headers: {

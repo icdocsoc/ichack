@@ -28,3 +28,7 @@ Yeah fuck the new version. For an app that only 700-800 users would use, We don'
 <summary>22nd July 2024</summary>
 No entries in the journal for a long time. In the course of the past 5 days, I changed multiple things regarding the setup of the server-side code. Now it feels like it has converged into something we can work with long-term. I am locking in the changes to the Basic auth routes. You can view the changes in the <a href="https://github.com/icdocsoc/ichack25/pull/4/files">PR #4 Diff</a>. Awaiting for Jay's review before I can continue otherwise I would realise more things I wouldn't like and change stuff again. So having something function on the main branch will then force me to conform to a pattern, even if later I realise it isn't the best. <br><br> Most of the changes were simply moving stuff around and renaming things. After typing out the documentation, it made sense to call something a particular way. Eg <tt>validateAccess</tt> should really be <tt>grantAccessTo</tt>, and that <tt>grantAccessTo('all')</tt> is basically rendering the middleware ineffective, but nice to be explicit.
 </details>
+<details>
+<summary>30th July 2024</summary>
+Development has slowed down a bit from my side because of the relaxing weekends and internship. Need to test the websocket shit with announcements on the admin page and also made it easier to work in dev mode with <tt>dev.docker-compose.yaml</tt>
+</details>

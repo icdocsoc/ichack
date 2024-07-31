@@ -9,16 +9,19 @@ import profile from './profile';
 import team from './team';
 import factory from './factory';
 
-const app = factory
-  .createApp()
-  .use(logger())
-  .use(sessionMiddleware())
+const api = new Hono()
   .route('/announcement', announcement)
   .route('/auth', auth)
   .route('/category', category)
   .route('/event', event)
   .route('/profile', profile)
   .route('/team', team);
+
+const app = factory
+  .createApp()
+  .use(logger())
+  .use(sessionMiddleware())
+  .route('/api', api);
 
 export default app;
 

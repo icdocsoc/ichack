@@ -10,19 +10,6 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  server:
-    container_name: server
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: server
-    ports:
-      - '5000:3000'
-    depends_on:
-      - postgres
-    env_file:
-      - ./server/.env
-
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin
@@ -36,14 +23,33 @@ services:
     depends_on:
       - postgres
 
+  server:
+    container_name: server
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev_server
+    volumes:
+      - './server:/ichack25/server'
+      - './server/node_modules:/ichack25/server/node_modules'
+    ports:
+      - '5000:3000'
+    depends_on:
+      - postgres
+    env_file:
+      - ./server/.env
+
   admin:
     container_name: admin
     build:
       context: .
       dockerfile: Dockerfile
-      target: admin
+      target: dev_admin
     ports:
       - '3000:3000'
+    volumes:
+      - './apps/admin:/ichack25/apps/admin'
+      - './apps/admin/node_modules:/ichack25/apps/admin/node_modules'
     env_file:
       - ./apps/admin/.env
 

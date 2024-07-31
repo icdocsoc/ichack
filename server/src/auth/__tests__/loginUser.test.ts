@@ -22,6 +22,8 @@ beforeAll(async () => {
   });
 });
 
+const client = testClient(app).api;
+
 describe('Auth Module > POST /login', () => {
   test('A valid user can login', async () => {
     // MOCKS
@@ -36,7 +38,7 @@ describe('Auth Module > POST /login', () => {
     }));
 
     // TEST
-    const res = await testClient(app).auth.login.$post({
+    const res = await client.auth.login.$post({
       json: {
         email: 'nj421@ic.ac.uk',
         password: 'dontheckme'
@@ -52,7 +54,7 @@ describe('Auth Module > POST /login', () => {
 
   test('Invalid email is rejected', async () => {
     // TEST
-    const res = await testClient(app).auth.login.$post({
+    const res = await client.auth.login.$post({
       json: {
         email: 'someotheremail@ic.ac.uk',
         password: 'dontheckme'
@@ -71,7 +73,7 @@ describe('Auth Module > POST /login', () => {
 
   test('Invalid password is rejected', async () => {
     // TEST
-    const res = await testClient(app).auth.login.$post({
+    const res = await client.auth.login.$post({
       json: {
         email: 'nj421@ic.ac.uk',
         password: 'iheckedyou'
@@ -90,7 +92,7 @@ describe('Auth Module > POST /login', () => {
 
   test('User with null password is rejected', async () => {
     // TEST
-    const res = await testClient(app).auth.login.$post({
+    const res = await client.auth.login.$post({
       json: {
         email: 'johndoe@ic.ac.uk', // User with null password
         password: 'dontheckme'
@@ -109,7 +111,7 @@ describe('Auth Module > POST /login', () => {
 
   test('Missing email or password', async () => {
     // TEST
-    const res = await testClient(app).auth.login.$post({
+    const res = await client.auth.login.$post({
       // @ts-ignore password is missing for testing purposes
       json: {
         email: 'nj421@ic.ac.uk'
@@ -124,7 +126,7 @@ describe('Auth Module > POST /login', () => {
     expect(cookies.length).toBe(0);
 
     // TEST 2
-    const res2 = await testClient(app).auth.login.$post({
+    const res2 = await client.auth.login.$post({
       // @ts-ignore password is missing for testing purposes
       json: {
         password: 'dontheckme'

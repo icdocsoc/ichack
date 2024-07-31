@@ -7,14 +7,19 @@ COPY server/package.json ./server/
 RUN bun install --frozen-lockfile
 COPY . .
 
+FROM base AS dev_server
+CMD [ "bun", "run", "dev:server" ]
+
 FROM base AS build_server
-RUN bun install
 RUN bun run build:server
 
 FROM base AS server
 WORKDIR /prod/server
 COPY --from=build_server /ichack25/server/dist .
 CMD ["bun", "run", "index.js"]
+
+FROM base AS dev_admin
+CMD [ "bun", "run", "dev:admin" ]
 
 FROM base AS build_admin
 RUN bun run build:admin
