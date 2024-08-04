@@ -47,7 +47,7 @@ This is your local DNS resolution file. In the browser, when you type `admin.exa
 In the root directory of the project, execute:
 
 ```bash
-docker compose -f dev.docker-compose.yaml up --build
+docker compose -f dev.docker-compose.yaml up
 ```
 
 You can visit the websites `[subdomain?].example.org` to view your development. For the server, `http://localhost:5000` works fine.

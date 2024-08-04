@@ -1,6 +1,8 @@
 <script lang="ts" setup>
   import { useVuelidate } from '@vuelidate/core';
   import { required, email, helpers } from '@vuelidate/validators';
+
+  const { $authRepo } = useNuxtApp();
   const userCredentials = reactive({
     email: '',
     password: ''
@@ -32,10 +34,7 @@
       return;
     }
     try {
-      const response = await $fetch('/api/auth/login', {
-        method: 'POST',
-        body: userCredentials
-      });
+      await $authRepo.loginUser(userCredentials);
     } catch (err) {
       console.error('Error with logging in: ', err);
     }
