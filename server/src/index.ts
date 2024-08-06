@@ -8,8 +8,10 @@ import event from './event';
 import profile from './profile';
 import team from './team';
 import factory from './factory';
+import { websocket } from './websocket';
 
-const api = new Hono()
+const api = factory
+  .createApp()
   .route('/announcement', announcement)
   .route('/auth', auth)
   .route('/category', category)
@@ -22,6 +24,12 @@ const app = factory
   .use(logger())
   .use(sessionMiddleware())
   .route('/api', api);
+
+Bun.serve({
+  fetch: app.fetch,
+  port: Bun.env.PORT || 3000,
+  websocket
+});
 
 export default app;
 
