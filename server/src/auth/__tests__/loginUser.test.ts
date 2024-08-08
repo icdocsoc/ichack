@@ -1,6 +1,6 @@
 import { describe, test, expect, mock, beforeAll, beforeEach } from 'bun:test';
 import { testClient } from 'hono/testing';
-import app from '../..';
+import app from '../../app';
 import { createUser } from '../../testHelpers';
 import { db } from '../../drizzle';
 import { users, userSession } from '../schema';

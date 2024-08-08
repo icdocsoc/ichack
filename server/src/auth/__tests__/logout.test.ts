@@ -1,7 +1,7 @@
 import { describe, test, expect, beforeEach } from 'bun:test';
 import { createUserWithSession } from '../../testHelpers';
 import { testClient } from 'hono/testing';
-import app from '../..';
+import app from '../../app';
 import { db } from '../../drizzle';
 import { users, userSession } from '../schema';
 

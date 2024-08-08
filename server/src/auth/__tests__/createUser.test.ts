@@ -2,7 +2,7 @@ import { describe, test, expect, beforeAll, beforeEach } from 'bun:test';
 import { createUserWithSession } from '../../testHelpers';
 import { eq } from 'drizzle-orm';
 import { testClient } from 'hono/testing';
-import app from '../..';
+import app from '../../app';
 import { db } from '../../drizzle';
 import { roles } from '../../types';
 import { users, userSession } from '../schema';
