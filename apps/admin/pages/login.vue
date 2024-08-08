@@ -3,6 +3,7 @@
   import { required, email, helpers } from '@vuelidate/validators';
 
   const { $authRepo } = useNuxtApp();
+  const userStore = useUserStore();
   const userCredentials = reactive({
     email: '',
     password: ''
@@ -33,11 +34,13 @@
       console.error('Invalid details supplied');
       return;
     }
-    try {
-      await $authRepo.loginUser(userCredentials);
-    } catch (err) {
-      console.error('Error with logging in: ', err);
-    }
+
+    const response = await $authRepo.loginUser(userCredentials);
+    // handling the success case and storing user object in pinia
+    // handling the error case by logging to console
+    response
+      .onSuccess(userState => userStore.updateUser(userState))
+      .onFailure(error => console.error(error));
   };
 </script>
 

@@ -45,3 +45,7 @@ Abstracted out the current behaviour that FE needs from the server into an inter
 <summary> 1st/2nd August 2024 </summary>
 Worked on implementing the repository pattern (See [[Repository Pattern]]). Our current implementation uses Hono and can be found in the HonoAuthRepo class. Added HonoAuthRepo as a plugin, allowing it to be used globally throughout the application. Updated shared types to add new type (User Credentials). Aliases have been added, and these should be imported through the base layer and can be used throughout the application for neater imports.
 </details>
+<details>
+<summary> 6th - 8th August 2024 </summary>
+Worked on setting up Pinia and using it in the project to store user state. Have created a user store in which all of the required fields (as of yet) are stored and update this with the response returned from the login request. loginUser now returns a Result<'UserState,Error'> and each case is dealt with in the FE. Having a fixed return type allows for easy maintenance in the future
+</details>

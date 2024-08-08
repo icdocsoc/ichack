@@ -21,5 +21,9 @@
     "apps/*",
     "packages/*",
     "server"
-  ]
+  ],
+  "dependencies": {
+    "@pinia/nuxt": "^0.5.3",
+    "pinia": "^2.2.1"
+  }
 }

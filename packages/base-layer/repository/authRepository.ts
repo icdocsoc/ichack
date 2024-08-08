@@ -1,6 +1,7 @@
 // Extracting out the functions/behaviour that the front end needs from the server
-import { type UserCredentials } from '@shared/types';
+import { type UserCredentials, type UserState } from '@shared/types';
+import type { Result } from 'typescript-result';
 
-export interface AuthServer {
-  loginUser(credentials: UserCredentials): Promise<Response>;
+export interface AuthRepository {
+  loginUser(credentials: UserCredentials): Promise<Result<UserState, Error>>;
 }
