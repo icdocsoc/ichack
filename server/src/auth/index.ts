@@ -55,7 +55,14 @@ const auth = factory
         }
 
         // Now asserted userInDb.length === 1
-        return c.json(userInDb[0], 201);
+        return c.json(
+          {
+            id: userInDb[0].id,
+            name: userInDb[0].name,
+            role: userInDb[0].role
+          },
+          201
+        );
       } catch (e) {
         return c.text('Failed to create user', 409);
       }
@@ -115,7 +122,14 @@ const auth = factory
           append: true
         }
       );
-      return c.json(user, 200);
+      return c.json(
+        {
+          id: user.id,
+          name: user.name,
+          role: user.role
+        },
+        200
+      );
     }
   )
   .post('/logout', grantAccessTo('authenticated'), async c => {

@@ -31,7 +31,7 @@ describe('Auth Module > POST /login', () => {
       async verify(
         digest: string,
         password: string,
-        options: object = {}
+        _: object = {}
       ): Promise<boolean> {
         return digest == password;
       }
@@ -50,6 +50,8 @@ describe('Auth Module > POST /login', () => {
     const cookies = res.headers.getSetCookie();
     expect(cookies.length).toBe(1);
     expect(cookies[0]).toMatch(/auth_session=[a-zA-Z0-9]+/);
+
+    mock.restore();
   });
 
   test('Invalid email is rejected', async () => {

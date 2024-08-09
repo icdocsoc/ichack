@@ -48,17 +48,17 @@ describe('Auth Module > POST /create', () => {
     expect(res.status).toBe(201);
 
     // Verify the user was created in the database
-    const user = await db
+    const usersInDb = await db
       .select()
       .from(users)
       .where(eq(users.email, 'test@example.org'));
-    expect(user.length).toBe(1);
-    expect(user[0].id).toBeTruthy();
-    expect(user[0].name).toBe('test');
-    expect(user[0].role).toBe('hacker');
+    expect(usersInDb).toHaveLength(1);
+    expect(usersInDb[0].id).toBeTruthy();
+    expect(usersInDb[0].name).toBe('test');
+    expect(usersInDb[0].role).toBe('hacker');
 
     // Verify the response body matches the database
-    expect(userFromResponse.id).toBe(user[0].id);
+    expect(userFromResponse.id).toBe(usersInDb[0].id);
   });
 
   test('no other auth role can create a user', async () => {
