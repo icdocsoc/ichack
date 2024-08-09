@@ -39,6 +39,18 @@ We are using Nginx to serve our frontend and backend. For local development, mak
 
 This is your local DNS resolution file. In the browser, when you type `admin.example.org` it will loopback into your own system; then Nginx will pick it up and redirect the request to the correct container (which is admin in this case).
 
+### Environment Variables
+
+Without setting environment variables, your code will not execute or behaving correctly. Copy the `.env.template` files into the same location and replace them with the appropriate values.
+Additionally, you must have two other environment variables here:
+
+```bash
+export UID=$(id -u)
+export GID=$(id -g)
+```
+
+You may put these in your `~/.bashrc` file or equivalent.
+
 ### Docker Compose
 
 > [!important]

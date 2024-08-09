@@ -24,23 +24,26 @@
   // validates the form using the rules and logs any errors
   const checkValid = () => {
     v$.value.$validate();
-    v$.value.$errors.forEach((error: any) => console.log(error.$message));
     return !v$.value.$error;
   };
   // checks if the form is valid and sends a POST request to the server
   const login = async () => {
     const valid = checkValid();
     if (!valid) {
-      console.error('Invalid details supplied');
       return;
     }
 
     const response = await $authRepo.loginUser(userCredentials);
     // handling the success case and storing user object in pinia
     // handling the error case by logging to console
-    response
-      .onSuccess(userState => userStore.updateUser(userState))
-      .onFailure(error => console.error(error));
+    response.fold(
+      userState => {
+        userStore.setUser(userState);
+      },
+      error => {
+        console.error(error); // TODO handle error better
+      }
+    );
   };
 </script>
 
@@ -48,23 +51,22 @@
   <h2 class="font-semibold text-5xl text-center">Login Screen</h2>
   <div class="mb-4 p-10 justify-center grid grid-flow-row">
     <div class="pb-2">
-      <TextInputField
+      <ICInputBasic
         v-model="userCredentials.email"
-        placeholderTxt="Enter Email"
-        name="Email"
-        type="text" />
+        placeholder="Enter Email"
+        type="email"
+        label="Email" />
       <!-- will display error messages generated during validation if any -->
-      <div class="text-red-500" v-if="v$.email.$error">
+      <div data-testid="emailError" class="text-red-500" v-if="v$.email.$error">
         {{ v$.email.$errors[0].$message }}
       </div>
     </div>
 
     <div class="pb-2">
-      <TextInputField
+      <ICInputPassword
         v-model="userCredentials.password"
-        placeholderTxt="Enter Password"
-        name="Password"
-        type="password" />
+        placeholder="Enter Password"
+        label="Password" />
 
       <div class="text-red-500" v-if="v$.password.$error">
         {{ v$.password.$errors[0].$message }}
