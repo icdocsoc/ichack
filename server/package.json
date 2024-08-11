@@ -10,13 +10,12 @@
     "test:coverage": "bash ./scripts/testServer.sh --coverage"
   },
   "dependencies": {
-    "@hono/swagger-ui": "^0.3.0",
     "@hono/zod-validator": "^0.2.2",
-    "@lucia-auth/adapter-drizzle": "^1.0.7",
+    "@lucia-auth/adapter-drizzle": "^1.1.0",
     "argon2": "^0.40.3",
-    "drizzle-orm": "^0.31.2",
+    "drizzle-orm": "^0.33.0",
     "drizzle-zod": "^0.5.1",
-    "hono": "^4.4.9",
+    "hono": "^4.5.5",
     "lucia": "^3.2.0",
     "pg": "^8.12.0",
     "picocolors": "^1.0.1",
@@ -25,6 +24,6 @@
   "devDependencies": {
     "@types/bun": "latest",
     "@types/pg": "^8.11.6",
-    "drizzle-kit": "^0.22.8"
+    "drizzle-kit": "^0.24.0"
   }
 }
