@@ -7,6 +7,7 @@ import event from './event';
 import profile from './profile';
 import team from './team';
 import factory from './factory';
+import { upgradeWebSocket } from './websocket';
 
 const api = factory
   .createApp()
@@ -21,7 +22,19 @@ const app = factory
   .createApp()
   .use(logger())
   .use(sessionMiddleware())
-  .route('/api', api);
+  .route('/api', api)
+  // DELETE this route in the next PR for websockets
+  .get(
+    '/ws',
+    upgradeWebSocket(_ => ({
+      onOpen(_, ws) {
+        ws.send('Hello, World!');
+      },
+      onMessage(evt, ws) {
+        ws.send(`Thank you for your message. Echo: ${evt.data}`);
+      }
+    }))
+  );
 
 export default app;
 

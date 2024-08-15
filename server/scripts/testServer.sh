@@ -1,4 +1,7 @@
 CALL_DIR=$(pwd)
+export NODE_ENV=test
+export PGPASSWORD=test
+DOCKER_CONTAINER_NAME=postgres_test
 
 # Assert that CALL_DIR is the server directory
 if [ ! -f "$CALL_DIR/scripts/testServer.sh" ]; then
@@ -20,21 +23,49 @@ fi
 
 echo "--- Starting Postgres ---"
 
-export PGPASSWORD=test
+cleanup() {
+  # Stop the Docker container
+  if [[ -n "$(docker ps -q -f name=$DOCKER_CONTAINER_NAME)" ]]; then
+    echo "--- Killing Postgres ---"
+    docker stop $DOCKER_CONTAINER_NAME > /dev/null
+  fi
+
+  deep_kill() {
+    local pid=$1
+    local children=$(pgrep -P $pid)
+    for child in $children; do
+      deep_kill $child
+    done
+    kill $pid
+  }
+
+  if [[ -n "$SERVER_PID" ]]; then
+    echo "--- Killing the server ---"
+    deep_kill $SERVER_PID
+  fi
+}
+trap cleanup EXIT
 
 processes=$(docker ps -a --format '{{.Names}}')
-if [[ $processes == *"postgres_test"* ]]; then
-  docker restart postgres_test > /dev/null
+if [[ $processes == *"$DOCKER_CONTAINER_NAME"* ]]; then
+  docker restart $DOCKER_CONTAINER_NAME > /dev/null
 else
   docker run -d \
-    --name postgres_test \
+    --name $DOCKER_CONTAINER_NAME \
     -e POSTGRES_USER=test \
     -e POSTGRES_PASSWORD=$PGPASSWORD \
     -p 5432:5432 \
     postgres:16 > /dev/null
 fi
+sleep 1
 
-while ! docker exec postgres_test pg_isready -U test > /dev/null; do
+# Check if docker run was successful
+if [ "$(docker inspect -f '{{.State.Running}}' $DOCKER_CONTAINER_NAME)" != "true" ]; then
+  echo "Failed to start Postgres container."
+  exit 1
+fi
+
+while ! docker exec $DOCKER_CONTAINER_NAME pg_isready -U test > /dev/null; do
   echo "--- Waiting for Postgres to start ---"
   sleep 1
 done
@@ -47,11 +78,20 @@ else
   echo "--- Database setup successful ---"
 fi
 
-echo "--- Running tests ---"
-bun test $@
-RESULT=$?
+echo "--- Running REST tests ---"
+bun test src/ $@
+REST_CODE=$?
 
-echo "--- Killing Postgres ---"
-docker stop postgres_test > /dev/null
+echo "--- Running WebSocket tests ---"
 
-exit $RESULT
+echo "Starting the server..."
+bun dev &
+SERVER_PID=$!
+sleep 1
+
+echo "Testing..."
+bun test tests/ $@
+WS_CODE=$?
+
+exit $(($REST_CODE | $WS_CODE))
+# The exit will invoke the cleanup function

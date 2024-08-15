@@ -4,7 +4,6 @@
 
 import { users, userSession } from './auth/schema';
 import { db } from './drizzle';
-import type { PgInsertValue } from 'drizzle-orm/pg-core';
 import type { roles } from './types';
 
 const today = new Date();
@@ -39,4 +38,26 @@ export const createUser = async (
   };
   await db.insert(users).values(user);
   return userId;
+};
+
+export const socketEvent = async <T, E extends keyof WebSocketEventMap>(
+  ws: WebSocket,
+  event: E,
+  handler: (ev: WebSocketEventMap[E]) => T,
+  timeout: number = 1000
+) => {
+  return await new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => {
+      reject(new Error(`Timeout waiting for ${event}`));
+    }, timeout);
+
+    ws.addEventListener(
+      event,
+      ev => {
+        clearTimeout(timer);
+        resolve(handler(ev));
+      },
+      { once: true }
+    );
+  });
 };
