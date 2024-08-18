@@ -3,11 +3,8 @@
   "scripts": {
     "dev": "bun run --hot src/index.ts",
     "build": "bun build src/index.ts --outdir dist --target bun --minify",
-    "migrate:generate": "drizzle-kit generate",
-    "migrate:execute": "bun run scripts/migrate.ts",
-    "migrate": "bun run migrate:generate && bun run migrate:execute",
-    "test": "bash ./scripts/testServer.sh",
-    "test:coverage": "bash ./scripts/testServer.sh --coverage"
+    "generate": "bash ./scripts/generateSchema.sh",
+    "test": "bash ./scripts/testServer.sh"
   },
   "dependencies": {
     "@hono/zod-validator": "^0.2.2",
