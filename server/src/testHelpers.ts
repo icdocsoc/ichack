@@ -6,8 +6,8 @@ import { users, userSession } from './auth/schema';
 import { db } from './drizzle';
 import type { roles } from './types';
 
-const today = new Date();
-const tomorrow = new Date(today);
+export const today = new Date();
+export const tomorrow = new Date(today);
 tomorrow.setDate(today.getDate() + 1);
 
 export const createUserWithSession = async (

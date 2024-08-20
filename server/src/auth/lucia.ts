@@ -1,9 +1,8 @@
 import { DrizzlePostgreSQLAdapter } from '@lucia-auth/adapter-drizzle';
 import { userSession, users } from './schema';
-import { Lucia, TimeSpan } from 'lucia';
+import { generateId, Lucia, TimeSpan } from 'lucia';
 import { db } from '../drizzle';
 import { hash, type Options } from 'argon2';
-import { generateRandomString } from '../helpers';
 import { roles } from '../types';
 
 const adapter = new DrizzlePostgreSQLAdapter(db, userSession, users);
@@ -31,7 +30,7 @@ export const hashOptions: Options = {
 };
 
 export const getDummyPassword = async (): Promise<string> => {
-  const randomPassword = generateRandomString(12);
+  const randomPassword = generateId(12);
   return await hash(randomPassword, hashOptions);
 };
 

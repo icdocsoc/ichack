@@ -14,7 +14,7 @@ Every application or package built to support IC Hack'25 tech.
 1. Read relevant portions of the documentation.
 
 > [!note]
-> All ichack related systems every year are **private**. Feel free to fork this repository but **keep it private**.
+> All ichack related systems every year are **private**. Feel free to fork this repository but keep it private. You could make your repo public after IC Hack is over, but make sure there are no senstive information in the repository.
 
 ## Documentation
 
