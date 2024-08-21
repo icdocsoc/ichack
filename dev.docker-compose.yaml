@@ -23,35 +23,29 @@ services:
     depends_on:
       - postgres
 
-  server:
-    container_name: server
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: dev_server
+  server_dev:
+    container_name: server_dev
+    image: oven/bun:1.1.18
     volumes:
-      - './server:/ichack25/server'
-      - './server/node_modules:/ichack25/server/node_modules'
+      - './:/ichack25'
+    working_dir: /ichack25
+    command: bun run dev:server
     ports:
       - '5000:3000'
     depends_on:
       - postgres
-    user: '${UID}:${GID}'
     env_file:
       - ./server/.env
 
-  admin:
-    container_name: admin
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: dev_admin
+  admin_dev:
+    container_name: admin_dev
+    image: oven/bun:1.1.18
     ports:
       - '3000:3000'
     volumes:
-      - './apps/admin:/ichack25/apps/admin'
-      - './apps/admin/node_modules:/ichack25/apps/admin/node_modules'
-    user: '${UID}:${GID}'
+      - './:/ichack25'
+    working_dir: /ichack25
+    command: bun run dev:admin
     env_file:
       - ./apps/admin/.env
 
@@ -59,12 +53,12 @@ services:
     image: nginx:latest
     container_name: nginx
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/dev.nginx.conf:/etc/nginx/nginx.conf
     ports:
       - '80:80'
     depends_on:
-      - server
-      - admin
+      - server_dev
+      - admin_dev
 
 volumes:
   postgres_data:

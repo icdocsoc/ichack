@@ -42,14 +42,6 @@ This is your local DNS resolution file. In the browser, when you type `admin.exa
 ### Environment Variables
 
 Without setting environment variables, your code will not execute or behaving correctly. Copy the `.env.template` files into the same location and replace them with the appropriate values.
-Additionally, you must have two other environment variables here:
-
-```bash
-export UID=$(id -u)
-export GID=$(id -g)
-```
-
-You may put these in your `~/.bashrc` file or equivalent.
 
 ### Docker Compose
 
@@ -59,12 +51,17 @@ You may put these in your `~/.bashrc` file or equivalent.
 In the root directory of the project, execute:
 
 ```bash
-docker compose -f dev.docker-compose.yaml up
+bun install
+docker compose -f dev.docker-compose.yaml up (-d)
 ```
+
+`(-d)` is optional, to run it headless.
 
 You can visit the websites `[subdomain?].example.org` to view your development. For the server, `http://localhost:5000` works fine.
 
-To stop the containers from running, execute (in the same root directory)
+To stop the containers from running, simply use CTRL+C.
+
+If you ran the project headless, execute (in the same root directory)
 
 ```bash
 docker compose down

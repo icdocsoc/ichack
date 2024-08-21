@@ -4,11 +4,8 @@ COPY package.json bun.lockb ./
 COPY packages/base-layer/package.json ./packages/base-layer/
 COPY apps/admin/package.json ./apps/admin/
 COPY server/package.json ./server/
-RUN bun install --frozen-lockfile
+RUN bun install --production
 COPY . .
-
-FROM base AS dev_server
-CMD [ "bun", "run", "dev:server" ]
 
 FROM base AS build_server
 RUN bun run build:server
@@ -17,9 +14,6 @@ FROM base AS server
 WORKDIR /prod/server
 COPY --from=build_server /ichack25/server/dist .
 CMD ["bun", "run", "index.js"]
-
-FROM base AS dev_admin
-CMD [ "bun", "run", "dev:admin" ]
 
 FROM base AS build_admin
 RUN bun run build:admin
