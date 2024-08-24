@@ -29,20 +29,6 @@ cleanup() {
     echo "--- Killing Postgres ---"
     docker stop $DOCKER_CONTAINER_NAME > /dev/null
   fi
-
-  deep_kill() {
-    local pid=$1
-    local children=$(pgrep -P $pid)
-    for child in $children; do
-      deep_kill $child
-    done
-    kill $pid
-  }
-
-  if [[ -n "$SERVER_PID" ]]; then
-    echo "--- Killing the server ---"
-    deep_kill $SERVER_PID
-  fi
 }
 trap cleanup EXIT
 
@@ -79,19 +65,8 @@ else
 fi
 
 echo "--- Running REST tests ---"
-bun test src/ $@
+bun test $@
 REST_CODE=$?
 
-echo "--- Running WebSocket tests ---"
-
-echo "Starting the server..."
-bun dev &
-SERVER_PID=$!
-sleep 1
-
-echo "Testing..."
-bun test tests/ $@
-WS_CODE=$?
-
-exit $(($REST_CODE | $WS_CODE))
+exit $REST_CODE
 # The exit will invoke the cleanup function

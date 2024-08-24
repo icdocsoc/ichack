@@ -1,14 +1,15 @@
 {
   "name": "@ichack25/monorepo",
   "scripts": {
-    "dev:server": "bun run --cwd server dev",
-    "build:server": "bun run --cwd server build",
-    "test:server": "bun run --cwd server test",
-    "dev:admin": "bun run --cwd apps/admin dev",
     "build:admin": "bun run --cwd apps/admin build",
-    "test:admin": "bun run --cwd apps/admin test",
+    "build:server": "bun run --cwd server build",
+    "check-schema": "bun run --cwd server check-schema",
+    "dev:admin": "bun run --cwd apps/admin dev",
+    "dev:server": "bun run --cwd server dev",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "test:admin": "bun run --cwd apps/admin test",
+    "test:server": "bun run --cwd server test"
   },
   "devDependencies": {
     "@nuxt/test-utils": "^3.14.0",

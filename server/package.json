@@ -1,8 +1,9 @@
 {
   "name": "server",
   "scripts": {
-    "dev": "bun run --hot src/index.ts",
     "build": "bun build src/index.ts --outdir dist --target bun --minify",
+    "check-schema": "bash ./scripts/checkSchema.sh",
+    "dev": "bun run --hot src/index.ts",
     "generate": "bash ./scripts/generateSchema.sh",
     "test": "bash ./scripts/testServer.sh"
   },

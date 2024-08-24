@@ -6,6 +6,11 @@ if [ ! -f "$callDir/scripts/testServer.sh" ]; then
   exit 1
 fi
 
+cleanup() {
+  rm -rf $callDir/migrations
+}
+trap cleanup EXIT
+
 shouldGenerate=0
 schemas=$(echo $callDir/src/**/scehma.ts)
 for schema in $schemas; do
@@ -16,11 +21,6 @@ for schema in $schemas; do
   fi
 done
 
-if [ $shouldGenerate -eq 0 ]; then
-  echo "--- Schema is up to date ---"
-  exit 0
-fi
-
 rm -rf $callDir/migrations
 if ! bunx drizzle-kit generate; then
   echo "--- Failed to generate the schema ---" >&2
@@ -28,6 +28,5 @@ if ! bunx drizzle-kit generate; then
 fi
 
 mv $callDir/migrations/0000_*.sql $callDir/data/schema.sql
-rm -rf $callDir/migrations
 
 echo "--- Schema generated successfully ---"

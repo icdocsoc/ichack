@@ -57,6 +57,24 @@ jobs:
       - name: Run tests
         run: bun run test:server
 
+  checkSchema:
+    needs: buildServer
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.1.18
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Check schema
+        run: bun run check-schema
+
   buildAdmin:
     needs: checkFormat
     runs-on: ubuntu-latest
