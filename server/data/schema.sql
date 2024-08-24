@@ -12,11 +12,6 @@ CREATE TABLE IF NOT EXISTS "announcements" (
 	"pin_until" timestamp
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "sponsor_company" (
-	"user_id" text PRIMARY KEY NOT NULL,
-	"company_name" text NOT NULL
-);
---> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "session" (
 	"id" text PRIMARY KEY NOT NULL,
 	"user_id" text NOT NULL,
@@ -45,11 +40,21 @@ CREATE TABLE IF NOT EXISTS "users" (
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "categories" (
-	"title" text PRIMARY KEY NOT NULL,
+	"slug" text PRIMARY KEY NOT NULL,
+	"title" text NOT NULL,
 	"owner" text NOT NULL,
 	"image" text NOT NULL,
 	"short_description" text NOT NULL,
 	"long_description" text NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "companies" (
+	"name" text PRIMARY KEY NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "sponsor_company" (
+	"user_id" text PRIMARY KEY NOT NULL,
+	"company_name" text NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "events" (
@@ -83,12 +88,6 @@ CREATE TABLE IF NOT EXISTS "user_team" (
 );
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "sponsor_company" ADD CONSTRAINT "sponsor_company_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
---> statement-breakpoint
-DO $$ BEGIN
  ALTER TABLE "session" ADD CONSTRAINT "session_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
@@ -96,6 +95,24 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "token" ADD CONSTRAINT "token_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "categories" ADD CONSTRAINT "categories_owner_companies_name_fk" FOREIGN KEY ("owner") REFERENCES "public"."companies"("name") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "sponsor_company" ADD CONSTRAINT "sponsor_company_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "sponsor_company" ADD CONSTRAINT "sponsor_company_company_name_companies_name_fk" FOREIGN KEY ("company_name") REFERENCES "public"."companies"("name") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -113,13 +130,13 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "teams" ADD CONSTRAINT "teams_sponsor_category_categories_title_fk" FOREIGN KEY ("sponsor_category") REFERENCES "public"."categories"("title") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "teams" ADD CONSTRAINT "teams_sponsor_category_categories_slug_fk" FOREIGN KEY ("sponsor_category") REFERENCES "public"."categories"("slug") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "teams" ADD CONSTRAINT "teams_docsoc_category_categories_title_fk" FOREIGN KEY ("docsoc_category") REFERENCES "public"."categories"("title") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "teams" ADD CONSTRAINT "teams_docsoc_category_categories_slug_fk" FOREIGN KEY ("docsoc_category") REFERENCES "public"."categories"("slug") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

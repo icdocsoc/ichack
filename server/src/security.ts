@@ -60,8 +60,8 @@ export const grantAccessTo = (
       return next();
     }
 
-    const user: User | null = c.get('user');
-    const session: Session | null = c.get('session');
+    const user = c.get('user');
+    const session = c.get('session');
     if (user === null || session === null) {
       apiLogger.error(
         c,

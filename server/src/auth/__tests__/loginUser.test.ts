@@ -1,13 +1,13 @@
-import { describe, test, expect, mock, beforeAll, beforeEach } from 'bun:test';
+import { describe, test, expect, mock, beforeAll } from 'bun:test';
 import { testClient } from 'hono/testing';
 import app from '../../app';
 import { createUser } from '../../testHelpers';
 import { db } from '../../drizzle';
-import { users, userSession } from '../schema';
+import { users } from '../schema';
+import { sql } from 'drizzle-orm';
 
 beforeAll(async () => {
-  await db.delete(userSession); // User session should be deleted first
-  await db.delete(users); // Delete users second
+  await db.execute(sql`TRUNCATE ${users} CASCADE`);
 
   await createUser('god', {
     name: 'Nishant',

@@ -23,12 +23,10 @@ POST /forgetPasswd --> {email: string} send a forget password email. Check if em
 ## Category (/category)
 
 GET / -> get all categories. "authenticated".
-GET /:name -> get specific category (title). "authenticated".
-POST /:name -> create the category. "admin".
-PUT / -> updates all fields except longDesc. "sponsor"
-PUT /:name -> update all fields except longDesc. "admin"
-PUT /longDesc -> upload md file and add that link to db. "sponsor"
-PUT /longDesc/:name -> upload md file and add that link to db. "admin"
+GET /:slug -> get specific category (title). "authenticated".
+POST / -> create the category. "admin".
+PUT /:slug -> update all fields. "admin", "sponsor". Sponsors cannot change the title
+DELETE /:slug -> deletes a category. "admin"
 
 ## Event (/event)
 

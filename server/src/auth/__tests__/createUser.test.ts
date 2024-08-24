@@ -1,19 +1,18 @@
-import { describe, test, expect, beforeAll, beforeEach } from 'bun:test';
+import { describe, test, expect, beforeAll } from 'bun:test';
 import { createUserWithSession } from '../../testHelpers';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { testClient } from 'hono/testing';
 import app from '../../app';
 import { db } from '../../drizzle';
 import { roles } from '../../types';
-import { users, userSession } from '../schema';
+import { users } from '../schema';
 
 const sessionIds: { [K in (typeof roles)[number]]?: string } = {};
 
 const client = testClient(app).api;
 
 beforeAll(async () => {
-  await db.delete(userSession); // User session should be deleted first
-  await db.delete(users); // Delete users second
+  await db.execute(sql`TRUNCATE ${users} CASCADE`);
 
   for (const role of roles) {
     const { sessionId } = await createUserWithSession(role, {

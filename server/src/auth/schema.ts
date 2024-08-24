@@ -43,13 +43,6 @@ export const userToken = pgTable('token', {
   type: text('type').notNull() // TODO: Make an enum instead.
 });
 
-export const sponsorCompany = pgTable('sponsor_company', {
-  userId: text('user_id')
-    .primaryKey()
-    .references(() => users.id),
-  companyName: text('company_name').notNull()
-});
-
 export const insertUserSchema = createInsertSchema(users, {
   email: schema => schema.email.email()
 });

@@ -3,11 +3,11 @@ import { createUserWithSession } from '../../testHelpers';
 import { testClient } from 'hono/testing';
 import app from '../../app';
 import { db } from '../../drizzle';
-import { users, userSession } from '../schema';
+import { users } from '../schema';
+import { sql } from 'drizzle-orm';
 
 beforeEach(async () => {
-  await db.delete(userSession);
-  await db.delete(users);
+  await db.execute(sql`TRUNCATE ${users} CASCADE`);
 });
 
 const client = testClient(app).api;

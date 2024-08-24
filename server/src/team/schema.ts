@@ -11,8 +11,8 @@ import { users } from '../auth/schema';
 export const teams = pgTable('teams', {
   id: serial('id').primaryKey(),
   teamName: text('team_name').notNull(),
-  sponsorCategory: text('sponsor_category').references(() => categories.title),
-  docsocCategory: text('docsoc_category').references(() => categories.title),
+  sponsorCategory: text('sponsor_category').references(() => categories.slug),
+  docsocCategory: text('docsoc_category').references(() => categories.slug),
   leader: text('leader')
     .notNull()
     .references(() => users.id),
