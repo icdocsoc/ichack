@@ -44,6 +44,27 @@ export const postRegisterBody = insertUserSchema
 
 const auth = factory
   .createApp()
+  .get('/', grantAccessTo('authenticated'), async c => {
+    const { id } = c.get('user')!;
+
+    const user = await db.select().from(users).where(eq(users.id, id));
+
+    if (!user || user.length < 1) {
+      // TODO log this. This should never happen.
+      return c.text('Unable to fetch your details', 404);
+    }
+
+    const userResult = user[0];
+    return c.json(
+      {
+        id: userResult.id,
+        name: userResult.name,
+        email: userResult.email,
+        role: userResult.role
+      },
+      200
+    );
+  })
   .post(
     '/create',
     grantAccessTo('god'),
