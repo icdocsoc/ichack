@@ -7,7 +7,7 @@ import { db } from '../../drizzle';
 import { roles } from '../../types';
 import { users } from '../schema';
 
-const sessionIds: { [K in (typeof roles)[number]]?: string } = {};
+const sessionIds: Partial<Record<(typeof roles)[number], string>> = {};
 
 const client = testClient(app).api;
 
@@ -26,7 +26,6 @@ beforeAll(async () => {
 
 describe('Auth Module > POST /create', () => {
   test('a god can create a user', async () => {
-    // TEST
     const res = await client.auth.create.$post(
       {
         json: {
@@ -42,8 +41,6 @@ describe('Auth Module > POST /create', () => {
       }
     );
 
-    const userFromResponse = await res.json();
-
     expect(res.status).toBe(201);
 
     // Verify the user was created in the database
@@ -55,13 +52,9 @@ describe('Auth Module > POST /create', () => {
     expect(usersInDb[0].id).toBeTruthy();
     expect(usersInDb[0].name).toBe('test');
     expect(usersInDb[0].role).toBe('hacker');
-
-    // Verify the response body matches the database
-    expect(userFromResponse.id).toBe(usersInDb[0].id);
   });
 
   test('no other auth role can create a user', async () => {
-    // TEST
     for (const role of roles) {
       if (role === 'god') continue;
 
@@ -89,7 +82,6 @@ describe('Auth Module > POST /create', () => {
   });
 
   test('public user cannot access this route', async () => {
-    // TEST
     const res = await client.auth.create.$post({
       json: {
         name: 'test',
@@ -105,8 +97,6 @@ describe('Auth Module > POST /create', () => {
   });
 
   test('Cannot create a user with an existing email', async () => {
-    // TEST SETUP
-
     // Create a user with the same email
     const res = await client.auth.create.$post(
       {

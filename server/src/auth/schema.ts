@@ -3,21 +3,20 @@ import { roles } from '../types';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 
 export const userRoles = pgEnum('user_roles', roles);
+export const tokenType = pgEnum('token_type', [
+  'forgot_password',
+  'registration_link'
+]);
 
 export const users = pgTable('users', {
   id: text('id').primaryKey(),
   name: text('name').notNull(),
   email: text('email').unique().notNull(),
+  // The reason why this is nullable is because gods create users without passwords.
+  // And passwords are later filled in by the user.
+  // Null Password means the user did not complete the registration process.
   password: text('password'),
-  role: userRoles('role').notNull(),
-  photosOptOut: boolean('photos_opt_out').notNull().default(false),
-  dietaryRestrictions: text('dietary_restrictions')
-    .array()
-    .notNull()
-    .default([]),
-  allergies: text('allergies').array().notNull().default([]),
-  pronouns: text('pronouns'),
-  meals: boolean('meals').array().notNull().default([false, false, false])
+  role: userRoles('role').notNull()
 });
 
 export const userSession = pgTable('session', {
@@ -40,7 +39,7 @@ export const userToken = pgTable('token', {
     withTimezone: true,
     mode: 'date'
   }).notNull(),
-  type: text('type').notNull() // TODO: Make an enum instead.
+  type: tokenType('type').notNull()
 });
 
 export const insertUserSchema = createInsertSchema(users, {

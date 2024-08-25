@@ -1,4 +1,10 @@
 DO $$ BEGIN
+ CREATE TYPE "public"."token_type" AS ENUM('forgot_password', 'registration_link');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
  CREATE TYPE "public"."user_roles" AS ENUM('god', 'admin', 'hacker', 'sponsor', 'volunteer');
 EXCEPTION
  WHEN duplicate_object THEN null;
@@ -22,7 +28,7 @@ CREATE TABLE IF NOT EXISTS "token" (
 	"id" text PRIMARY KEY NOT NULL,
 	"user_id" text NOT NULL,
 	"expires_at" timestamp with time zone NOT NULL,
-	"type" text NOT NULL
+	"type" "token_type" NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "users" (
@@ -31,11 +37,6 @@ CREATE TABLE IF NOT EXISTS "users" (
 	"email" text NOT NULL,
 	"password" text,
 	"role" "user_roles" NOT NULL,
-	"photos_opt_out" boolean DEFAULT false NOT NULL,
-	"dietary_restrictions" text[] DEFAULT '{}' NOT NULL,
-	"allergies" text[] DEFAULT '{}' NOT NULL,
-	"pronouns" text,
-	"meals" boolean[] DEFAULT '{false,false,false}' NOT NULL,
 	CONSTRAINT "users_email_unique" UNIQUE("email")
 );
 --> statement-breakpoint

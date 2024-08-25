@@ -13,12 +13,12 @@ DELETE /:id --> delete an announcement. "admin"
 ## Auth routes (/auth)
 
 POST /create --> Create a users and returns the object. "god"
-POST /validateToken --> {token: string} creates a session cookie. Return the type of token. "public"
-POST /signup --> Users can update their profile for the first time. "authenticated"
-POST /login --> Users can log in, return their session token. "public"
+POST /login --> Users can log in, return their session token. "all"
 POST /logout --> Deletes the cookie on frontend. "authenticated"
 DELETE /:id --> deleting a user. "god"
-POST /forgetPasswd --> {email: string} send a forget password email. Check if email exists. 
+PUT /changePassword --> changes the password of a user. "authenticated"
+POST /forgetPassword --> {email: string} send a forget password email. Check if email exists. "all"
+POST /resetPassword --> {newPassword, token} completes the forgot password route. "all"
 
 ## Category (/category)
 

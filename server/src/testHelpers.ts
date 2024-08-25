@@ -9,12 +9,14 @@ import type { roles } from './types';
 export const today = new Date();
 export const tomorrow = new Date(today);
 tomorrow.setDate(today.getDate() + 1);
+export const yesterday = new Date(today);
+yesterday.setDate(today.getDate() - 1);
 
 export const createUserWithSession = async (
   role: (typeof roles)[number],
-  body: { name: string; email: string; password: string }
+  body: { name: string; email: string; password: string | null }
 ): Promise<{ userId: string; sessionId: string }> => {
-  const sessionId = `${role}_session`;
+  const sessionId = `${role}_session_${Math.random()}`;
   const userId = await createUser(role, body);
 
   await db.insert(userSession).values({
@@ -30,7 +32,7 @@ export const createUser = async (
   role: (typeof roles)[number],
   body: { name: string; email: string; password: string | null }
 ): Promise<string> => {
-  const userId = `${role}_user`;
+  const userId = `${role}_user_${Math.random()}`;
   const user = {
     id: userId,
     role: role,

@@ -14,28 +14,29 @@ const client = testClient(app).api;
 
 describe('Auth Module > POST /logout', () => {
   test('a user can logout', async () => {
-    // TEST SETUP
+    // Create a session
     const { sessionId } = await createUserWithSession('hacker', {
       name: 'Nishant',
       email: 'nj421@ic.ac.uk',
       password: 'dontheckme'
     });
 
-    // TEST
-    const res = await client.auth.logout.$post(
-      {},
-      {
-        headers: {
-          Cookie: `auth_session=${sessionId}`
-        }
+    // test can logout
+    const res = await client.auth.logout.$post(undefined, {
+      headers: {
+        Cookie: `auth_session=${sessionId}`
       }
-    );
-
+    });
     expect(res.status).toBe(204);
+
+    const cookies = res.headers.getSetCookie();
+    expect(cookies).toHaveLength(1);
+
+    const authToken = cookies[0].split(';')[0].split('=')[1];
+    expect(authToken).toBeEmpty();
   });
 
   test('unauthenticated user cannot logout', async () => {
-    // TEST
     const res = await client.auth.logout.$post();
 
     // @ts-ignore this can return 403
@@ -43,32 +44,26 @@ describe('Auth Module > POST /logout', () => {
   });
 
   test('user session is invalidated after logout', async () => {
-    // TEST SETUP
     const { sessionId } = await createUserWithSession('hacker', {
       name: 'Nishant',
       email: 'nj421@ic.ac.uk',
       password: 'dontheckme'
     });
 
-    // TEST
-    await client.auth.logout.$post(
-      {},
-      {
-        headers: {
-          Cookie: `auth_session=${sessionId}`
-        }
+    // logout once
+    await client.auth.logout.$post(undefined, {
+      headers: {
+        Cookie: `auth_session=${sessionId}`
       }
-    );
+    });
 
+    // logout again
     // Logout is a protected route (for authenticated users only)
-    const res = await client.auth.logout.$post(
-      {},
-      {
-        headers: {
-          Cookie: `auth_session=${sessionId}`
-        }
+    const res = await client.auth.logout.$post(undefined, {
+      headers: {
+        Cookie: `auth_session=${sessionId}`
       }
-    );
+    });
 
     // @ts-ignore this can return 403
     expect(res.status).toBe(403);

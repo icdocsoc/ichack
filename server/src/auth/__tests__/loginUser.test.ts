@@ -1,18 +1,21 @@
-import { describe, test, expect, mock, beforeAll } from 'bun:test';
+import { describe, test, expect, beforeAll } from 'bun:test';
 import { testClient } from 'hono/testing';
 import app from '../../app';
 import { createUser } from '../../testHelpers';
 import { db } from '../../drizzle';
-import { users } from '../schema';
-import { sql } from 'drizzle-orm';
+import { users, userSession } from '../schema';
+import { hash } from 'argon2';
+import { hashOptions } from '../lucia';
+import { eq, sql } from 'drizzle-orm';
 
 beforeAll(async () => {
   await db.execute(sql`TRUNCATE ${users} CASCADE`);
 
+  const hashed = await hash('Plea#eDontH3ckMe', hashOptions);
   await createUser('god', {
     name: 'Nishant',
     email: 'nj421@ic.ac.uk',
-    password: 'dontheckme'
+    password: hashed
   });
 
   await createUser('hacker', {
@@ -26,40 +29,30 @@ const client = testClient(app).api;
 
 describe('Auth Module > POST /login', () => {
   test('A valid user can login', async () => {
-    // MOCKS
-    mock.module('argon2', () => ({
-      async verify(
-        digest: string,
-        password: string,
-        _: object = {}
-      ): Promise<boolean> {
-        return digest == password;
-      }
-    }));
-
-    // TEST
     const res = await client.auth.login.$post({
       json: {
         email: 'nj421@ic.ac.uk',
-        password: 'dontheckme'
+        password: 'Plea#eDontH3ckMe'
       }
     });
-
     expect(res.status).toBe(200);
 
     const cookies = res.headers.getSetCookie();
     expect(cookies.length).toBe(1);
-    expect(cookies[0]).toMatch(/auth_session=[a-zA-Z0-9]+/);
 
-    mock.restore();
+    const cookieToken = cookies[0].split(';')[0].split('=')[1];
+    const session = await db
+      .select()
+      .from(userSession)
+      .where(eq(userSession.id, cookieToken));
+    expect(session).toHaveLength(1);
   });
 
   test('Invalid email is rejected', async () => {
-    // TEST
     const res = await client.auth.login.$post({
       json: {
         email: 'someotheremail@ic.ac.uk',
-        password: 'dontheckme'
+        password: 'Plea#eDontH3ckMe'
       }
     });
 
@@ -74,11 +67,10 @@ describe('Auth Module > POST /login', () => {
   });
 
   test('Invalid password is rejected', async () => {
-    // TEST
     const res = await client.auth.login.$post({
       json: {
         email: 'nj421@ic.ac.uk',
-        password: 'iheckedyou'
+        password: 'IH3eckedY#u'
       }
     });
 
@@ -93,11 +85,10 @@ describe('Auth Module > POST /login', () => {
   });
 
   test('User with null password is rejected', async () => {
-    // TEST
     const res = await client.auth.login.$post({
       json: {
         email: 'johndoe@ic.ac.uk', // User with null password
-        password: 'dontheckme'
+        password: 'Plea#eDontH3ckMe'
       }
     });
 
@@ -112,7 +103,6 @@ describe('Auth Module > POST /login', () => {
   });
 
   test('Missing email or password', async () => {
-    // TEST
     const res = await client.auth.login.$post({
       // @ts-ignore password is missing for testing purposes
       json: {
@@ -127,7 +117,6 @@ describe('Auth Module > POST /login', () => {
     const cookies = res.headers.getSetCookie();
     expect(cookies.length).toBe(0);
 
-    // TEST 2
     const res2 = await client.auth.login.$post({
       // @ts-ignore password is missing for testing purposes
       json: {
@@ -141,5 +130,34 @@ describe('Auth Module > POST /login', () => {
 
     const cookies2 = res2.headers.getSetCookie();
     expect(cookies2.length).toBe(0);
+  });
+
+  test('Authenticated user cannot login again', async () => {
+    // login once
+    const res = await client.auth.login.$post({
+      json: {
+        email: 'nj421@ic.ac.uk',
+        password: 'Plea#eDontH3ckMe'
+      }
+    });
+    expect(res.status).toBe(200);
+
+    // login twice
+    const cookies = res.headers.getSetCookie();
+    const res2 = await client.auth.login.$post(
+      {
+        json: {
+          email: 'nj421@ic.ac.uk',
+          password: 'Plea#eDontH3ckMe'
+        }
+      },
+      {
+        headers: {
+          Cookie: cookies[0]
+        }
+      }
+    );
+
+    expect(res2.status).toBe(409);
   });
 });
