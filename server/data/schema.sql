@@ -72,20 +72,20 @@ CREATE TABLE IF NOT EXISTS "team_invites" (
 	CONSTRAINT "team_invites_team_id_user_id_pk" PRIMARY KEY("team_id","user_id")
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "team_members" (
+	"user_id" text PRIMARY KEY NOT NULL,
+	"team_id" integer NOT NULL,
+	"is_leader" boolean NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "teams" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"team_name" text NOT NULL,
 	"sponsor_category" text,
 	"docsoc_category" text,
-	"leader" text NOT NULL,
 	"submission_link" text,
-	"phone" text NOT NULL,
+	"phone" text,
 	"phone2" text
-);
---> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "user_team" (
-	"user_id" text PRIMARY KEY NOT NULL,
-	"team_id" integer NOT NULL
 );
 --> statement-breakpoint
 DO $$ BEGIN
@@ -131,6 +131,18 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
+ ALTER TABLE "team_members" ADD CONSTRAINT "team_members_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "team_members" ADD CONSTRAINT "team_members_team_id_teams_id_fk" FOREIGN KEY ("team_id") REFERENCES "public"."teams"("id") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
  ALTER TABLE "teams" ADD CONSTRAINT "teams_sponsor_category_categories_slug_fk" FOREIGN KEY ("sponsor_category") REFERENCES "public"."categories"("slug") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
@@ -138,24 +150,6 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "teams" ADD CONSTRAINT "teams_docsoc_category_categories_slug_fk" FOREIGN KEY ("docsoc_category") REFERENCES "public"."categories"("slug") ON DELETE no action ON UPDATE no action;
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
---> statement-breakpoint
-DO $$ BEGIN
- ALTER TABLE "teams" ADD CONSTRAINT "teams_leader_users_id_fk" FOREIGN KEY ("leader") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
---> statement-breakpoint
-DO $$ BEGIN
- ALTER TABLE "user_team" ADD CONSTRAINT "user_team_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
---> statement-breakpoint
-DO $$ BEGIN
- ALTER TABLE "user_team" ADD CONSTRAINT "user_team_team_id_teams_id_fk" FOREIGN KEY ("team_id") REFERENCES "public"."teams"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

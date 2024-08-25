@@ -50,15 +50,16 @@ PUT /meal --> {userId: string, num: number} update the meal. "volunteer"
 
 ## Team (/team)
 
-POST / --> {name: string} create a team in the db. "hacker"
-PUT /:id --> a leader can update anything (not id) on the team db. "hacker"
-DELETE /:id --> a leader can delete the team. "hacker"
-GET /user?id={string} --> returns the id of the team the user is in. "hacker"
+POST / --> create a team in the db, named `firstName`s team. "hacker"
+PUT / --> a leader can update anything (not id) on the team db. "hacker"
+DELETE / --> a leader can delete the team. "hacker"
+PUT /transfer --> {userId: string} a leader can transfer ownership of a team. "hacker"
+GET /search?name={string}&email={string} --> returns user full name, id, and whether they are in a team or not. "hacker". searches by name OR email, name takes precedence.
 GET / --> get the team information. "hacker"
 GET /ws --> websocket subscribe for team info. "hacker"
 POST /invite --> {userId: string} a leader can invite a user. "hacker"
 GET /invite/ws --> A hacker can see realtime invites. "hacker"
 POST /acceptInvite --> {teamId: string} removes all invites of the hacker and adds hacker's uid to user_team table. "hacker"
 POST /removeInvite --> {teamId: string} removes that entry from team_invites table. "hacker"
-POST /removeUser --> {userId: string} Leader can remove a user from a team. "hacker"
-POST /leave --> authenticated hacker can remove themselves from the team. "hacker"
+POST /removeUser/:userId --> Leader can remove a user from a team. "hacker"
+POST /removeUser --> authenticated hacker can remove themselves from the team. "hacker"
