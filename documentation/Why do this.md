@@ -9,7 +9,7 @@ This is the first year where all the code will be in a single place with full do
 ## Why did we start so early?
 
 - For IC Hack '24 and earlier, development of the website started late October until mid-January (actually first week of February). Historically, IC Hack has happened in the first weekend of February. 
-- IC Hack '25 is being held in the last week of January which pushes not only Tech but every other team.
+- IC Hack '25 is being held in the first week of February which pushes not only Tech but every other team.
 - We are building our own backend. Historically, all IC Hack builds used Firebase BaaS.
 
 ## Why build your own server?

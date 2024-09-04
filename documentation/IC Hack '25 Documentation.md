@@ -18,10 +18,6 @@ IC Hack is Europe's Largest Hackathon, hosted by Imperial College's DoCSoc. You 
 1. Learn about [[Why do this|why we did what we did]].
 2. Try out our code by [[Running the project locally]].
 3. Look at the [[Directory Structure]] and understand what is placed where.
-5. Read through our team's reflections to know any major problems or decisions that were made.
-   1. [[Nishant]]
-   2. [[Jay]]
-   3. [[Harini]]
 6. Review our [code](https://github.com/icdocsoc/ichack25) and also see the available documentation and comments.
 
 ## DISCLAIMER

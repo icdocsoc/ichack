@@ -11,4 +11,5 @@ They provide a bunch of different internet solutions to consumers. We use/plan t
 - Analytics (self-explanatory).
 - [[DNS record management]].
 - SSL/TLS - gives the 's' in https by decrypting incoming traffic and encrypting outgoing traffic. 
+	- This also needs to be done by [[Nginx]] too.
 - DDoS protection - Prevents a DDoS attack by blocking the malicious requests. 

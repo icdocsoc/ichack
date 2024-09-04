@@ -5,7 +5,7 @@ authors:
 ---
 ## Announcements (/annoucement)
 
-GET /all --> Websocket to get all annoucements. "authenticated"
+GET /sse --> SSE to get all annoucements. "authenticated"
 POST / --> create an announcement. "admin"
 PUT /:id --> edit the announcement. "admin" 
 DELETE /:id --> delete an announcement. "admin"

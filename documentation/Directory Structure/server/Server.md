@@ -10,8 +10,7 @@ The server's entry point is `src/index.ts`. The server is a (in gradle project t
 [[Routes]] define the different entrypoint interactions from the frontend. Each route will have different request bodies, if at all. If you are an authenticated user accessing the route, you need to send in a Cookie called `auth_session` with the session ID. 
 
 1. Every successful response (2xx) will return a json.
-2. Every failed response (4xx) will return a text. 
-3. Not sure what happens in a (5xx).
+2. Every failed response (4xx/5xx) will return a text. 
 
 ## Middlewares
 

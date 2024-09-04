@@ -3,7 +3,7 @@ created: 2024-07-08
 authors:
   - Nishant
 ---
-When the user requests for a website. The request first goes through [[Cloudflare]] and the potentially malicious ones are filtered out. Then the request goes to the Cloud VM where it is first encountered by [[Nginx]] which would act as a load balancer and direct the request to the correct running port based on the [subdomain](#subdomains).
+When the user requests for a website. The request first goes through [[Cloudflare]] and the potentially malicious ones are filtered out. Then the request goes to the Cloud VM where it is first encountered by [[Nginx]] which would act as a load balancer and direct the request to the correct container based on the [subdomain](#subdomains).
 
 ## Subdomains
 

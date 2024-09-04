@@ -9,7 +9,7 @@ Just a choice from Nishant, really. [[Bun]] was chosen since it is quite fast an
 
 ## Why not Elysia?
 
-Elysia is also a great choice, but it is one person (@SaltyAom) building the entire thing. It is great but it got issues and tons of them on github that aren't being attended to. 
+Elysia is also a great choice, but it is one person (@SaltyAom) building the entire thing. It is great but it got issues and tons of them on github that aren't being attended to. Plus the framework [does not follow SemVer](https://github.com/elysiajs/elysia/issues/720) and it is difficult to maintain even after v1 release.
 
 ## Why not Express?
 

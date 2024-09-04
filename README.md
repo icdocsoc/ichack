@@ -52,10 +52,8 @@ In the root directory of the project, execute:
 
 ```bash
 bun install
-docker compose -f dev.docker-compose.yaml up (-d)
+bun run dev
 ```
-
-`(-d)` is optional, to run it headless.
 
 You can visit the websites `[subdomain?].example.org` to view your development. For the server, `http://localhost:5000` works fine.
 
@@ -67,7 +65,7 @@ If you ran the project headless, execute (in the same root directory)
 docker compose down
 ```
 
-Refer to [[Docker]] to learn about how we containerised it and used compose.
+Refer to [Docker](./documentation/Techologies/Docker.md) to learn about how we containerised it and used compose.
 
 ## Development rules
 

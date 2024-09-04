@@ -9,7 +9,7 @@ From IC Hack '24, it was clear that NoSQL is bad for our kind of data. Each enti
 
 ## Why not MySQL or SQLite?
 
-PostgreSQL has `LISTEN` and `NOTIFY` syntax that we can take advantage of when communicating real-time data via websockets.
+PostgreSQL has `LISTEN` and `NOTIFY` syntax that we can take advantage of when communicating real-time data via [[SSE]].
 
 ## What's PgAdmin?
 

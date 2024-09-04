@@ -6,8 +6,10 @@
     "check-schema": "bun run --cwd server check-schema",
     "dev:admin": "bun run --cwd apps/admin dev",
     "dev:server": "bun run --cwd server dev",
+    "dev": "docker compose -f dev.docker-compose.yaml up",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "preview": "docker compose up --build",
     "test:admin": "bun run --cwd apps/admin test",
     "test:server": "bun run --cwd server test"
   },
