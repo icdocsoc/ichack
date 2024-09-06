@@ -59,7 +59,8 @@ CREATE TABLE IF NOT EXISTS "sponsor_company" (
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "events" (
-	"title" text PRIMARY KEY NOT NULL,
+	"id" serial PRIMARY KEY NOT NULL,
+	"title" text NOT NULL,
 	"description" text NOT NULL,
 	"starts_at" timestamp NOT NULL,
 	"ends_at" timestamp,

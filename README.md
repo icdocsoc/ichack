@@ -105,7 +105,7 @@ You should create a PR **as soon as** you create a branch.
 ## Repository Administrators
 
 - [@cybercoder-naj | Nishant Aanjaney Jalan](https://github.com/cybercoder-naj)
-- [@dropheart | Jay Ahmed Abussaud](https://github.com/dropheart)
+- [@dropheart | Jay Abussaud](https://github.com/dropheart)
 
 ## Code contributors
 
