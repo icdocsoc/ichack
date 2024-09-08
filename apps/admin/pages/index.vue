@@ -1,4 +1,11 @@
+<script lang="ts" setup>
+definePageMeta({
+  middleware: ['require-auth']
+});
+
+useTitle('Dashboard');
+</script>
+
 <template>
-  <div>Hello Home Page</div>
+  <NuxtLayout name="toolbar"></NuxtLayout>
 </template>
-<script lang="ts" setup></script>

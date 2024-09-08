@@ -8,7 +8,7 @@ const godUser1 = {
   id: generateIdFromEntropySize(16),
   name: 'Nishant Aanjaney Jalan',
   email: 'nj421@ic.ac.uk',
-  password: await hash('pass#1234', hashOptions),
+  password: await hash('Pass#1234', hashOptions),
   role: 'god',
   pronouns: 'he/him'
 } as const;

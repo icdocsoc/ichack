@@ -4,8 +4,14 @@ import { fileURLToPath } from 'url';
 export default defineNuxtConfig({
   devtools: { enabled: true },
 
+  $development: {
+    runtimeConfig: {
+      serverBaseUrl: 'http://server_dev:3000'
+    }
+  },
+
   runtimeConfig: {
-    proxyUrl: process.env.SERVER_BASE_URL
+    serverBaseUrl: 'http://server:3000'
   },
 
   alias: {

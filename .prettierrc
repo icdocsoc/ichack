@@ -5,6 +5,6 @@
   "singleQuote": true,
   "bracketSameLine": true,
   "arrowParens": "avoid",
-  "vueIndentScriptAndStyle": true,
+  "vueIndentScriptAndStyle": false,
   "htmlWhitespaceSensitivity": "ignore"
 }

@@ -52,3 +52,11 @@ Here, we are stopping and removing the containers that were created by the up co
 ```bash
 docker compose down
 ```
+
+## Testing
+
+To run the tests, run the following command:
+
+```bash
+bun run test
+```

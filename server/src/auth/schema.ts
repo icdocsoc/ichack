@@ -45,4 +45,6 @@ export const userToken = pgTable('token', {
 export const insertUserSchema = createInsertSchema(users, {
   email: schema => schema.email.email()
 });
-export const selectUserSchema = createSelectSchema(users);
+export const selectUserSchema = createSelectSchema(users).omit({
+  password: true
+});

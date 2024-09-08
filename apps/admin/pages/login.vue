@@ -1,26 +1,31 @@
 <script lang="ts" setup>
-  import { z } from 'zod';
-  const userStore = useUserStore();
-  const { $authRepo } = useNuxtApp();
-  const router = useRouter();
+import { passwordPattern } from '@shared/types';
+import { z } from 'zod';
 
-  const userCredentials = reactive({
-    email: '',
-    password: ''
-  });
-
-  const loginSchema = z.object({
-    email: z.string().email('Invalid email address'),
-    password: z.string().min(8)
-  });
-
-  const errors = ref({
-    emailError: [] as string[],
-    passwordError: [] as string[]
-  });
-
-  const validateSchema = () => {
-    const validatedSchema = loginSchema.safeParse(userCredentials);
+const userStore = useUserStore();
+const { authRepo } = useRepositories();
+const userCredentials = reactive({
+  email: '',
+  password: ''
+});
+const loginSchema = z.object({
+  email: z
+    .string({ message: 'Email is required' })
+    .email('Invalid email address'),
+  password: z
+    .string({ message: 'Password is required' })
+    .regex(
+      passwordPattern,
+      'Password must contain at least 8 characters with one lowercase letter, one uppercase letter and one number'
+    )
+});
+const errors = ref({
+  emailError: [] as string[],
+  passwordError: [] as string[]
+});
+const handleLogin = async () => {
+  const validateSchema = async () => {
+    const validatedSchema = await loginSchema.safeParseAsync(userCredentials);
     if (!validatedSchema.success) {
       const error = validatedSchema.error.format();
       errors.value.emailError = error.email?._errors ?? [];
@@ -30,55 +35,49 @@
     return validatedSchema.data;
   };
 
-  const handleSubmit = async () => {
-    try {
-      const data = validateSchema();
-      if (!data) return;
-      const response = await $authRepo.loginUser(userCredentials);
-      response.fold(
-        userState => {
-          userStore.setUser(userState);
-          router.push('/');
-        },
-        error => {
-          console.error(error);
-        }
-      );
-    } catch (error) {
-      console.log(error);
-    }
-    // handle form submission
-  };
+  try {
+    const data = validateSchema();
+    if (!data) return;
+
+    const response = await authRepo.loginUser(userCredentials);
+    response.fold(
+      userState => {
+        userStore.setUser(userState);
+        navigateTo('/');
+      },
+      error => {
+        console.error(error);
+      }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+  // handle form submission
+};
+
+useTitle('Login');
 </script>
+
 <template>
   <h2 class="font-semibold text-5xl text-center">Login Screen</h2>
-  <div class="mb-4 p-10 justify-center grid grid-flow-row">
-    <form
-      :schema="loginSchema"
-      :state="userCredentials"
-      @submit.prevent="handleSubmit">
-      <ICInputBasic
-        v-model="userCredentials.email"
-        placeholder="Enter Email"
-        type="email"
-        label="Email" />
-      <div v-if="errors.emailError" class="text-red-500">
-        {{ errors.emailError[0] }}
-      </div>
+  <UContainer class="flex flex-col justify-center items-center">
+    <UForm :schema="loginSchema" :state="userCredentials" @submit="handleLogin">
+      <UFormGroup label="Email" required>
+        <UInput
+          v-model="userCredentials.email"
+          placeholder="Enter Email"
+          type="email"
+          icon="i-heroicons-envelope" />
+      </UFormGroup>
 
-      <ICInputPassword
-        v-model="userCredentials.password"
-        placeholder="Enter Password"
-        label="Password" />
-      <div v-if="errors.passwordError" class="text-red-500">
-        {{ errors.passwordError[0] }}
-      </div>
-
-      <button
-        type="submit"
-        class="p-2 bg-blue-500 text-white font-bold rounded shadow-md hover:bg-blue-700">
-        Login
-      </button>
-    </form>
-  </div>
+      <UFormGroup label="Password" required>
+        <UInput
+          v-model="userCredentials.password"
+          placeholder="Enter Password"
+          type="password"
+          icon="i-heroicons-lock-closed" />
+      </UFormGroup>
+      <UButton type="submit">Login</UButton>
+    </UForm>
+  </UContainer>
 </template>

@@ -1,10 +1,10 @@
-import type { UserState } from '@shared/types';
+import type { User } from '@shared/types';
 import { defineStore } from 'pinia';
 
 export const useUserStore = defineStore('user', () => {
-  const user = ref<UserState | null>(null);
+  const user = ref<User | null>(null);
 
-  const setUser = (userObj: UserState) => {
+  const setUser = (userObj: User) => {
     user.value = userObj;
   };
 

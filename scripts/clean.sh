@@ -1,1 +1,1 @@
-rm -rfv node_modules bun.lockb apps/admin/node_modules apps/admin/.nuxt apps/admin/.output server/node_modules
+rm -rfv node_modules bun.lockb apps/admin/node_modules apps/admin/.nuxt apps/admin/.output server/node_modules packages/base-layer/.playground/.nuxt

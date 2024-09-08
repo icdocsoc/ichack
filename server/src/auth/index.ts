@@ -8,14 +8,7 @@ import { hash, verify } from 'argon2';
 import factory from '../factory';
 import { grantAccessTo } from '../security';
 import { z } from 'zod';
-
-/** The password pattern is as follows:
- * At least 8 characters long
- * At least one uppercase letter
- * At least one lowercase letter
- * At least one number
- */
-export const passwordPattern = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{8,}$/g;
+import { passwordPattern } from '@shared/types';
 
 export const createUserBody = insertUserSchema.pick({
   name: true,
