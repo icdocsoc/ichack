@@ -11,8 +11,6 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@vuelidate/core": "^2.0.3",
-    "@vuelidate/validators": "^2.0.4",
     "nuxt": "^3.12.3",
     "vue": "latest",
     "@nuxtjs/tailwindcss": "^6.12.1",

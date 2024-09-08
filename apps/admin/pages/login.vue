@@ -1,81 +1,84 @@
 <script lang="ts" setup>
-  import { useVuelidate } from '@vuelidate/core';
-  import { required, email, helpers } from '@vuelidate/validators';
-
-  const { $authRepo } = useNuxtApp();
+  import { z } from 'zod';
   const userStore = useUserStore();
+  const { $authRepo } = useNuxtApp();
+  const router = useRouter();
+
   const userCredentials = reactive({
     email: '',
     password: ''
   });
-  const rules = computed(() => {
-    return {
-      email: {
-        required: helpers.withMessage('Email is required', required),
-        email: helpers.withMessage('Email must be valid', email)
-      },
-      password: {
-        required: helpers.withMessage('Password is required', required)
-      }
-    };
+
+  const loginSchema = z.object({
+    email: z.string().email('Invalid email address'),
+    password: z.string().min(8)
   });
 
-  const v$ = useVuelidate(rules, userCredentials);
-  // validates the form using the rules and logs any errors
-  const checkValid = () => {
-    v$.value.$validate();
-    return !v$.value.$error;
-  };
-  // checks if the form is valid and sends a POST request to the server
-  const login = async () => {
-    const valid = checkValid();
-    if (!valid) {
+  const errors = ref({
+    emailError: [] as string[],
+    passwordError: [] as string[]
+  });
+
+  const validateSchema = () => {
+    const validatedSchema = loginSchema.safeParse(userCredentials);
+    if (!validatedSchema.success) {
+      const error = validatedSchema.error.format();
+      errors.value.emailError = error.email?._errors ?? [];
+      errors.value.passwordError = error.password?._errors ?? [];
       return;
     }
+    return validatedSchema.data;
+  };
 
-    const response = await $authRepo.loginUser(userCredentials);
-    // handling the success case and storing user object in pinia
-    // handling the error case by logging to console
-    response.fold(
-      userState => {
-        userStore.setUser(userState);
-      },
-      error => {
-        console.error(error); // TODO handle error better
-      }
-    );
+  const handleSubmit = async () => {
+    try {
+      const data = validateSchema();
+      if (!data) return;
+      const response = await $authRepo.loginUser(userCredentials);
+      response.fold(
+        userState => {
+          userStore.setUser(userState);
+          router.push('/');
+        },
+        error => {
+          console.error(error);
+        }
+      );
+    } catch (error) {
+      console.log(error);
+    }
+    // handle form submission
   };
 </script>
-
 <template>
   <h2 class="font-semibold text-5xl text-center">Login Screen</h2>
   <div class="mb-4 p-10 justify-center grid grid-flow-row">
-    <div class="pb-2">
+    <form
+      :schema="loginSchema"
+      :state="userCredentials"
+      @submit.prevent="handleSubmit">
       <ICInputBasic
         v-model="userCredentials.email"
         placeholder="Enter Email"
         type="email"
         label="Email" />
-      <!-- will display error messages generated during validation if any -->
-      <div data-testid="emailError" class="text-red-500" v-if="v$.email.$error">
-        {{ v$.email.$errors[0].$message }}
+      <div v-if="errors.emailError" class="text-red-500">
+        {{ errors.emailError[0] }}
       </div>
-    </div>
 
-    <div class="pb-2">
       <ICInputPassword
         v-model="userCredentials.password"
         placeholder="Enter Password"
         label="Password" />
-
-      <div class="text-red-500" v-if="v$.password.$error">
-        {{ v$.password.$errors[0].$message }}
+      <div v-if="errors.passwordError" class="text-red-500">
+        {{ errors.passwordError[0] }}
       </div>
-    </div>
-    <button
-      @click.prevent="login"
-      class="p-2 bg-blue-500 text-white font-bold rounded shadow-md hover:bg-blue-700">
-      Login
-    </button>
+
+      <button
+        type="submit"
+        class="p-2 bg-blue-500 text-white font-bold rounded shadow-md hover:bg-blue-700">
+        Login
+      </button>
+    </form>
   </div>
 </template>
