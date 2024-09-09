@@ -67,6 +67,15 @@ CREATE TABLE IF NOT EXISTS "events" (
 	"public" boolean NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "profiles" (
+	"id" text PRIMARY KEY NOT NULL,
+	"photos_opt_out" boolean NOT NULL,
+	"dietary_restrictions" text[] NOT NULL,
+	"allergies" text[] NOT NULL,
+	"pronouns" text,
+	"meals" boolean[] DEFAULT '{false,false,false}' NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "team_invites" (
 	"team_id" integer NOT NULL,
 	"user_id" text NOT NULL,
@@ -115,6 +124,12 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "sponsor_company" ADD CONSTRAINT "sponsor_company_company_name_companies_name_fk" FOREIGN KEY ("company_name") REFERENCES "public"."companies"("name") ON DELETE no action ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "profiles" ADD CONSTRAINT "profiles_id_users_id_fk" FOREIGN KEY ("id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

@@ -38,13 +38,17 @@ DELETE /:id --> Delete an event. "admin"
 ## Profile routes (/profile)
 
 GET / --> returns the logged in user. "authenticated"
-GET /:id --> returns the user of id. "hacker, volunteer"
-GET /search?name={string}&email={string} --> returns list of users of query. For email, has to be exact match. "hacker, volunteer"
+GET /all --> returns all users. "admin"
+GET /:id --> returns the user of id. "volunteer"
+GET /search?name={string}&email={string} --> returns list of users of query. name takes precedence "volunteer"
 POST /cv --> Uploads a CV to storage bucket. "hacker, volunteers"
 GET /cv --> Get the cv in pdf. "sponsor, hacker"
 GET /subscribe --> websocket for profile details. "authenticated"
 PUT / --> Updates the profile info with a partial user object. "authenticated"
-PUT /meal --> {userId: string, num: number} update the meal. "volunteer" 
+PUT /meal --> {userId: string} sets the current meal to true. "volunteer" 
+GET /discord?code={string}&state={string} --> redirects to discord oauth, or adds user to server based on whether code and state provided.
+GET /register?token={string} --> get the name, email, and role from a registeration token
+POST /register?token={string} --> register user using token `token`
 <!-- Insert /discord route: TODO @Jay-->
 <!-- Look into encryption for QR codes -->
 

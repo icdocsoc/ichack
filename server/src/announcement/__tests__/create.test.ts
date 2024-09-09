@@ -1,4 +1,4 @@
-import { describe, test, expect, beforeAll } from 'bun:test';
+import { describe, test, expect, beforeAll, jest } from 'bun:test';
 import { db } from '../../drizzle';
 import { users } from '../../auth/schema';
 import { announcements } from '../schema';
@@ -28,6 +28,9 @@ beforeAll(async () => {
 
 describe('Announcement Module > POST /', () => {
   test('Successfully creates an announcement', async () => {
+    // Mock the date
+    jest.setSystemTime(today);
+
     const newAnnouncement = {
       title: 'Test Announcement',
       description: 'This is a test announcement',
@@ -61,9 +64,10 @@ describe('Announcement Module > POST /', () => {
       createdAt: expect.any(Date)
     });
 
-    // Verify the createdAt is within 1 second of the current time
-    const difference = announcement[0].createdAt.getTime() - today.getTime();
-    expect(difference).toBeLessThan(1000); // Less than 1 second
+    // Verify the createdAt is within 10 seconds of the current time
+    expect(announcement[0].createdAt).toEqual(today);
+
+    jest.clearAllMocks();
   });
   test('Unauthorised user cannot create an announcement', async () => {
     const { sessionId: volunteerId } = await createUserWithSession(

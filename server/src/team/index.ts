@@ -65,7 +65,7 @@ const team = factory
     grantAccessTo('hacker'),
     async ctx => {
       // Creates a team in the DB using supplied team, and user who requested as leader.
-      const user = ctx.get('user')!!;
+      const user = ctx.get('user')!;
       const body = await ctx.req.json();
 
       const currentTeam = await selectTeamLinkFromMember.execute({
@@ -114,7 +114,7 @@ const team = factory
     async ctx => {
       // A leader can update anything but ID
       const body = await ctx.req.json();
-      const user = ctx.get('user')!!;
+      const user = ctx.get('user')!;
 
       const currTeam = await selectTeamFromLeader.execute({ userId: user.id });
       if (currTeam.length < 1) {
@@ -153,7 +153,7 @@ const team = factory
   )
   .get('/', grantAccessTo('hacker'), async ctx => {
     // Returns team information
-    const user = ctx.get('user')!!;
+    const user = ctx.get('user')!;
     const teamLink = await selectTeamLinkFromMember.execute({
       userId: user.id
     });
@@ -190,7 +190,7 @@ const team = factory
     zValidator('json', userIdSchema),
     grantAccessTo('hacker'),
     async ctx => {
-      const oldLeader = ctx.get('user')!!;
+      const oldLeader = ctx.get('user')!;
       const { userId: newLeaderId } = await ctx.req.json();
 
       const leaderTeamLink = await selectTeamLinkFromMember.execute({
@@ -224,7 +224,7 @@ const team = factory
     }
   )
   .delete('/', grantAccessTo('hacker'), async ctx => {
-    const user = ctx.get('user')!!;
+    const user = ctx.get('user')!;
 
     const team = await selectTeamFromLeader.execute({ userId: user.id });
     if (team.length < 1) {
@@ -281,7 +281,7 @@ const team = factory
   .get('/search', grantAccessTo('hacker'), async ctx => {
     // Returns full name as well as whether they're in a team or not
     const { name, email } = ctx.req.query();
-    const user = ctx.get('user')!!;
+    const user = ctx.get('user')!;
 
     if (!name && !email) {
       return ctx.text('Must provide a name or email.', 400);
@@ -343,7 +343,7 @@ const team = factory
         return ctx.text('User with this ID is already in a team.', 409);
       }
 
-      const currentUser = ctx.get('user')!!;
+      const currentUser = ctx.get('user')!;
       const currentTeam = await selectTeamFromLeader.execute({
         userId: currentUser.id
       });
@@ -425,7 +425,7 @@ const team = factory
       // Remove all invites, and accept invite
       const { teamId } = await ctx.req.json();
 
-      const user = ctx.get('user')!!;
+      const user = ctx.get('user')!;
       const existingTeam = await selectTeamLinkFromMember.execute({
         userId: user.id
       });
@@ -538,7 +538,7 @@ const team = factory
       // Declines an invite
       const { teamId } = await ctx.req.json();
 
-      const user = ctx.get('user')!!;
+      const user = ctx.get('user')!;
 
       const deletedInvite = await db
         .delete(teamInvites)
@@ -571,7 +571,7 @@ const team = factory
     async ctx => {
       // Removes user from team
       const { userId: userIdToRemove } = ctx.req.param();
-      const teamLeader = ctx.get('user')!!;
+      const teamLeader = ctx.get('user')!;
 
       if (userIdToRemove == teamLeader.id) {
         return ctx.text('User is trying to remove self.', 400);
@@ -621,7 +621,7 @@ const team = factory
   )
   .post('/removeUser', grantAccessTo('hacker'), async ctx => {
     // Aka '/leave'; remove yourself.
-    const user = ctx.get('user')!!;
+    const user = ctx.get('user')!;
 
     const teamsLeading = await selectTeamFromLeader.execute({
       userId: user.id
