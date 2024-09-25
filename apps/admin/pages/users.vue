@@ -35,10 +35,10 @@ const roleItems = computed(() =>
 );
 
 // List of users related properties
-const { authRepo } = useRepositories();
+const { authRepo, profileRepo } = useRepositories();
 const { user } = useUserStore();
 const { data, refresh, status, error } = await useAsyncResult('users', () =>
-  authRepo.getUsers()
+  profileRepo.getUsers()
 );
 
 // Actions on users

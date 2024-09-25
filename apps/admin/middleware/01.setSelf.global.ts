@@ -1,8 +1,8 @@
 export default defineNuxtRouteMiddleware(async (from, to) => {
-  const { authRepo } = useRepositories();
+  const { profileRepo } = useRepositories();
   const store = useUserStore();
 
-  const selfResult = await authRepo.getSelf();
+  const selfResult = await profileRepo.getSelf();
   if (selfResult.isOk()) {
     store.setUser(selfResult.value);
   }

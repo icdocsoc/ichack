@@ -79,39 +79,6 @@ export class HonoAuthRepo implements AuthRepository {
     throw new Error('Not implemented');
   }
 
-  async getSelf(): Promise<Result<User, Error>> {
-    return Result.try(async () => {
-      const token = useCookie('auth_session');
-
-      const response = await this.authService.$get(undefined, {
-        headers: {
-          Cookie: `auth_session=${token.value}`
-        }
-      });
-
-      switch (response.status) {
-        case 200:
-          return await response.json();
-      }
-      throw new Error("Couldn't get self, status: " + response.status);
-    });
-  }
-
-  async getUsers(): Promise<Result<User[], Error>> {
-    return Result.try(async () => {
-      const token = useCookie('auth_session');
-
-      // Sending get request to the server and getting the response
-      // const response = await this.authService.users.$get(undefined, {
-      //   headers: {
-      //     Cookie: `auth_session=${token.value}`
-      //   }
-      // });
-      // const responseFields = await response.json();
-      return [];
-    });
-  }
-
   async logout(): Promise<Result<void, Error>> {
     return Result.try(async () => {
       const token = useCookie('auth_session');

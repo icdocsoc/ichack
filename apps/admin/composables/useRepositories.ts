@@ -1,4 +1,5 @@
 import type { AuthRepository } from '@base/repository/authRepository';
+import type { ProfileRepository } from '@base/repository/profileRepository';
 
 export default function () {
   const config = useRuntimeConfig();
@@ -7,8 +8,12 @@ export default function () {
   const authRepo: AuthRepository = new HonoAuthRepo(
     resolveServerUrl(config.public.serverBaseUrl)
   );
+  const profileRepo: ProfileRepository = new HonoProfileRepo(
+    resolveServerUrl(config.public.serverBaseUrl)
+  );
 
   return {
-    authRepo
+    authRepo,
+    profileRepo
   };
 }
