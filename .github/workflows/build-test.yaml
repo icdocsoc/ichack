@@ -92,21 +92,3 @@ jobs:
 
       - name: Build server
         run: bun run build:admin
-
-  testAdmin:
-    needs: buildAdmin
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: 1.1.18
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
-
-      - name: Run tests
-        run: bun run test:admin

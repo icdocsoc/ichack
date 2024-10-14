@@ -34,8 +34,12 @@ services:
       - '5000:3000'
     depends_on:
       - postgres
-    env_file:
-      - ./server/.env
+    environment:
+      - PG_USER=admin
+      - PG_PASSWORD=rootpasswd
+      - PG_DB=postgres
+      - PG_HOST=postgres
+      - PG_PORT=5432
 
   admin_dev:
     container_name: admin_dev

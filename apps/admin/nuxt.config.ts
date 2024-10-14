@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2024-04-03',
-  extends: ['../../packages/base-layer'],
+  extends: ['../../layers/base-layer'],
   modules: ['@pinia/nuxt', '@nuxt/ui'],
   runtimeConfig: {
     public: {

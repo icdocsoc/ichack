@@ -6,7 +6,7 @@ Every application or package built to support IC Hack'25 tech.
 
 - [Server (Perry)](./server/) - First time custom backend server built.
 - [Admin (Ferb)](./apps/admin) - An insider website that manages users, teams, announcements... admin stuff
-- [Base Layer](./packages/base-layer/) - UI Components and domain layer interfaces that are common among the frontend code.
+- [Base Layer](./layers/base-layer/) - UI Components and domain layer interfaces that are common among the frontend code.
 
 ## Before you start
 

@@ -28,7 +28,7 @@
   },
   "workspaces": [
     "apps/*",
-    "packages/*",
+    "layers/*",
     "server"
   ]
 }
