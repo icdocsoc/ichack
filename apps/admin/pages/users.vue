@@ -25,14 +25,6 @@ const tableColumns = [
     key: 'actions'
   }
 ];
-const roleItems = computed(() =>
-  roles.map(role => ({
-    label: role as string,
-    click() {
-      userDetails.role = role;
-    }
-  }))
-);
 
 // List of users related properties
 const { authRepo, profileRepo } = useRepositories();
@@ -40,6 +32,14 @@ const { user } = useUserStore();
 const { data, refresh, status, error } = await useAsyncResult('users', () =>
   profileRepo.getUsers()
 );
+const roleItems = computed(() => {
+  return [
+    roles.map(role => ({
+      label: role,
+      click: () => (userDetails.role = role)
+    }))
+  ];
+});
 
 // Actions on users
 const deleteUser = async (id: string) => {
@@ -137,11 +137,7 @@ useTitle('Users');
               <UInput v-model="userDetails.email" />
             </UFormGroup>
             <UFormGroup label="Role" name="role" class="justify-center p-1">
-              <UDropdown :items="roleItems">
-                <UButton
-                  :label="userDetails.role"
-                  trailing-icon="heroicons-chevron-down-20-solid" />
-              </UDropdown>
+              <DropdownInput v-model="userDetails.role" :items="roleItems" />
             </UFormGroup>
             <UButton type="submit" class="justify-center p-4">Submit</UButton>
           </UForm>
