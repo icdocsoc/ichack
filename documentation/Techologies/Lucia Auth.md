@@ -8,3 +8,6 @@ authors:
 [The Copenhagen Book](https://thecopenhagenbook.com/) is a great reference to read on how to properly deal with multiple types of authentication methods and how to prevent yourself from common attacks.
 
 The lucia documentation is great and especially [this example repo](https://github.com/lucia-auth/examples/tree/main/hono/username-and-password) helps in practically understanding how to use Lucia.
+
+> [!error]
+> Lucia v3 has announced it's deprecation [here](https://github.com/lucia-auth/lucia/discussions/1714). If we continue to use this library, please switch to Lucia v4 (if released) or use another authentication library.
