@@ -14,7 +14,7 @@ let adminId: string;
 let hackerSession: string;
 let hackerId: string;
 
-const client = testClient(app).api;
+const client = testClient(app);
 
 const existingPassword = 'Dontheckme123';
 const changedPassword = 'NewPassword1234';

@@ -17,7 +17,7 @@ const phineasEvent = {
 
 const sessionIds: Partial<Record<(typeof roles)[number], string>> = {};
 
-const baseRoute = testClient(app).api.event;
+const baseRoute = testClient(app).event;
 
 beforeAll(async () => {
   await db.execute(sql`TRUNCATE ${users} CASCADE`);

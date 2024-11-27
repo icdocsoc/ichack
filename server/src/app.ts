@@ -21,7 +21,7 @@ const app = factory
   .createApp()
   .use(logger())
   .use(sessionMiddleware())
-  .route('/api', api);
+  .route('', api);
 
 export default app;
 

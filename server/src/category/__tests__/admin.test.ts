@@ -10,7 +10,7 @@ import { eq, sql } from 'drizzle-orm';
 
 const sessionIds: Partial<Record<(typeof roles)[number], string>> = {};
 
-const client = testClient(app).api;
+const client = testClient(app);
 const kotlinCategory = {
   title: 'App development in Kotlin',
   owner: 'JetBrains',

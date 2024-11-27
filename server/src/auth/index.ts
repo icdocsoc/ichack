@@ -8,7 +8,7 @@ import { hash, verify } from 'argon2';
 import factory from '../factory';
 import { grantAccessTo } from '../security';
 import { z } from 'zod';
-import { passwordPattern } from '@shared/types';
+import { passwordPattern } from '../../../shared/types';
 
 export const createUserBody = insertUserSchema.pick({
   name: true,
@@ -101,7 +101,7 @@ const auth = factory
       }
 
       // Now we know the user exists with non-null password.
-      const user = userQuery[0];
+      const user = userQuery[0]!;
       const userPassword = user.password!;
 
       // The user has a password, so we can verify it.
@@ -216,7 +216,7 @@ const auth = factory
         return c.text('An invalid token was provided', 401);
       }
 
-      const tokenResult = tokenQuery[0];
+      const tokenResult = tokenQuery[0]!;
       const now = new Date();
       if (tokenResult.expiresAt < now) {
         await db.delete(userToken).where(lt(userToken.expiresAt, now));
@@ -263,7 +263,7 @@ const auth = factory
         return c.text(`User of id ${user.id} not found`, 404);
       }
 
-      const currPassword = usersInDb[0].password;
+      const currPassword = usersInDb[0]!.password;
       if (!currPassword) {
         // The user was created by a god, but has no password.
         // The user is attempting to set their password for the first time.

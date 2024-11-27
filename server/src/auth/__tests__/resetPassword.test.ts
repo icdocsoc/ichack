@@ -16,7 +16,7 @@ import app from '../../app';
 const TOKEN_ID = 'tokenId1234';
 let userId: string;
 
-const client = testClient(app).api.auth;
+const client = testClient(app).auth;
 
 beforeAll(async () => {
   await db.execute(sql`TRUNCATE ${users} CASCADE`);

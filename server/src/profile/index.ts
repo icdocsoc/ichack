@@ -283,12 +283,12 @@ const profile = factory
         return ctx.text('Invalid token.', 403);
       }
       const now = new Date();
-      if (userAndToken[0].expiresAt < now) {
+      if (userAndToken[0]!.expiresAt < now) {
         await db.delete(userToken).where(lt(userToken.expiresAt, now));
         return ctx.text('Token is expired.', 403);
       }
 
-      const user = userAndToken[0];
+      const user = userAndToken[0]!;
 
       return ctx.json(
         {
@@ -326,16 +326,16 @@ const profile = factory
         .select()
         .from(userToken)
         .where(eq(userToken.id, token));
-      if (tokenInDb.length < 1 || tokenInDb[0].type != 'registration_link') {
+      if (tokenInDb.length < 1 || tokenInDb[0]!.type != 'registration_link') {
         return ctx.text('Invalid token.', 403);
       }
       const now = new Date();
-      if (tokenInDb[0].expiresAt < now) {
+      if (tokenInDb[0]!.expiresAt < now) {
         await db.delete(userToken).where(lt(userToken.expiresAt, now));
         return ctx.text('Token has expired.', 403);
       }
 
-      const userId = tokenInDb[0].userId;
+      const userId = tokenInDb[0]!.userId;
       const hashedPassword = await hash(body.password, hashOptions);
 
       await db.transaction(async tx => {

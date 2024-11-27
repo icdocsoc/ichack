@@ -32,7 +32,7 @@ const invalidEvent = {
   public: true
 };
 
-const baseRoute = testClient(app).api.event;
+const baseRoute = testClient(app).event;
 
 beforeAll(async () => {
   await db.execute(sql`TRUNCATE ${users} CASCADE`);

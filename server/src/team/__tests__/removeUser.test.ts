@@ -7,7 +7,7 @@ import app from '../../app';
 import { testClient } from 'hono/testing';
 import { eq, sql } from 'drizzle-orm';
 
-const baseRoute = testClient(app).api.team;
+const baseRoute = testClient(app).team;
 const testUsers: { userId: string; sessionId: string }[] = [];
 
 const TEAM_LEADER = 0;

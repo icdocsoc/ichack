@@ -11,7 +11,7 @@ import { eq, sql } from 'drizzle-orm';
 const sessionIds: Partial<Record<(typeof roles)[number], string>> = {};
 let kotlinOwnerId: string;
 
-const client = testClient(app).api;
+const client = testClient(app);
 const kotlinCategory = {
   slug: 'jetbrains-app-development-in-kotlin',
   title: 'App development in Kotlin',

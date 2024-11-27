@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, test } from 'bun:test';
-import { profiles, type SearchResult, type SelectedProfile } from '../schema';
+import { profiles, type Profile, type SelectedProfile } from '../schema';
 import { db } from '../../drizzle';
 import { users, userSession } from '../../auth/schema';
 import { createUserWithSession } from '../../testHelpers';
@@ -10,7 +10,7 @@ import { sql } from 'drizzle-orm';
 
 const sessionIds: Partial<Record<(typeof roles)[number], string>> = {};
 const userIds: Partial<Record<(typeof roles)[number], string>> = {};
-const baseRoute = testClient(app).api.profile;
+const baseRoute = testClient(app).profile;
 const expectedSkeleton = {
   photos_opt_out: false,
   dietary_restrictions: [],
@@ -18,11 +18,10 @@ const expectedSkeleton = {
   pronouns: null,
   meals: [false, false, false]
 };
-const expectedSearch: Partial<Record<(typeof roles)[number], SearchResult>> =
-  {};
+const expectedSearch: Partial<Record<(typeof roles)[number], Profile>> = {};
 const sortById = (
-  a: SelectedProfile | SearchResult,
-  b: SelectedProfile | SearchResult
+  a: SelectedProfile | Profile,
+  b: SelectedProfile | Profile
 ) => (a.id > b.id ? 1 : -1);
 
 beforeAll(async () => {

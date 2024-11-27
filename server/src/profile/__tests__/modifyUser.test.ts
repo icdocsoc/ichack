@@ -11,7 +11,7 @@ import { sha256 } from 'hono/utils/crypto';
 
 const sessionIds: Partial<Record<(typeof roles)[number], string>> = {};
 const userIds: Partial<Record<(typeof roles)[number], string>> = {};
-const baseRoute = testClient(app).api.profile;
+const baseRoute = testClient(app).profile;
 const expectedSkeleton = {
   photos_opt_out: false,
   dietary_restrictions: [],

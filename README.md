@@ -5,8 +5,7 @@ Every application or package built to support IC Hack'25 tech.
 ## What is in this?
 
 - [Server (Perry)](./server/) - First time custom backend server built.
-- [Admin (Ferb)](./apps/admin) - An insider website that manages users, teams, announcements... admin stuff
-- [Base Layer](./layers/base-layer/) - UI Components and domain layer interfaces that are common among the frontend code.
+- [Admin (Ferb)](./app) - An insider website that manages users, teams, announcements... admin stuff - tbd to be app/pages/admin or something. update before merge.
 
 ## Before you start
 
@@ -29,19 +28,42 @@ This is the first time IC Hack tech systems will have extensive documentation. O
 
 ## How to run?
 
-### Hosts file
+### Pre-setup
 
-We are using Nginx to serve our frontend and backend. For local development, make sure that you edit your `/etc/hosts` file to include the following line
-
-```
-127.0.0.1 admin.example.org
-```
-
-This is your local DNS resolution file. In the browser, when you type `admin.example.org` it will loopback into your own system; then Nginx will pick it up and redirect the request to the correct container (which is admin in this case).
+You'll need Docker, bun, and psql installed.
 
 ### Environment Variables
 
-Without setting environment variables, your code will not execute or behaving correctly. Copy the `.env.template` files into the same location and replace them with the appropriate values.
+Without setting environment variables, your code will not execute or behave correctly. Copy the `.env.template` file into `.env.local` and `.env.test` and fill it appriorately.
+
+#### Dev setup
+
+```env
+PGUSER=admin
+PGPASSWORD=rootpasswd
+PGDB=postgres
+PGHOST=0.0.0.0
+PGPORT=5432
+
+DISCORD_CLIENT_ID=anything, you'll know if you're testing this
+DISCORD_SERVER_ID=see above
+DISCORD_CLIENT_SECRET=see above
+```
+
+#### Test setup
+
+```env
+PGUSER=test
+PGPASSWORD=test
+PGDB=postgres
+PGHOST=0.0.0.0
+PGPORT=5432
+PGCA=
+
+DISCORD_CLIENT_ID=
+DISCORD_SERVER_ID=
+DISCORD_CLIENT_SECRET=
+```
 
 ### Docker Compose
 
@@ -52,12 +74,17 @@ In the root directory of the project, execute:
 
 ```bash
 bun install
+bun reset-db
 bun run dev
 ```
 
-You can visit the websites `[subdomain?].example.org` to view your development. For the server, `http://localhost:5000` works fine.
+You can visit the admin page at `localhost:3000`. This will be updated to `admin.localhost:3000` soon:tm:.
+
+The api routes can be accessed from `localhost:3000/api`, as expected.
 
 To stop the containers from running, simply use CTRL+C.
+
+To add yourself as a god user for testing, edit and execute `bun run scripts/seed.ts`.
 
 If you ran the project headless, execute (in the same root directory)
 
@@ -66,6 +93,20 @@ docker compose down
 ```
 
 Refer to [Docker](./documentation/Techologies/Docker.md) to learn about how we containerised it and used compose.
+
+#### Common Docker error
+
+If you get the error
+
+```
+Error response from daemon: network 91cc91888ed27849c518f6769cf18115ddb56b0ef833e745e764964a6a2586da not found
+```
+
+Run the following command and try again.
+
+```bash
+docker-compose -f dev.docker-compose.yaml down --remove-orphans
+```
 
 ## Development rules
 

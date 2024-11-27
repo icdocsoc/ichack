@@ -10,7 +10,7 @@ beforeEach(async () => {
   await db.execute(sql`TRUNCATE ${users} CASCADE`);
 });
 
-const client = testClient(app).api;
+const client = testClient(app);
 
 describe('Auth Module > POST /logout', () => {
   test('a user can logout', async () => {

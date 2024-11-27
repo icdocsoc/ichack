@@ -1,34 +1,56 @@
 {
   "name": "@ichack25/monorepo",
   "scripts": {
-    "build:admin": "bun run --cwd apps/admin build",
-    "build:server": "bun run --cwd server build",
-    "check-schema": "bun run --cwd server check-schema",
-    "dev:admin": "bun run --cwd apps/admin dev",
-    "dev:server": "bun run --cwd server dev",
-    "dev": "docker compose -f dev.docker-compose.yaml up",
+    "build": "bun --bun nuxt prepare && bun --bun nuxt build",
+    "dev": "bash ./scripts/start-dev.sh",
+    "generate": "bun --bun nuxt generate",
+    "preview": "bun --bun nuxt preview",
+    "postinstall": "bun --bun nuxt prepare",
+    "backend:test": "bash ./scripts/test-backend.sh",
+    "backend:check-schema": "bash ./scripts/check-schema.sh",
+    "backend:generate": "bash ./scripts/generate-schema.sh",
+    "reset-db": "bun up-db && bash ./scripts/reset-db.sh && bun down-db",
+    "up-db": "docker compose up -d postgres",
+    "down-db": "docker compose down postgres",
     "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "preview": "docker compose up --build",
-    "test:admin": "bun run --cwd apps/admin test",
-    "test:server": "bun run --cwd server test"
+    "format:check": "prettier --check ."
   },
   "devDependencies": {
-    "@nuxt/test-utils": "^3.14.0",
     "@types/bun": "^1.1.6",
-    "@vue/test-utils": "^2.4.6",
     "bun-types": "^1.1.20",
-    "happy-dom": "^14.12.3",
-    "playwright-core": "^1.46.0",
     "prettier": "^3.3.2",
-    "vitest": "^2.0.5"
+    "@types/pg": "^8.11.6",
+    "drizzle-kit": "^0.24.0"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
-  "workspaces": [
-    "apps/*",
-    "layers/*",
-    "server"
-  ]
+  "trustedDependencies": [
+    "@parcel/watcher",
+    "argon2",
+    "esbuild",
+    "nuxt-app",
+    "vue-demi"
+  ],
+  "dependencies": {
+    "@hono/zod-validator": "^0.2.2",
+    "@iconify-json/heroicons": "^1.1.24",
+    "@lucia-auth/adapter-drizzle": "^1.1.0",
+    "@nuxt/ui": "^2.19.2",
+    "@pinia/nuxt": "^0.5.3",
+    "argon2": "^0.40.3",
+    "build-url-ts": "^6.1.7",
+    "drizzle-orm": "^0.33.0",
+    "drizzle-zod": "^0.5.1",
+    "hono": "^4.5.5",
+    "lucia": "^3.2.0",
+    "nuxi": "^3.15.0",
+    "nuxt": "^3.12.3",
+    "pg": "^8.12.0",
+    "picocolors": "^1.0.1",
+    "pinia": "^2.2.1",
+    "typescript-result": "^2.1.0",
+    "vue": "latest",
+    "zod": "^3.23.8"
+  }
 }

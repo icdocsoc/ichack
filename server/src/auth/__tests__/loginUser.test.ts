@@ -25,7 +25,7 @@ beforeAll(async () => {
   });
 });
 
-const client = testClient(app).api;
+const client = testClient(app);
 
 describe('Auth Module > POST /login', () => {
   test('A valid user can login', async () => {

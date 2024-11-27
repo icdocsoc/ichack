@@ -2,7 +2,7 @@ import { pgTable, text, boolean } from 'drizzle-orm/pg-core';
 import { createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
 import { users } from '../auth/schema';
-import { passwordPattern } from '@shared/types';
+import { passwordPattern } from '../../../shared/types';
 import { roles } from '../types';
 
 export const profiles = pgTable('profiles', {
@@ -35,7 +35,7 @@ export const updateProfileSchema = selectProfileSchema
   .partial();
 
 export type SelectedProfile = z.infer<typeof selectProfileSchema>;
-export type SearchResult = {
+export type Profile = {
   id: string;
   name: string;
   email: string;

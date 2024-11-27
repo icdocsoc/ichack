@@ -130,7 +130,7 @@ const category = factory
       if (categoriesInDb.length === 0) return c.text('Category not found', 404);
       // slug is primary key. So, there can be only one category
 
-      const category = categoriesInDb[0];
+      const category = categoriesInDb[0]!;
       const newCategory = c.req.valid('json');
       if (user.role == 'sponsor') {
         // Sponsor cannot change the title or the owner of the category
@@ -152,7 +152,7 @@ const category = factory
           return c.text("You don't not have your company registered", 404);
         // user id is primary key. So, there can be only one sponsor company
 
-        if (category.owner !== sponsorCompanies[0].companyName)
+        if (category.owner !== sponsorCompanies[0]!.companyName)
           return c.text('You are not allowed to update this category', 403);
       }
 

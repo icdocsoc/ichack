@@ -46,7 +46,7 @@ const announcement = factory
         );
       }
 
-      return c.json({ id: affectedRows[0].id }, 201);
+      return c.json({ id: affectedRows[0]!.id }, 201);
     }
   )
   /**

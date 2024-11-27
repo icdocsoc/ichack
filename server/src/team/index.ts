@@ -87,12 +87,12 @@ const team = factory
           .insert(teamMembers)
           .values({
             userId: user.id,
-            teamId: createdTeam[0].id,
+            teamId: createdTeam[0]!.id,
             isLeader: true
           })
           .returning();
 
-        return createdTeam[0].id;
+        return createdTeam[0]!.id;
       });
 
       return ctx.json(
@@ -130,14 +130,14 @@ const team = factory
       const updatedTeam = await db
         .update(teams)
         .set(body)
-        .where(eq(teams.id, currTeam[0].id))
+        .where(eq(teams.id, currTeam[0]!.id))
         .returning();
 
       if (updatedTeam.length < 1) {
         apiLogger.error(
           ctx,
           'PUT /team',
-          `Error while updating team ${currTeam[0].id} owned by ${user.id}.`
+          `Error while updating team ${currTeam[0]!.id} owned by ${user.id}.`
         );
         return ctx.text('Failed to update team. Internal error.', 500);
       } else if (updatedTeam.length > 1) {
@@ -173,12 +173,12 @@ const team = factory
     const team = await db
       .select()
       .from(teams)
-      .where(eq(teams.id, teamLink[0].teamId));
+      .where(eq(teams.id, teamLink[0]!.teamId));
     if (team.length == 0) {
       apiLogger.error(
         ctx,
         'GET /team',
-        `User ${user.id} is linked to team ${teamLink[0].teamId}, which does not exist.`
+        `User ${user.id} is linked to team ${teamLink[0]!.teamId}, which does not exist.`
       );
       return ctx.text(`Internal error.`, 500);
     }
@@ -196,7 +196,7 @@ const team = factory
       const leaderTeamLink = await selectTeamLinkFromMember.execute({
         userId: oldLeader.id
       });
-      if (leaderTeamLink.length < 1 || !leaderTeamLink[0].isLeader) {
+      if (leaderTeamLink.length < 1 || !leaderTeamLink[0]!.isLeader) {
         return ctx.text('User does not lead any team.', 404);
       }
 
@@ -205,7 +205,7 @@ const team = factory
       });
       if (
         newLeaderTeamLink.length < 1 ||
-        leaderTeamLink[0].teamId != newLeaderTeamLink[0].teamId
+        leaderTeamLink[0]!.teamId != newLeaderTeamLink[0]!.teamId
       ) {
         return ctx.text('Target must be in the same team.', 400);
       }
@@ -241,29 +241,29 @@ const team = factory
     const success = await db.transaction(async tx => {
       const deletedUsers = await tx
         .delete(teamMembers)
-        .where(eq(teamMembers.teamId, team[0].id))
+        .where(eq(teamMembers.teamId, team[0]!.id))
         .returning();
       if (deletedUsers.length < 1) {
         apiLogger.error(
           ctx,
           'DELETE /team',
-          `Failed to delete user team links for team ${team[0].id} lead by ${user.id}.`
+          `Failed to delete user team links for team ${team[0]!.id} lead by ${user.id}.`
         );
         return false;
       }
 
-      await tx.delete(teamInvites).where(eq(teamInvites.teamId, team[0].id));
+      await tx.delete(teamInvites).where(eq(teamInvites.teamId, team[0]!.id));
 
       const deletedTeam = await tx
         .delete(teams)
-        .where(eq(teams.id, team[0].id))
+        .where(eq(teams.id, team[0]!.id))
         .returning();
 
       if (deletedTeam.length < 1) {
         apiLogger.error(
           ctx,
           'DELETE /team',
-          `Failed to delete team ${team[0].id} lead by ${user.id}.`
+          `Failed to delete team ${team[0]!.id} lead by ${user.id}.`
         );
         tx.rollback();
         return false;
@@ -303,7 +303,7 @@ const team = factory
       .where(
         and(
           name == undefined
-            ? ilike(users.email, email)
+            ? ilike(users.email, email!)
             : ilike(users.name, `${name}%`),
           eq(users.role, 'hacker'),
           not(eq(users.id, user.id))
@@ -360,7 +360,7 @@ const team = factory
         // Though, we should never hit this case anyways.
       }
 
-      const invId = currentTeam[0].id;
+      const invId = currentTeam[0]!.id;
 
       const currUsers = await db
         .select()
@@ -600,8 +600,8 @@ const team = factory
         .delete(teamMembers)
         .where(
           and(
-            eq(teamMembers.userId, userIdToRemove),
-            eq(teamMembers.teamId, team[0].id)
+            eq(teamMembers.userId, userIdToRemove!),
+            eq(teamMembers.teamId, team[0]!.id)
           )
         )
         .returning();
@@ -612,7 +612,7 @@ const team = factory
         apiLogger.warn(
           ctx,
           'POST /team/removeUser',
-          `User ${userIdToRemove} was in team ${team[0].id} multiple times.`
+          `User ${userIdToRemove} was in team ${team[0]!.id} multiple times.`
         );
       }
 

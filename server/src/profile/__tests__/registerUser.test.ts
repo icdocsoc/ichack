@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, test } from 'bun:test';
-import { profiles, type SearchResult, type SelectedProfile } from '../schema';
+import { profiles, type Profile, type SelectedProfile } from '../schema';
 import { db } from '../../drizzle';
 import { users, userSession, userToken } from '../../auth/schema';
 import { createUserWithSession, tomorrow, yesterday } from '../../testHelpers';
@@ -12,7 +12,7 @@ import { hashOptions } from '../../auth/lucia';
 
 const sessionIds: Partial<Record<(typeof roles)[number], string>> = {};
 const userIds: Partial<Record<(typeof roles)[number], string>> = {};
-const baseRoute = testClient(app).api.profile;
+const baseRoute = testClient(app).profile;
 const expectedSkeleton = {
   photos_opt_out: false,
   dietary_restrictions: [],
@@ -22,8 +22,7 @@ const expectedSkeleton = {
 };
 const expectedGet: Partial<Record<(typeof roles)[number], SelectedProfile>> =
   {};
-const expectedSearch: Partial<Record<(typeof roles)[number], SearchResult>> =
-  {};
+const expectedSearch: Partial<Record<(typeof roles)[number], Profile>> = {};
 
 beforeAll(async () => {
   // Insert sample users into the database & sign in as one

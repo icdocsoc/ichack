@@ -8,7 +8,7 @@ import { users } from '../../auth/schema';
 import { sql } from 'drizzle-orm';
 
 let hackerSession: string;
-const client = testClient(app).api;
+const client = testClient(app);
 
 const kotlinCategory = {
   slug: 'jetbrains-app-development-in-kotlin',

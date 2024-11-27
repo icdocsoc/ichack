@@ -15,7 +15,7 @@ const phineasEvent = {
   public: true
 };
 
-const baseRoute = testClient(app).api.event;
+const baseRoute = testClient(app).event;
 
 const sessionIds: Partial<Record<(typeof roles)[number], string>> = {};
 

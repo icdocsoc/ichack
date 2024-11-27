@@ -11,7 +11,7 @@ import { lucia } from '../../auth/lucia';
 let adminSession: string;
 let adminId: string;
 
-const client = testClient(app).api;
+const client = testClient(app);
 
 beforeAll(async () => {
   await db.execute(sql`TRUNCATE ${users} CASCADE`);

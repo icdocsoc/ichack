@@ -41,7 +41,7 @@ const event = factory
       const body = ctx.req.valid('json');
       const eventInDb = await db.insert(events).values(body).returning();
 
-      return ctx.json(eventInDb[0].id, 201);
+      return ctx.json(eventInDb[0]!.id, 201);
     }
   )
   .put(
@@ -68,8 +68,8 @@ const event = factory
       if (currentEvent.length == 0)
         return ctx.text('Event does not exist.', 404);
 
-      let startsAt = body.startsAt ?? currentEvent[0].startsAt;
-      let endsAt = body.endsAt ?? currentEvent[0].endsAt;
+      let startsAt = body.startsAt ?? currentEvent[0]!.startsAt;
+      let endsAt = body.endsAt ?? currentEvent[0]!.endsAt;
 
       if (endsAt != null && startsAt > endsAt)
         return ctx.text('Event must start before it ends.', 400);

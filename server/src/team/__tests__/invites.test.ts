@@ -7,7 +7,7 @@ import app from '../../app';
 import { testClient } from 'hono/testing';
 import { and, eq, not, sql } from 'drizzle-orm';
 
-const baseRoute = testClient(app).api.team;
+const baseRoute = testClient(app).team;
 const testUsers: { userId: string; sessionId: string }[] = [];
 // In order to test the seven user limit.
 const sixUsers: { userId: string; sessionId: string }[] = [];

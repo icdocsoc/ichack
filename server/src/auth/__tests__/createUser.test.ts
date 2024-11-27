@@ -9,7 +9,7 @@ import { users } from '../schema';
 
 const sessionIds: Partial<Record<(typeof roles)[number], string>> = {};
 
-const client = testClient(app).api;
+const client = testClient(app);
 
 beforeAll(async () => {
   await db.execute(sql`TRUNCATE ${users} CASCADE`);
