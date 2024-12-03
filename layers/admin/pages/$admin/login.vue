@@ -22,8 +22,8 @@ const handleLogin = async () => {
 </script>
 
 <template>
-  <h2 class="font-semibold text-5xl text-center">Admin's Login Screen</h2>
-  <UContainer class="flex flex-col justify-center items-center">
+  <h2 class="text-center text-5xl font-semibold">Admin's Login Screen</h2>
+  <UContainer class="flex flex-col items-center justify-center">
     <UForm
       :schema="postLoginBody"
       :state="userCredentials"

@@ -99,8 +99,8 @@ definePageMeta({
 
 <template>
   <NuxtLayout name="toolbar">
-    <UContainer class="relative overflow-y-scroll max-h-full">
-      <h2 class="font-semibold text-5xl text-center">Manage Users</h2>
+    <UContainer class="relative max-h-full overflow-y-scroll">
+      <h2 class="text-center text-5xl font-semibold">Manage Users</h2>
       <UButton
         label="Add User"
         @click="isAddUserPopupOpen = true"
@@ -131,7 +131,7 @@ definePageMeta({
         </template>
       </UTable>
       <UModal v-model="isAddUserPopupOpen">
-        <UContainer class="mb-4 p-10 justify-center grid grid-flow-row">
+        <UContainer class="mb-4 grid grid-flow-row justify-center p-10">
           <UForm
             data-testid="form"
             :schema="schema"
