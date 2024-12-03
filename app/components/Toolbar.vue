@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import useAuth from '~/composables/useAuth';
 
-const { logOut } = useAuth();
+const { logout } = useAuth();
 
 const menu = [
   [
@@ -20,7 +20,7 @@ const menu = [
       label: 'Logout',
       icon: 'websymbol:logout',
       async click() {
-        const result = await logOut();
+        const result = await logout();
         result.onSuccess(() => navigateTo('/login'));
       }
     }

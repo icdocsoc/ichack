@@ -2,8 +2,8 @@ import { pgTable, text, boolean } from 'drizzle-orm/pg-core';
 import { createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
 import { users } from '../auth/schema';
-import { passwordPattern } from '../../../shared/types';
-import { roles } from '../types';
+import { type Role } from '../types';
+import { passwordPattern } from '../auth/types';
 
 export const profiles = pgTable('profiles', {
   id: text('id')
@@ -20,8 +20,8 @@ export const profiles = pgTable('profiles', {
 // We're manually overriding some of the columns due to a bug in drizzle-zod
 // There have been approved PRs to fix it that... have not been merged.
 const selectProfileSchema = createSelectSchema(profiles, {
-  dietary_restrictions: z.array(z.string()).default([]),
-  allergies: z.array(z.string()).default([])
+  dietary_restrictions: z.array(z.string()),
+  allergies: z.array(z.string())
 });
 
 export const insertProfileSchema = selectProfileSchema
@@ -39,7 +39,7 @@ export type Profile = {
   id: string;
   name: string;
   email: string;
-  role: (typeof roles)[number];
+  role: Role;
   photos_opt_out: boolean;
   dietary_restrictions: string[];
   allergies: string[];

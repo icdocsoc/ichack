@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import type { Profile, User } from '~~/shared/types';
+import type { Profile } from '~~/shared/types';
 
 export const useProfileStore = defineStore('user', () => {
   const profile = ref<Profile | null>(null);

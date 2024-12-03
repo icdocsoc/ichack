@@ -51,7 +51,7 @@ const profile = factory
       );
     }
 
-    return ctx.json(user[0], 200);
+    return ctx.json(user[0]!, 200);
   })
   .get('/all', grantAccessTo('admin'), async ctx => {
     const allusers = await db

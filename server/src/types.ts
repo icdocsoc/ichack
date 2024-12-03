@@ -7,7 +7,8 @@ export const roles = [
   'sponsor',
   'volunteer'
 ] as const;
-export type AccessPermission = (typeof roles)[number] | 'all' | 'authenticated';
+export type Role = (typeof roles)[number];
+export type AccessPermission = Role | 'all' | 'authenticated';
 
 export type Env = {
   Variables: {

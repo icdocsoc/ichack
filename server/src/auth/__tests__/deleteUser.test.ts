@@ -1,14 +1,14 @@
 import { describe, expect, test, beforeAll } from 'bun:test';
 import { db } from '../../drizzle';
 import { users } from '../schema';
-import { roles } from '../../types';
+import { roles, type Role } from '../../types';
 import { createUserWithSession } from '../../testHelpers';
 import { testClient } from 'hono/testing';
 import app from '../../app';
 import { eq, sql } from 'drizzle-orm';
 
-const sessionIds: Partial<Record<(typeof roles)[number], string>> = {};
-const userIds: Partial<Record<(typeof roles)[number], string>> = {};
+const sessionIds: Partial<Record<Role, string>> = {};
+const userIds: Partial<Record<Role, string>> = {};
 
 const client = testClient(app);
 

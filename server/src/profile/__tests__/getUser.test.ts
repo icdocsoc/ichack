@@ -3,13 +3,13 @@ import { profiles, type Profile, type SelectedProfile } from '../schema';
 import { db } from '../../drizzle';
 import { users, userSession } from '../../auth/schema';
 import { createUserWithSession } from '../../testHelpers';
-import { roles } from '../../types';
+import { roles, type Role } from '../../types';
 import { testClient } from 'hono/testing';
 import app from '../../app';
 import { sql } from 'drizzle-orm';
 
-const sessionIds: Partial<Record<(typeof roles)[number], string>> = {};
-const userIds: Partial<Record<(typeof roles)[number], string>> = {};
+const sessionIds: Partial<Record<Role, string>> = {};
+const userIds: Partial<Record<Role, string>> = {};
 const baseRoute = testClient(app).profile;
 const expectedSkeleton = {
   photos_opt_out: false,
@@ -18,7 +18,7 @@ const expectedSkeleton = {
   pronouns: null,
   meals: [false, false, false]
 };
-const expectedSearch: Partial<Record<(typeof roles)[number], Profile>> = {};
+const expectedSearch: Partial<Record<Role, Profile>> = {};
 const sortById = (
   a: SelectedProfile | Profile,
   b: SelectedProfile | Profile

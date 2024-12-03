@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { type CreateUserDetails, roles } from '~~/shared/types';
+import { roles } from '#shared/types';
 import { z } from 'zod';
 import useProfile from '~/composables/useProfile';
 import useAdmin from '~/composables/useAdmin';
-import useTitle from '~/composables/useTitle';
 
 // UI related properties
 const isAddUserPopupOpen = ref(false);
@@ -98,8 +97,6 @@ async function handleSubmit() {
 definePageMeta({
   middleware: ['require-auth']
 });
-
-useTitle('Users');
 </script>
 
 <template>

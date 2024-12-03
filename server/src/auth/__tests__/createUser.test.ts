@@ -4,10 +4,10 @@ import { eq, sql } from 'drizzle-orm';
 import { testClient } from 'hono/testing';
 import app from '../../app';
 import { db } from '../../drizzle';
-import { roles } from '../../types';
+import { roles, type Role } from '../../types';
 import { users } from '../schema';
 
-const sessionIds: Partial<Record<(typeof roles)[number], string>> = {};
+const sessionIds: Partial<Record<Role, string>> = {};
 
 const client = testClient(app);
 

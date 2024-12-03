@@ -1,34 +1,43 @@
-import { Result } from 'typescript-result';
-import type { Profile, User, UserCredentials } from '~~/shared/types';
+import { AsyncResult, Result } from 'typescript-result';
+import type { Profile } from '#shared/types';
 
 export default () => {
   const headers = useRequestHeaders(['cookie']);
+  const cookie = headers.cookie ?? '';
 
-  const getProfiles = (): Promise<Result<Profile[], Error>> =>
+  const getProfiles = (): AsyncResult<Profile[], Error> =>
     Result.try(async () => {
-      const req = await $fetch('/api/profile/all', {
-        method: 'GET'
+      const res = await client.profile.all.$get(undefined, {
+        headers: {
+          Cookie: cookie
+        }
       });
-
-      if (req.error) {
-        throw req.error;
+      if (!res.ok) {
+        const errorMessage = await res.text();
+        throw new Error(errorMessage);
       }
 
-      return req;
+      const profiles = await res.json();
+      return profiles;
     });
 
-  const getSelf = (): Promise<Result<Profile, Error>> =>
+  const getSelf = (): AsyncResult<Profile, Error> =>
     Result.try(async () => {
-      const req = await $fetch('/api/profile', {
-        method: 'GET',
-        headers: headers
+      console.log('In server, before request call');
+      const res = await client.profile.$get(undefined, {
+        headers: {
+          Cookie: cookie
+        }
       });
+      console.log('In server, AFTER request call');
 
-      if (req.error) {
-        throw req.error;
+      if (!res.ok) {
+        const errorMessage = await res.text();
+        throw new Error(errorMessage);
       }
 
-      return req;
+      const profile = await res.json();
+      return profile;
     });
 
   return {

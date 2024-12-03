@@ -3,15 +3,15 @@ import { profiles, type Profile, type SelectedProfile } from '../schema';
 import { db } from '../../drizzle';
 import { users, userSession, userToken } from '../../auth/schema';
 import { createUserWithSession, tomorrow, yesterday } from '../../testHelpers';
-import { roles } from '../../types';
+import { roles, type Role } from '../../types';
 import { testClient } from 'hono/testing';
 import app from '../../app';
 import { eq, sql } from 'drizzle-orm';
 import { verify } from 'argon2';
 import { hashOptions } from '../../auth/lucia';
 
-const sessionIds: Partial<Record<(typeof roles)[number], string>> = {};
-const userIds: Partial<Record<(typeof roles)[number], string>> = {};
+const sessionIds: Partial<Record<Role, string>> = {};
+const userIds: Partial<Record<Role, string>> = {};
 const baseRoute = testClient(app).profile;
 const expectedSkeleton = {
   photos_opt_out: false,
@@ -20,9 +20,8 @@ const expectedSkeleton = {
   pronouns: null,
   meals: [false, false, false]
 };
-const expectedGet: Partial<Record<(typeof roles)[number], SelectedProfile>> =
-  {};
-const expectedSearch: Partial<Record<(typeof roles)[number], Profile>> = {};
+const expectedGet: Partial<Record<Role, SelectedProfile>> = {};
+const expectedSearch: Partial<Record<Role, Profile>> = {};
 
 beforeAll(async () => {
   // Insert sample users into the database & sign in as one

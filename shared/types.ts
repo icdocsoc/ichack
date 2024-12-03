@@ -1,20 +1,11 @@
-import app from '../server/src/app';
 import { z } from 'zod';
-import { selectUserSchema } from '../server/src/auth/schema';
-import type { createUserBody, loginBody } from '../server/src/auth';
-import type { Result } from 'typescript-result';
+import { postLoginBody } from './schemas';
+import app from '~~/server/src/app';
+import { selectUserSchema } from '~~/server/src/auth/schema';
 
-export type Perry = typeof app;
+export { roles } from '~~/server/src/types';
+
+export type UserCredentials = z.infer<typeof postLoginBody>;
+export type PerryApi = typeof app;
 export type User = z.infer<typeof selectUserSchema>;
-export type UserCredentials = z.infer<typeof loginBody>;
-export type CreateUserDetails = z.infer<typeof createUserBody>;
-export type { Profile } from '../server/src/profile/schema';
-export { roles } from '../server/src/types';
-
-/** The password pattern is as follows:
- * 1. At least 8 characters long
- * 2. At least one uppercase letter
- * 3. At least one lowercase letter
- * 4. At least one number
- */
-export const passwordPattern = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{8,}$/;
+export type { Profile } from '~~/server/src/profile/schema';

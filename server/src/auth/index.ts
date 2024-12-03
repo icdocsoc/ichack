@@ -1,4 +1,12 @@
-import { insertUserSchema, users, userSession, userToken } from './schema';
+import {
+  postChangePasswordBody,
+  postCreateBody,
+  postLoginBody,
+  postResetPasswordBody,
+  users,
+  userSession,
+  userToken
+} from './schema';
 import { zValidator } from '@hono/zod-validator';
 import { db } from '../drizzle';
 import { generateIdFromEntropySize } from 'lucia';
@@ -8,39 +16,13 @@ import { hash, verify } from 'argon2';
 import factory from '../factory';
 import { grantAccessTo } from '../security';
 import { z } from 'zod';
-import { passwordPattern } from '../../../shared/types';
-
-export const createUserBody = insertUserSchema.pick({
-  name: true,
-  email: true,
-  role: true
-});
-
-export const loginBody = insertUserSchema
-  .pick({
-    email: true,
-    password: true
-  })
-  .extend({
-    password: z.string().regex(passwordPattern)
-  });
-
-export const changePasswordBody = z.object({
-  oldPassword: z.string().regex(passwordPattern),
-  newPassword: z.string().regex(passwordPattern)
-});
-
-// This is the same as insertUserSchemea, but with all fields required.
-export const postRegisterBody = insertUserSchema
-  .pick({ password: true })
-  .extend({ password: z.string().regex(passwordPattern) });
 
 const auth = factory
   .createApp()
   .post(
     '/create',
     grantAccessTo('god'),
-    zValidator('json', createUserBody, ({ success }, c) => {
+    zValidator('json', postCreateBody, ({ success }, c) => {
       if (!success) {
         return c.text('Name, email and role are required', 400);
       }
@@ -74,7 +56,7 @@ const auth = factory
   .post(
     '/login',
     grantAccessTo('all'), // Effectively a no-op - just being explicit
-    zValidator('json', loginBody, ({ success }, c) => {
+    zValidator('json', postLoginBody, ({ success }, c) => {
       if (!success) {
         return c.text('Email and password are required', 400);
       }
@@ -183,18 +165,11 @@ const auth = factory
   .post(
     '/resetPassword',
     grantAccessTo('all'),
-    zValidator(
-      'json',
-      z.object({
-        token: z.string(),
-        password: z.string().regex(passwordPattern)
-      }),
-      (result, c) => {
-        if (!result.success) {
-          return c.text(result.error.message, 400);
-        }
+    zValidator('json', postResetPasswordBody, (result, c) => {
+      if (!result.success) {
+        return c.text(result.error.message, 400);
       }
-    ),
+    }),
     async c => {
       const session = c.get('session')!;
       if (session) {
@@ -241,7 +216,7 @@ const auth = factory
   .put(
     '/changePassword',
     grantAccessTo('authenticated'),
-    zValidator('json', changePasswordBody),
+    zValidator('json', postChangePasswordBody),
     async c => {
       const user = c.get('user')!; // Non-null because of grantAccessTo('authenticated')
 

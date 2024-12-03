@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, test } from 'bun:test';
 import { db } from '../../drizzle';
 import { events } from '../schema';
-import { roles } from '../../types';
+import { roles, type Role } from '../../types';
 import { testClient } from 'hono/testing';
 import { eq, sql } from 'drizzle-orm';
 import { users, userSession } from '../../auth/schema';
@@ -17,7 +17,7 @@ const phineasEvent = {
 
 const baseRoute = testClient(app).event;
 
-const sessionIds: Partial<Record<(typeof roles)[number], string>> = {};
+const sessionIds: Partial<Record<Role, string>> = {};
 
 beforeAll(async () => {
   await db.execute(sql`TRUNCATE ${users} CASCADE`);

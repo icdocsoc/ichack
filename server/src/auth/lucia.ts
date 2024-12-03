@@ -3,7 +3,7 @@ import { userSession, users } from './schema';
 import { generateId, Lucia, TimeSpan } from 'lucia';
 import { db } from '../drizzle';
 import { hash, type Options } from 'argon2';
-import { roles } from '../types';
+import { type Role } from '../types';
 
 const adapter = new DrizzlePostgreSQLAdapter(db, userSession, users);
 
@@ -40,7 +40,7 @@ declare module 'lucia' {
     DatabaseUserAttributes: DatabaseUserAttributes;
   }
   interface DatabaseUserAttributes {
-    role: (typeof roles)[number];
+    role: Role;
     email: string;
   }
 }

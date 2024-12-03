@@ -1,38 +1,38 @@
-import { Result } from 'typescript-result';
-import type { User, UserCredentials } from '~~/shared/types';
+import { AsyncResult, Result } from 'typescript-result';
+import type { User, UserCredentials } from '#shared/types';
 
-export default () => {
-  const loginUser = (
-    credentials: UserCredentials
-  ): Promise<Result<User, Error>> =>
+export default function () {
+  const loginUser = (credentials: UserCredentials): AsyncResult<User, Error> =>
     Result.try(async () => {
-      const res = await $fetch('/api/auth/login', {
-        method: 'POST',
-        body: credentials
+      const res = await client.auth.login.$post({
+        json: credentials
       });
-
-      if (res.error) {
-        throw res.error;
+      if (!res.ok) {
+        const errorMessage = await res.text();
+        throw new Error(errorMessage);
       }
 
-      console.log(res);
-
-      return res;
+      const userBody = await res.json();
+      return userBody;
     });
 
-  const logOut = (): Promise<Result<void, Error>> =>
+  const logout = (): AsyncResult<void, Error> =>
     Result.try(async () => {
-      const req = await $fetch('/api/auth/logout', {
-        method: 'POST'
+      const sessionToken = useCookie('auth_session');
+      const res = await client.auth.logout.$post(undefined, {
+        headers: {
+          Cookie: `auth_session=${sessionToken}`
+        }
       });
 
-      if (req.error) {
-        throw req.error;
+      if (!res.ok) {
+        const errorMessage = await res.text();
+        throw new Error(errorMessage);
       }
     });
 
   return {
     loginUser,
-    logOut
+    logout
   };
-};
+}

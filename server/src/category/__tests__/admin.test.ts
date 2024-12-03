@@ -5,10 +5,10 @@ import { categories, companies } from '../schema';
 import { createUserWithSession } from '../../testHelpers';
 import app from '../../app';
 import { testClient } from 'hono/testing';
-import { roles } from '../../types';
+import { roles, type Role } from '../../types';
 import { eq, sql } from 'drizzle-orm';
 
-const sessionIds: Partial<Record<(typeof roles)[number], string>> = {};
+const sessionIds: Partial<Record<Role, string>> = {};
 
 const client = testClient(app);
 const kotlinCategory = {

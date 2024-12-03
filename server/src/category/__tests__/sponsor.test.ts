@@ -1,5 +1,5 @@
 import { beforeAll, beforeEach, describe, expect, test } from 'bun:test';
-import { roles } from '../../types';
+import { roles, type Role } from '../../types';
 import { testClient } from 'hono/testing';
 import app from '../../app';
 import { sponsorCompany, categories, companies } from '../schema';
@@ -8,7 +8,7 @@ import { users } from '../../auth/schema';
 import { createUserWithSession } from '../../testHelpers';
 import { eq, sql } from 'drizzle-orm';
 
-const sessionIds: Partial<Record<(typeof roles)[number], string>> = {};
+const sessionIds: Partial<Record<Role, string>> = {};
 let kotlinOwnerId: string;
 
 const client = testClient(app);

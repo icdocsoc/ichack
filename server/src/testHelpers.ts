@@ -4,7 +4,7 @@
 
 import { users, userSession } from './auth/schema';
 import { db } from './drizzle';
-import type { roles } from './types';
+import type { Role } from './types';
 
 export const today = new Date();
 export const tomorrow = new Date(today);
@@ -13,7 +13,7 @@ export const yesterday = new Date(today);
 yesterday.setDate(today.getDate() - 1);
 
 export const createUserWithSession = async (
-  role: (typeof roles)[number],
+  role: Role,
   body: { name: string; email: string; password: string | null }
 ): Promise<{ userId: string; sessionId: string }> => {
   const sessionId = `${role}_session_${Math.random()}`;
@@ -29,7 +29,7 @@ export const createUserWithSession = async (
 };
 
 export const createUser = async (
-  role: (typeof roles)[number],
+  role: Role,
   body: { name: string; email: string; password: string | null }
 ): Promise<string> => {
   const userId = `${role}_user_${Math.random()}`;

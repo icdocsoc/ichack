@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, test } from 'bun:test';
 import { db } from '../../drizzle';
 import { events } from '../schema';
-import { roles } from '../../types';
+import { roles, type Role } from '../../types';
 import { testClient } from 'hono/testing';
 import { eq, sql } from 'drizzle-orm';
 import { users, userSession } from '../../auth/schema';
@@ -15,7 +15,7 @@ const phineasEvent = {
   public: true
 };
 
-const sessionIds: Partial<Record<(typeof roles)[number], string>> = {};
+const sessionIds: Partial<Record<Role, string>> = {};
 
 const baseRoute = testClient(app).event;
 

@@ -1,6 +1,8 @@
-import { boolean, pgEnum, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
+import { pgEnum, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
 import { roles } from '../types';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
+import { z } from 'zod';
+import { passwordPattern } from './types';
 
 export const userRoles = pgEnum('user_roles', roles);
 export const tokenType = pgEnum('token_type', [
@@ -47,4 +49,34 @@ export const insertUserSchema = createInsertSchema(users, {
 });
 export const selectUserSchema = createSelectSchema(users).omit({
   password: true
+});
+
+export const postCreateBody = insertUserSchema.pick({
+  name: true,
+  email: true,
+  role: true
+});
+
+export const postLoginBody = insertUserSchema
+  .pick({
+    email: true,
+    password: true
+  })
+  .merge(z.object({ password: z.string().regex(passwordPattern) }));
+
+export const postChangePasswordBody = z.object({
+  oldPassword: z
+    .string()
+    .regex(passwordPattern, 'Your old password is too weak.'),
+  newPassword: z
+    .string()
+    .regex(passwordPattern, 'Your new password is too weak.')
+});
+
+// This is the same as insertUserSchemea, but with all fields required.
+export const postRegisterBody = insertUserSchema.pick({ password: true });
+
+export const postResetPasswordBody = z.object({
+  token: z.string(),
+  password: z.string().regex(passwordPattern, 'Your password is too weak.')
 });

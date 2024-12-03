@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, test } from 'bun:test';
 import { profiles, type SelectedProfile } from '../schema';
-import { roles } from '../../types';
+import { roles, type Role } from '../../types';
 import { testClient } from 'hono/testing';
 import app from '../../app';
 import { db } from '../../drizzle';
@@ -9,8 +9,8 @@ import { createUserWithSession } from '../../testHelpers';
 import { eq, sql } from 'drizzle-orm';
 import { sha256 } from 'hono/utils/crypto';
 
-const sessionIds: Partial<Record<(typeof roles)[number], string>> = {};
-const userIds: Partial<Record<(typeof roles)[number], string>> = {};
+const sessionIds: Partial<Record<Role, string>> = {};
+const userIds: Partial<Record<Role, string>> = {};
 const baseRoute = testClient(app).profile;
 const expectedSkeleton = {
   photos_opt_out: false,
@@ -20,8 +20,7 @@ const expectedSkeleton = {
   meals: [false, false, false],
   password: 'securepass'
 };
-const expectedUsers: Partial<Record<(typeof roles)[number], SelectedProfile>> =
-  {};
+const expectedUsers: Partial<Record<Role, SelectedProfile>> = {};
 
 beforeAll(async () => {
   // Insert sample users into the database & sign in as one
