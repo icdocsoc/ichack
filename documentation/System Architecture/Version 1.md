@@ -5,6 +5,9 @@ authors:
 ---
 When the user requests for a website. The request first goes through [[Cloudflare]] and the potentially malicious ones are filtered out. Then the request goes to the Cloud VM where it is first encountered by [[Nginx]] which would act as a load balancer and direct the request to the correct container based on the [subdomain](#subdomains).
 
+> [!note]
+> Nginx is removed under [[The Fresh Architecture]]. 
+
 ## Subdomains
 
 We have subdomains for all the user-facing applications. 

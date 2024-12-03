@@ -3,7 +3,6 @@ created: 2024-07-16
 authors:
   - Nishant
 ---
-
 # Authentication Workflows
 
 ## Registration

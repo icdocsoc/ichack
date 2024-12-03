@@ -1,5 +1,3 @@
-import useProfile from '~/composables/useProfile';
-
 export default defineNuxtRouteMiddleware(async (from, to) => {
   const { getSelf } = useProfile();
   const store = useProfileStore();

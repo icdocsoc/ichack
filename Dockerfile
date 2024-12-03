@@ -5,5 +5,5 @@ COPY package.json bun.lockb ./
 RUN bun install --production
 COPY . .
 
-RUN bun --bun run build
-CMD ["bun", "run", "index.js"]
+RUN bun run build
+CMD ["bun", "run", ".output/server/index.mjs"]

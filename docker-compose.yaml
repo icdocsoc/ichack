@@ -18,8 +18,12 @@ services:
       - '3000:3000'
     depends_on:
       - postgres
-    env_file:
-      - .env.local
+    environment:
+      - PGUSER=admin
+      - PGPASSWORD=rootpasswd
+      - PGDB=postgres
+      - PGHOST=posgres
+      - PGPORT=5432
 
 volumes:
   postgres_data:

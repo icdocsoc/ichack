@@ -10,4 +10,4 @@ authors:
 The lucia documentation is great and especially [this example repo](https://github.com/lucia-auth/examples/tree/main/hono/username-and-password) helps in practically understanding how to use Lucia.
 
 > [!error]
-> Lucia v3 has announced it's deprecation [here](https://github.com/lucia-auth/lucia/discussions/1714). If we continue to use this library, please switch to Lucia v4 (if released) or use another authentication library.
+> Lucia v3 has announced it's deprecation [here](https://github.com/lucia-auth/lucia/discussions/1714). Please switch to Lucia v4 (if released) or use something else for IC Hack '26 onwards.

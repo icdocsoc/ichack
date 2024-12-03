@@ -3,7 +3,10 @@ created: 2024-07-08
 authors:
   - Nishant
 ---
-The server's entry point is `src/index.ts`. The server is a (in gradle project terms) a multi-modular build. See [[Modules]] to learn how they are the foundational building blocks of the server.
+The server is a [[Hono]] application that is artificially connected to the Nuxt application (see `nuxt.config.ts`). Its entrypoint is `index.ts`. The server is a (in gradle project terms) a multi-modular build. See [[Modules]] to learn how they are the foundational building blocks of the server.
+
+> [!note]
+> Do not get confused by the middlewares inside `server/src` and the subdomain middleware in `server/middleware`. The subdomain middleware is part of the Nitro family while everything inside `src` is the Hono family. The routes inside `src` are only invoked when the path starts with a `/api`.
 
 ## Requests & Responses
 

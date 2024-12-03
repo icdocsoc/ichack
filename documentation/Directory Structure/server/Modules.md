@@ -4,7 +4,7 @@ authors:
   - Nishant
 ---
 Every sub-directory inside the `server/` directory is considered a **module**. A module *in this project* contains their routes and possibly a schema.
-These modules are *pluggable* in the server code. In `src/index.ts`, you can import the module and route it with the `.route(url, app)` function by Hono.
+These modules are *pluggable* in the server code. In `src/app.ts`, you can import the module and route it with the `.route(url, app)` function by Hono.
 
 ## Modules
 
@@ -19,7 +19,6 @@ The core modules for IC Hack are:
 - **profile** - to manage a users profile, including cv upload and names.
 - **team** - to create and manage teams that a user is in.
 
-Other modules are considered `feature` modules for the other spicy and fun experiences IC Hack provides during the day. This may be features like collecting demographics or awarding points for interacting with sponsors
-- **logging** - we decided to publish logs to the PostgreSQL too.
+Other modules are considered `feature` modules for the other spicy and fun experiences IC Hack provides during the day. This may be features like collecting demographics or awarding points for interacting with sponsors.
 
-To create a feature module, make sure you have an `[feat]/index.ts` file with the Hono routes. See other modules for reference. Import those routes into `src/index.ts` and route them in the app.
+To create a feature module, make sure you have an `[feat]/index.ts` file with the Hono routes. See other modules for reference. Import those routes into `src/app.ts` and route them in the app.

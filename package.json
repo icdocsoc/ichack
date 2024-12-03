@@ -4,7 +4,7 @@
     "build": "bun --bun nuxt prepare && bun --bun nuxt build",
     "dev": "bash ./scripts/start-dev.sh",
     "generate": "bun --bun nuxt generate",
-    "preview": "bun --bun nuxt preview",
+    "preview": "docker compose up",
     "postinstall": "bun --bun nuxt prepare",
     "backend:test": "bash ./scripts/test-backend.sh",
     "backend:check-schema": "bash ./scripts/check-schema.sh",

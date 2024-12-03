@@ -3,22 +3,11 @@ created: 2024-07-04
 authors:
  - Nishant
 ---
-IC Hack is Europe's Largest Hackathon, hosted by Imperial College's DoCSoc. You will find the entire code base on [GitHub](https://github.com/icdocsoc/ichack25). This documentation will give you extensive details on the code, workflow and design choices made by our Webmasters - Nishant and Jay.
-
-## Ways to see this documentation
-
-### In Obsidian
-
-1. Install [Obsidian](https://obsidian.md/).
-2. Clone the repository with `git clone git@github.com:icdocsoc/ichack25.git`
-3. Open the path `./documentation` as an Obsidian Vault.
-
+IC Hack is Europe's Largest Hackathon, hosted by Imperial College's DoCSoc. You will find the entire code base on [GitHub](https://github.com/icdocsoc/ichack25). This documentation will give you extensive details on the code, workflow and design choices made by our Webmasters - Nishant and Jay - and other long term volunteers.
 ## How to get started?
-
 1. Learn about [[Why do this|why we did what we did]].
-2. Try out our code by [[Running the project locally]].
-3. Look at the [[Directory Structure]] and understand what is placed where.
-6. Review our [code](https://github.com/icdocsoc/ichack25) and also see the available documentation and comments.
+3. Try out our code by [[Running the project locally]].
+4. Look at the [[Directory Structure]] and understand what is placed where.
 
 ## DISCLAIMER
 

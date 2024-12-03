@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { postLoginBody } from '#shared/schemas';
-import type { UserCredentials } from '~~/shared/types';
+import type { UserCredentials } from '#shared/types';
 
 const userCredentials = reactive<UserCredentials>({
   email: '',
@@ -22,7 +22,7 @@ const handleLogin = async () => {
 </script>
 
 <template>
-  <h2 class="font-semibold text-5xl text-center">Login Screen</h2>
+  <h2 class="font-semibold text-5xl text-center">Admin's Login Screen</h2>
   <UContainer class="flex flex-col justify-center items-center">
     <UForm
       :schema="postLoginBody"

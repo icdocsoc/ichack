@@ -2,7 +2,6 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
   compatibilityDate: '2024-11-21',
-  modules: ['@pinia/nuxt', '@nuxt/ui'],
 
   future: {
     compatibilityVersion: 4
@@ -16,9 +15,21 @@ export default defineNuxtConfig({
     }
   ],
 
-  css: ['~/assets/css/base.css'],
+  $development: {
+    runtimeConfig: {
+      public: {
+        mainDomain: ['localhost:3000']
+      }
+    }
+  },
 
-  icon: {
-    provider: 'iconify'
-  }
+  $production: {
+    runtimeConfig: {
+      public: {
+        mainDomain: ['ichack.org', 'localhost:3000']
+      }
+    }
+  },
+
+  extends: ['layers/admin', 'layers/my', 'layers/www']
 });

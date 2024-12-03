@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { roles } from '#shared/types';
 import { z } from 'zod';
-import useProfile from '~/composables/useProfile';
-import useAdmin from '~/composables/useAdmin';
 
 // UI related properties
 const isAddUserPopupOpen = ref(false);

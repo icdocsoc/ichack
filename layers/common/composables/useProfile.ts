@@ -23,13 +23,11 @@ export default () => {
 
   const getSelf = (): AsyncResult<Profile, Error> =>
     Result.try(async () => {
-      console.log('In server, before request call');
       const res = await client.profile.$get(undefined, {
         headers: {
           Cookie: cookie
         }
       });
-      console.log('In server, AFTER request call');
 
       if (!res.ok) {
         const errorMessage = await res.text();

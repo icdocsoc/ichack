@@ -1,8 +1,9 @@
 ---
-title: Why build IC Hack '25
 date: 2024-07-04
+authors:
+  - Nishant
 ---
-In 2023-24, Nishant and Jay were Tech Volunteers and we built the IC Hack '24 from the ground up. The same pair were elected as Webmasters of DoCSoc in 2024-25. we believe we can build a tech system that's scalable and extendable for at least a couple years. That is possible with a well written code base and **well documented one too** (which we and the '25 volunteers will do our best in).
+In 2023-24, Nishant and Jay were Tech Volunteers and we built the IC Hack '24 from the ground up as long-term volunteers. The same pair were elected as Webmasters of DoCSoc in 2024-25. we believe we can build a tech system that's scalable and extendable for at least a couple years. That is possible with a well written code base and **well documented one too** (which we and the '25 volunteers will do our best in).
 
 This is the first year where all the code will be in a single place with full documentation for new volunteers contributing to the code base as well as future committees taking inspiration.
 

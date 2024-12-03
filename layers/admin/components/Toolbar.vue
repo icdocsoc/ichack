@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import useAuth from '~/composables/useAuth';
-
-const { logout } = useAuth();
+const { logOut } = useAuth();
 
 const menu = [
   [
