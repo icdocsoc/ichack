@@ -5,9 +5,9 @@ export default defineConfig({
   out: './migrations',
   dialect: 'postgresql',
   dbCredentials: {
-    host: 'postgres',
+    host: '0.0.0.0',
     user: 'admin',
     password: 'rootpasswd',
-    database: 'ichack25'
+    database: 'postgres'
   }
 });

@@ -13,7 +13,7 @@ else
     -e POSTGRES_PASSWORD=rootpasswd \
     -e POSTGRES_DB=postgres \
     -p 5432:5432 \
-    -v ichack25_postgres_data:/var/lib/postgresql/data \
+    -v ichack_postgres_data:/var/lib/postgresql/data \
     postgres:16
 fi
 

@@ -17,7 +17,7 @@ This is a gigantic single running Nuxt4 application. The 3 main frontend applica
 1. Read relevant portions of the documentation.
 
 > [!note]
-> All ichack related systems every year are **private**. A public **port** (not _fork_) of the repository is allowed but all sensitive information must be deleted from all commit history.
+> All IC Hack related systems every year are **private**. A public **port** (not _fork_) of the repository is allowed but all sensitive information must be deleted from all commit history.
 
 ## Documentation
 

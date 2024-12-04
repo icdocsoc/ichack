@@ -1,5 +1,5 @@
 {
-  "name": "@ichack25/monorepo",
+  "name": "@ichack/monorepo",
   "scripts": {
     "build": "bun --bun nuxt prepare && bun --bun nuxt build",
     "dev": "bash ./scripts/start-dev.sh",

@@ -27,4 +27,4 @@ services:
 
 volumes:
   postgres_data:
-    name: ichack25_postgres_data
+    name: ichack_postgres_data

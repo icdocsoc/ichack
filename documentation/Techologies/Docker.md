@@ -33,7 +33,7 @@ docker run \
 docker run \
   --name server \
   -p '5000:3000' \
-  ichack25-server:latest
+  ichack-server:latest
 
 ...
 ```
