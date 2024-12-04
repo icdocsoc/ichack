@@ -1,6 +1,6 @@
-# IC Hack '25
+# IC Hack
 
-Every application or package built to support IC Hack'25 tech.
+Every application or package built to support IC Hack tech.
 
 ## What is in this?
 
