@@ -1,5 +1,6 @@
 {
   "name": "@ichack/monorepo",
+  "type": "module",
   "scripts": {
     "build": "bun --bun nuxt prepare && bun --bun nuxt build",
     "dev": "bash ./scripts/start-dev.sh",
@@ -9,6 +10,8 @@
     "backend:test": "bash ./scripts/test-backend.sh",
     "backend:check-schema": "bash ./scripts/check-schema.sh",
     "backend:generate": "bash ./scripts/generate-schema.sh",
+    "landing:test": "vitest run --dir layers/www",
+    "landing:test:update": "vitest --dir layers/www -u",
     "reset-db": "bun up-db && bash ./scripts/reset-db.sh && bun down-db",
     "up-db": "docker compose up -d postgres",
     "down-db": "docker compose down postgres",
@@ -16,12 +19,16 @@
     "format:check": "prettier --check ."
   },
   "devDependencies": {
+    "@nuxt/test-utils": "^3.15.1",
     "@types/bun": "^1.1.6",
     "@types/pg": "^8.11.6",
+    "@vue/test-utils": "^2.4.6",
     "bun-types": "^1.1.20",
     "drizzle-kit": "^0.24.0",
+    "happy-dom": "^15.11.7",
     "prettier": "^3.3.2",
-    "prettier-plugin-tailwindcss": "^0.6.9"
+    "prettier-plugin-tailwindcss": "^0.6.9",
+    "vitest": "^2.1.8"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"

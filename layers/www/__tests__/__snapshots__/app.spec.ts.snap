@@ -1,0 +1,3 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Match snapshot 1`] = `"ICHACK '25 Landing Page"`;
