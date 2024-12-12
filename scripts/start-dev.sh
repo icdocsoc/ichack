@@ -1,8 +1,3 @@
-function cleanup() {
-  docker stop postgres
-}
-trap cleanup EXIT
-
 # Check if a container with name postgres exists
 if docker ps -a --format '{{.Names}}' | grep -Eq "^postgres$"; then
   docker start postgres
@@ -24,3 +19,11 @@ done
 
 bun --bun nuxt prepare
 bun --bun nuxt dev
+PID=$!
+
+function cleanup() {
+  docker stop postgres
+  kill $PID
+  bunx kill-port 3000
+}
+trap cleanup EXIT

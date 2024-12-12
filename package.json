@@ -12,6 +12,8 @@
     "backend:generate": "bash ./scripts/generate-schema.sh",
     "landing:test": "vitest run --dir layers/www",
     "landing:test:update": "vitest --dir layers/www -u",
+    "test:e2e": "start-server-and-test 'bun --bun nuxt dev > /dev/null' http://localhost:3000 'bun test:e2e:run'",
+    "test:e2e:run": "playwright test",
     "reset-db": "bun up-db && bash ./scripts/reset-db.sh && bun down-db",
     "up-db": "docker compose up -d postgres",
     "down-db": "docker compose down postgres",
@@ -20,14 +22,17 @@
   },
   "devDependencies": {
     "@nuxt/test-utils": "^3.15.1",
+    "@playwright/test": "^1.49.1",
     "@types/bun": "^1.1.6",
     "@types/pg": "^8.11.6",
     "@vue/test-utils": "^2.4.6",
     "bun-types": "^1.1.20",
     "drizzle-kit": "^0.24.0",
     "happy-dom": "^15.11.7",
+    "playwright": "^1.49.1",
     "prettier": "^3.3.2",
     "prettier-plugin-tailwindcss": "^0.6.9",
+    "start-server-and-test": "^2.0.9",
     "vitest": "^2.1.8"
   },
   "peerDependencies": {
