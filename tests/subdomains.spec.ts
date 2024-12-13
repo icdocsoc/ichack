@@ -17,7 +17,7 @@ test.describe('All subdomains must be accessible', () => {
   });
 
   test('Landing page is accessible', async ({ page }) => {
-    await page.goto('http://localhost:3000/');
+    await page.goto('http://localhost:3001/');
 
     const headingElem = page.getByText('LANDING');
     await expect(headingElem).toBeVisible();

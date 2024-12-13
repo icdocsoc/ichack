@@ -32,5 +32,5 @@ export default defineNuxtConfig({
     }
   },
 
-  extends: ['layers/admin', 'layers/my', 'layers/www']
+  extends: ['packages/admin', 'packages/my']
 });

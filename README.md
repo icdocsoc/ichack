@@ -6,10 +6,15 @@ Every application or package built to support IC Hack tech.
 
 This is a gigantic single running Nuxt4 application. The 3 main frontend applications are separated under subdomain routing.
 
-- [Server (Perry)](./server/) - First time custom backend server built.
-- [Admin (Ferb)](./app/pages/$admin/) - An admin dashboard website that manages users, teams, announcements.
-- [Internal (Phineas)](./app/pages/$my/) - The Internal Website used by hackers, volunteers, etc.
-- [Landing Page (Isabella)](./app/pages/$www/) - A static landing page.
+- [Server (Perry)](./server/) - Backend server written in Hono.
+- [Admin (Ferb)](./packages/admin/) - The admin dashboard website that manages users, teams, announcements.
+- [Internal (Phineas)](./packages/my/) - The Internal Website used by hackers, volunteers, etc.
+- [Landing Page (Isabella)](./packages/www/) - The static landing page.
+
+This application also contains the utility modules:
+
+- [Common](./packages/common/) - Common utilities and API call code.
+- [UI 25](./packages/ui25/) - The UI components for IC Hack '25.
 
 ## Before you start
 

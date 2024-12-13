@@ -6,7 +6,7 @@ export default defineVitestConfig({
     environment: 'nuxt',
     environmentOptions: {
       nuxt: {
-        rootDir: fileURLToPath(new URL('./layers', import.meta.url)),
+        rootDir: fileURLToPath(new URL('./packages', import.meta.url)),
         domEnvironment: 'happy-dom'
       }
     }
