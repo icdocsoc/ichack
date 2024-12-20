@@ -13,9 +13,27 @@ services:
 
   website:
     container_name: website
-    build: .
+    build:
+      context: .
+      target: website
     ports:
       - '3000:3000'
+    depends_on:
+      - postgres
+    environment:
+      - PGUSER=admin
+      - PGPASSWORD=rootpasswd
+      - PGDB=postgres
+      - PGHOST=posgres
+      - PGPORT=5432
+
+  landing:
+    container_name: landing
+    build:
+      context: .
+      target: landing
+    ports:
+      - '3001:3000'
     depends_on:
       - postgres
     environment:

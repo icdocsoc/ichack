@@ -1,1 +1,1 @@
-rm -rfv node_modules bun.lockb .nuxt .output
+rm -rfv node_modules bun.lockb .nuxt .output ./**/.nuxt ./**/node_modules ./**/.output ./**/dist
