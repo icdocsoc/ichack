@@ -10,16 +10,12 @@ import {
 } from './schema';
 import { and, eq, ilike, lt, sql } from 'drizzle-orm';
 import { apiLogger } from '../logger';
-import { zValidator } from '@hono/zod-validator';
 import { users, userToken } from '../auth/schema';
 import { z } from 'zod';
 import { hash } from 'argon2';
 import { hashOptions } from '../auth/lucia';
 import { DiscordRepository } from './discord';
-
-const tokenSchema = z.object({
-  token: z.string()
-});
+import { simpleValidator } from '../validators';
 
 const profile = factory
   .createApp()
@@ -74,11 +70,7 @@ const profile = factory
   .get(
     '/search',
     grantAccessTo('volunteer'),
-    zValidator('query', searchUserSchema, async (zRes, ctx) => {
-      if (!zRes.success) {
-        return ctx.text(zRes.error.message, 400);
-      }
-    }),
+    simpleValidator('query', searchUserSchema),
     async ctx => {
       const { name, email } = ctx.req.valid('query');
       // Can only search by name OR email; update Obsidian to note this.
@@ -123,14 +115,7 @@ const profile = factory
   .put(
     '/',
     grantAccessTo('authenticated'),
-    zValidator('json', updateProfileSchema, async (zRes, ctx) => {
-      if (!zRes.success) {
-        return ctx.text(
-          `Invalid JSON event passed in:\n${zRes.error.message}`,
-          400
-        );
-      }
-    }),
+    simpleValidator('json', updateProfileSchema),
     async ctx => {
       // Update profile info w a partial user object
       try {
@@ -149,7 +134,12 @@ const profile = factory
         // No need to return anything, as the browser is subscribed to the websocket.
         return ctx.text('', 200);
       } catch (e) {
-        apiLogger.error(ctx, 'PUT /profile', 'Failed to update user', e);
+        apiLogger.error(
+          ctx,
+          'PUT /profile',
+          'Failed to update user',
+          e.message
+        );
         return ctx.text('Internal error, failed to update profile', 500);
       }
     }
@@ -157,14 +147,7 @@ const profile = factory
   .put(
     '/meal',
     grantAccessTo('volunteer'),
-    zValidator('json', updateMealSchema, async (zRes, ctx) => {
-      if (!zRes.success) {
-        return ctx.text(
-          `Invalid JSON body supplied.\n${zRes.error.message}`,
-          400
-        );
-      }
-    }),
+    simpleValidator('json', updateMealSchema),
     async ctx => {
       // { userId: string, num: number }
       // Toggle meal number `num`
@@ -197,7 +180,7 @@ const profile = factory
   .get(
     '/discord',
     grantAccessTo('authenticated'),
-    zValidator(
+    simpleValidator(
       'query',
       z.object({ code: z.string().optional(), state: z.string().optional() })
     ),
@@ -254,15 +237,11 @@ const profile = factory
   .get(
     '/register',
     grantAccessTo('all'),
-    zValidator('query', tokenSchema, async (zRes, ctx) => {
-      if (!zRes.success) {
-        return ctx.text('Missing registration token.', 400);
-      }
-    }),
+    simpleValidator('query', z.object({ token: z.string() })),
     async ctx => {
       const signedIn = ctx.get('user');
       if (signedIn != null) {
-        return ctx.text('User is already registered.', 400);
+        return ctx.text('You have already registered.', 400);
       }
 
       const { token } = ctx.req.valid('query');
@@ -303,20 +282,12 @@ const profile = factory
   .post(
     '/register',
     grantAccessTo('all'),
-    zValidator('query', z.object({ token: z.string() }), async (zRes, ctx) => {
-      if (!zRes.success) {
-        return ctx.text('Missing registration token.', 400);
-      }
-    }),
-    zValidator('json', insertProfileSchema, async (zRes, ctx) => {
-      if (!zRes.success) {
-        return ctx.text(`Invalid request:\n${zRes.error.message}`, 400);
-      }
-    }),
+    simpleValidator('query', z.object({ token: z.string() })),
+    simpleValidator('json', insertProfileSchema),
     async ctx => {
       const signedIn = ctx.get('user');
       if (signedIn != null) {
-        return ctx.text('User is already registered.', 400);
+        return ctx.text('You have already registered.', 400);
       }
 
       const { token } = ctx.req.valid('query');
@@ -350,7 +321,7 @@ const profile = factory
           pronouns: body.pronouns
         });
 
-        // The zValidator schema takes care of the regex.
+        // The simpleValidator schema takes care of the regex.
         await tx
           .update(users)
           .set({

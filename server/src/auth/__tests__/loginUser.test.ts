@@ -112,7 +112,9 @@ describe('Auth Module > POST /login', () => {
 
     // @ts-ignore this can return 400
     expect(res.status).toBe(400);
-    expect(await res.text()).toBe('Email and password are required');
+    expect(res.text()).resolves.toBe(
+      "'password' is either missing or not a string"
+    );
 
     const cookies = res.headers.getSetCookie();
     expect(cookies.length).toBe(0);
@@ -126,7 +128,9 @@ describe('Auth Module > POST /login', () => {
 
     // @ts-ignore this can return 400
     expect(res2.status).toBe(400);
-    expect(await res2.text()).toBe('Email and password are required');
+    expect(res2.text()).resolves.toBe(
+      "'email' is either missing or not a string; Property 'password' does not satisfy the conditions"
+    );
 
     const cookies2 = res2.headers.getSetCookie();
     expect(cookies2.length).toBe(0);
@@ -159,5 +163,6 @@ describe('Auth Module > POST /login', () => {
     );
 
     expect(res2.status).toBe(409);
+    expect(res2.text()).resolves.toBe('You are already logged in');
   });
 });

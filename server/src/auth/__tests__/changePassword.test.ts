@@ -101,6 +101,7 @@ describe('Auth Module > PUT /changePassword', () => {
     );
 
     expect(res.status).toBe(401);
+    expect(res.text()).resolves.toBe("The current password doesn't match");
   });
 
   test('weak new password returns 400', async () => {
@@ -119,6 +120,9 @@ describe('Auth Module > PUT /changePassword', () => {
     );
 
     expect(res.status).toBe(400);
+    expect(res.text()).resolves.toBe(
+      "Property 'newPassword' does not satisfy the conditions"
+    );
   });
   test('same as old password returns 400', async () => {
     const res = await client.auth.changePassword.$put(
@@ -136,5 +140,8 @@ describe('Auth Module > PUT /changePassword', () => {
     );
 
     expect(res.status).toBe(400);
+    expect(res.text()).resolves.toBe(
+      "The new password can't be the same as the old password"
+    );
   });
 });

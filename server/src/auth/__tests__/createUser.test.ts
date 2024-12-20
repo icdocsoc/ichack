@@ -78,6 +78,9 @@ describe('Auth Module > POST /create', () => {
       expect(res.ok).toBeFalse();
       // @ts-ignore this can return 403.
       expect(res.status).toBe(403);
+      expect(res.text()).resolves.toBe(
+        'You do not have access to POST /api/auth/create'
+      );
     }
   });
 
@@ -94,6 +97,9 @@ describe('Auth Module > POST /create', () => {
     expect(res.ok).toBeFalse();
     // @ts-ignore this can return 403.
     expect(res.status).toBe(403);
+    expect(res.text()).resolves.toBe(
+      'You do not have access to POST /api/auth/create'
+    );
   });
 
   test('Cannot create a user with an existing email', async () => {
@@ -119,7 +125,9 @@ describe('Auth Module > POST /create', () => {
     expect(res.status).toBe(409);
 
     const errorMsg = await res.text();
-    expect(errorMsg).toBe('Failed to create user');
+    expect(errorMsg).toBe(
+      'duplicate key value violates unique constraint "users_email_unique"'
+    );
   });
 
   test('request body with no email is rejected', async () => {
@@ -142,6 +150,9 @@ describe('Auth Module > POST /create', () => {
     expect(res.ok).toBeFalse();
     // @ts-ignore this can return 400.
     expect(res.status).toBe(400);
+    expect(res.text()).resolves.toBe(
+      "'email' is either missing or not a string"
+    );
   });
 
   test('request body with bad email is rejected', async () => {
@@ -163,5 +174,6 @@ describe('Auth Module > POST /create', () => {
     expect(res.ok).toBeFalse();
     // @ts-ignore this can return 400.
     expect(res.status).toBe(400);
+    expect(res.text()).resolves.toBe('Invalid email');
   });
 });

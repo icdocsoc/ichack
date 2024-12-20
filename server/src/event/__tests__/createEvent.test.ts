@@ -120,6 +120,9 @@ describe('Events Module > POST /', () => {
 
       // @ts-expect-error As it's from the middleware.
       expect(res.status).toBe(403);
+      expect(res.text()).resolves.toBe(
+        'You do not have access to POST /api/event'
+      );
     }
   });
 
@@ -137,6 +140,7 @@ describe('Events Module > POST /', () => {
 
     // @ts-expect-error as it's from the zod middleware
     expect(res.status).toBe(400);
+    expect(res.text()).resolves.toBe('Event must start before it ends.');
   });
 
   test('`title`, `desc`, `startsAt`, and `public` are required', async () => {
@@ -158,6 +162,9 @@ describe('Events Module > POST /', () => {
 
     // @ts-expect-error as it's from the zod middleware
     expect(res.status).toBe(400);
+    expect(res.text()).resolves.toBe(
+      "'public' is either missing or not a boolean"
+    );
 
     const res2 = await baseRoute.$post(
       {
@@ -177,6 +184,9 @@ describe('Events Module > POST /', () => {
 
     // @ts-expect-error as it's from the zod middleware
     expect(res2.status).toBe(400);
+    expect(res2.text()).resolves.toBe(
+      "'startsAt' is either missing or not a date"
+    );
 
     const res3 = await baseRoute.$post(
       {
@@ -196,6 +206,9 @@ describe('Events Module > POST /', () => {
 
     // @ts-expect-error as it's from the zod middleware
     expect(res3.status).toBe(400);
+    expect(res3.text()).resolves.toBe(
+      "'description' is either missing or not a string"
+    );
 
     const res4 = await baseRoute.$post(
       {
@@ -215,6 +228,9 @@ describe('Events Module > POST /', () => {
 
     // @ts-expect-error as it's from the zod middleware
     expect(res4.status).toBe(400);
+    expect(res4.text()).resolves.toBe(
+      "'title' is either missing or not a string"
+    );
 
     const res5 = await baseRoute.$post(
       {
@@ -231,5 +247,8 @@ describe('Events Module > POST /', () => {
     );
     // @ts-expect-error as it's from the zod middleware
     expect(res5.status).toBe(400);
+    expect(res5.text()).resolves.toBe(
+      "'title' is either missing or not a string; 'description' is either missing or not a string; 'startsAt' is either missing or not a date"
+    );
   });
 });

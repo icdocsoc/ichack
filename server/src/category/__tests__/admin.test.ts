@@ -89,6 +89,9 @@ describe('Category Module > POST /', () => {
 
       // @ts-ignore this can return 403
       expect(res.status).toBe(403);
+      expect(res.text()).resolves.toBe(
+        'You do not have access to POST /api/category'
+      );
     }
   });
   test('Duplicate name returns 409', async () => {
@@ -115,6 +118,9 @@ describe('Category Module > POST /', () => {
       }
     );
     expect(res2.status).toBe(409);
+    expect(res2.text()).resolves.toBe(
+      'duplicate key value violates unique constraint "categories_pkey"'
+    );
   });
 });
 
@@ -167,7 +173,7 @@ describe('Category Module > PUT /:slug', () => {
       const res = await client.category[':slug'].$put(
         {
           param: {
-            slug: kotlinCategory.title
+            slug: kotlinCategoryWithSlug.slug
           },
           json: newCategory
         },
@@ -180,9 +186,12 @@ describe('Category Module > PUT /:slug', () => {
 
       // @ts-ignore this can return 403
       expect(res.status).toBe(403);
+      expect(res.text()).resolves.toBe(
+        `You do not have access to PUT /api/category/${kotlinCategoryWithSlug.slug}`
+      );
     }
   });
-  test('Invalid name returns 404', async () => {
+  test('Invalid slug returns 404', async () => {
     const res = await client.category[':slug'].$put(
       {
         param: {
@@ -201,6 +210,9 @@ describe('Category Module > PUT /:slug', () => {
     );
 
     expect(res.status).toBe(404);
+    expect(res.text()).resolves.toBe(
+      "Category with slug 'terra-title' does not exist"
+    );
   });
   test('Can change the title', async () => {
     const newTitle = 'New Title';
@@ -236,7 +248,7 @@ describe('Category Module > PUT /:slug', () => {
   });
 });
 
-describe('Category Module > DELETE /:title', () => {
+describe('Category Module > DELETE /:slug', () => {
   beforeEach(async () => {
     await db.delete(categories);
     await db.insert(categories).values(kotlinCategoryWithSlug);
@@ -285,9 +297,12 @@ describe('Category Module > DELETE /:title', () => {
 
       // @ts-ignore this can return 403
       expect(res.status).toBe(403);
+      expect(res.text()).resolves.toBe(
+        `You do not have access to DELETE /api/category/${kotlinCategoryWithSlug.slug}`
+      );
     }
   });
-  test('Invalid name returns 404', async () => {
+  test('Invalid slug returns 404', async () => {
     const res = await client.category[':slug'].$delete(
       {
         param: {
@@ -302,5 +317,8 @@ describe('Category Module > DELETE /:title', () => {
     );
 
     expect(res.status).toBe(404);
+    expect(res.text()).resolves.toBe(
+      "Category with slug 'terra-title' does not exist"
+    );
   });
 });

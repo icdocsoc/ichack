@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, test } from 'bun:test';
+import { beforeAll, describe, expect, test } from 'bun:test';
 import { db } from '../../drizzle';
 import { users, userSession } from '../../auth/schema';
 import { teamInvites, teams, teamMembers } from '../schema';
@@ -22,9 +22,6 @@ let secondTeamId: number;
 beforeAll(async () => {
   await db.execute(sql`TRUNCATE ${users} CASCADE`);
   await db.execute(sql`TRUNCATE ${teams} CASCADE`);
-  await db.execute(sql`TRUNCATE ${userSession} CASCADE`);
-  await db.execute(sql`TRUNCATE ${teamMembers} CASCADE`);
-  await db.execute(sql`TRUNCATE ${teamInvites} CASCADE`);
 
   // Create users to be used during the test.
   // See constants for the purpose of each user.
@@ -61,17 +58,17 @@ beforeAll(async () => {
     ])
     .returning();
 
-  firstTeamId = team[0].id;
-  secondTeamId = team[1].id;
+  firstTeamId = team[0]!.id;
+  secondTeamId = team[1]!.id;
   await db.insert(teamMembers).values([
     {
-      teamId: team[0].id,
-      userId: testUsers[FIRST_TEAM_LEADER].userId,
+      teamId: team[0]!.id,
+      userId: testUsers[FIRST_TEAM_LEADER]!.userId,
       isLeader: true
     },
     {
-      teamId: team[1].id,
-      userId: testUsers[SECOND_TEAM_LEADER].userId,
+      teamId: team[1]!.id,
+      userId: testUsers[SECOND_TEAM_LEADER]!.userId,
       isLeader: true
     }
   ]);
@@ -110,12 +107,12 @@ describe('Team module > POST /invite', () => {
     const res = await baseRoute.invite.$post(
       {
         json: {
-          userId: testUsers[NORMAL_USER].userId
+          userId: testUsers[NORMAL_USER]!.userId
         }
       },
       {
         headers: {
-          Cookie: `auth_session=${testUsers[FIRST_TEAM_LEADER].sessionId}`
+          Cookie: `auth_session=${testUsers[FIRST_TEAM_LEADER]!.sessionId}`
         }
       }
     );
@@ -126,41 +123,43 @@ describe('Team module > POST /invite', () => {
     const invite = await db
       .select()
       .from(teamInvites)
-      .where(eq(teamInvites.userId, testUsers[NORMAL_USER].userId));
+      .where(eq(teamInvites.userId, testUsers[NORMAL_USER]!.userId));
     expect(invite.length).toBe(1);
-    expect(invite[0].userId).toBe(testUsers[NORMAL_USER].userId);
-    expect(invite[0].teamId).toBe(firstTeamId);
+    expect(invite[0]!.userId).toBe(testUsers[NORMAL_USER]!.userId);
+    expect(invite[0]!.teamId).toBe(firstTeamId);
 
     // Remove them from the team
     await db
       .delete(teamInvites)
-      .where(eq(teamInvites.userId, testUsers[NORMAL_USER].userId));
+      .where(eq(teamInvites.userId, testUsers[NORMAL_USER]!.userId));
   });
 
   test("can't reinvite user to the same team", async () => {
     // Add invite to team
     await db.insert(teamInvites).values({
       teamId: firstTeamId,
-      userId: testUsers[NORMAL_USER].userId
+      userId: testUsers[NORMAL_USER]!.userId
     });
 
     const res = await baseRoute.invite.$post(
       {
         json: {
-          userId: testUsers[NORMAL_USER].userId
+          userId: testUsers[NORMAL_USER]!.userId
         }
       },
       {
         headers: {
-          Cookie: `auth_session=${testUsers[FIRST_TEAM_LEADER].sessionId}`
+          Cookie: `auth_session=${testUsers[FIRST_TEAM_LEADER]!.sessionId}`
         }
       }
     );
 
     expect(res.status).toBe(409);
+    expect(res.text()).resolves.toBe('User is already invited');
+
     await db
       .delete(teamInvites)
-      .where(eq(teamInvites.userId, testUsers[NORMAL_USER].userId));
+      .where(eq(teamInvites.userId, testUsers[NORMAL_USER]!.userId));
   });
 
   test("can't invite an invalid user", async () => {
@@ -172,18 +171,19 @@ describe('Team module > POST /invite', () => {
       },
       {
         headers: {
-          Cookie: `auth_session=${testUsers[FIRST_TEAM_LEADER].sessionId}`
+          Cookie: `auth_session=${testUsers[FIRST_TEAM_LEADER]!.sessionId}`
         }
       }
     );
 
     expect(res.status).toBe(404);
+    expect(res.text()).resolves.toBe('User does not exist');
   });
 
   test('can invite a user invited by someone else', async () => {
     // Add an invite to first team.
     await db.insert(teamInvites).values({
-      userId: testUsers[NORMAL_USER].userId,
+      userId: testUsers[NORMAL_USER]!.userId,
       teamId: firstTeamId
     });
 
@@ -191,12 +191,12 @@ describe('Team module > POST /invite', () => {
     const res = await baseRoute.invite.$post(
       {
         json: {
-          userId: testUsers[NORMAL_USER].userId
+          userId: testUsers[NORMAL_USER]!.userId
         }
       },
       {
         headers: {
-          Cookie: `auth_session=${testUsers[SECOND_TEAM_LEADER].sessionId}`
+          Cookie: `auth_session=${testUsers[SECOND_TEAM_LEADER]!.sessionId}`
         }
       }
     );
@@ -206,7 +206,7 @@ describe('Team module > POST /invite', () => {
     // Remove invite we added
     await db
       .delete(teamInvites)
-      .where(eq(teamInvites.userId, testUsers[NORMAL_USER].userId));
+      .where(eq(teamInvites.userId, testUsers[NORMAL_USER]!.userId));
   });
 
   test.skip("can't invite user already in team", async () => {
@@ -216,23 +216,24 @@ describe('Team module > POST /invite', () => {
     const res = await baseRoute.invite.$post(
       {
         json: {
-          userId: testUsers[FIRST_TEAM_LEADER].userId
+          userId: testUsers[FIRST_TEAM_LEADER]!.userId
         }
       },
       {
         headers: {
-          Cookie: `auth_session=${testUsers[SECOND_TEAM_LEADER].sessionId}`
+          Cookie: `auth_session=${testUsers[SECOND_TEAM_LEADER]!.sessionId}`
         }
       }
     );
 
     expect(res.status).toBe(409);
+    expect(res.text()).resolves.toBe('User is already in this team');
   });
 
   test('only leader can invite user', async () => {
     // Add user NORMAL_USER to team
     await db.insert(teamMembers).values({
-      userId: testUsers[NORMAL_USER].userId,
+      userId: testUsers[NORMAL_USER]!.userId,
       teamId: firstTeamId,
       isLeader: false
     });
@@ -241,22 +242,23 @@ describe('Team module > POST /invite', () => {
     const res = await baseRoute.invite.$post(
       {
         json: {
-          userId: testUsers[NEVER_IN_TEAM].userId
+          userId: testUsers[NEVER_IN_TEAM]!.userId
         }
       },
       {
         headers: {
-          Cookie: `auth_session=${testUsers[NORMAL_USER].sessionId}`
+          Cookie: `auth_session=${testUsers[NORMAL_USER]!.sessionId}`
         }
       }
     );
 
     expect(res.status).toBe(400);
+    expect(res.text()).resolves.toBe('Only a leader can invite users');
 
     // Remove then from team.
     await db
       .delete(teamMembers)
-      .where(eq(teamMembers.userId, testUsers[NORMAL_USER].userId));
+      .where(eq(teamMembers.userId, testUsers[NORMAL_USER]!.userId));
   });
 });
 
@@ -265,11 +267,11 @@ describe('Team module > POST /acceptInvite', () => {
     // Add two invites
     await db.insert(teamInvites).values([
       {
-        userId: testUsers[NORMAL_USER].userId,
+        userId: testUsers[NORMAL_USER]!.userId,
         teamId: firstTeamId
       },
       {
-        userId: testUsers[NORMAL_USER].userId,
+        userId: testUsers[NORMAL_USER]!.userId,
         teamId: secondTeamId
       }
     ]);
@@ -283,7 +285,7 @@ describe('Team module > POST /acceptInvite', () => {
       },
       {
         headers: {
-          Cookie: `auth_session=${testUsers[NORMAL_USER].sessionId}`
+          Cookie: `auth_session=${testUsers[NORMAL_USER]!.sessionId}`
         }
       }
     );
@@ -293,22 +295,22 @@ describe('Team module > POST /acceptInvite', () => {
     const teamLink = await db
       .select()
       .from(teamMembers)
-      .where(eq(teamMembers.userId, testUsers[NORMAL_USER].userId));
+      .where(eq(teamMembers.userId, testUsers[NORMAL_USER]!.userId));
     expect(teamLink.length).toBe(1);
-    expect(teamLink[0].userId).toBe(testUsers[NORMAL_USER].userId);
-    expect(teamLink[0].teamId).toBe(firstTeamId);
+    expect(teamLink[0]!.userId).toBe(testUsers[NORMAL_USER]!.userId);
+    expect(teamLink[0]!.teamId).toBe(firstTeamId);
 
     // And that it wiped the second invite.
     const team2 = await db
       .select()
       .from(teamInvites)
-      .where(eq(teamInvites.userId, testUsers[NORMAL_USER].userId));
+      .where(eq(teamInvites.userId, testUsers[NORMAL_USER]!.userId));
     expect(team2.length).toBe(0);
 
     // Now remove user from team
     await db
       .delete(teamMembers)
-      .where(eq(teamMembers.userId, testUsers[NORMAL_USER].userId));
+      .where(eq(teamMembers.userId, testUsers[NORMAL_USER]!.userId));
   });
 
   test("can't accept an invite that doesn't exist", async () => {
@@ -320,19 +322,20 @@ describe('Team module > POST /acceptInvite', () => {
       },
       {
         headers: {
-          Cookie: `auth_session=${testUsers[NEVER_IN_TEAM].sessionId}`
+          Cookie: `auth_session=${testUsers[NEVER_IN_TEAM]!.sessionId}`
         }
       }
     );
 
     expect(res.status).toBe(400);
+    expect(res.text()).resolves.toBe('Invite does not exist');
   });
 
   test("cannot accept someone else's invite", async () => {
     // Invite NORMAL_USER
     await db.insert(teamInvites).values({
       teamId: firstTeamId,
-      userId: testUsers[NORMAL_USER].userId
+      userId: testUsers[NORMAL_USER]!.userId
     });
 
     // Attempt to join as NEVER_IN_TEAM
@@ -344,16 +347,17 @@ describe('Team module > POST /acceptInvite', () => {
       },
       {
         headers: {
-          Cookie: `auth_session=${testUsers[NEVER_IN_TEAM].sessionId}`
+          Cookie: `auth_session=${testUsers[NEVER_IN_TEAM]!.sessionId}`
         }
       }
     );
 
     expect(res.status).toBe(400);
+    expect(res.text()).resolves.toBe('Invite does not exist');
 
     await db
       .delete(teamInvites)
-      .where(eq(teamInvites.userId, testUsers[NORMAL_USER].userId));
+      .where(eq(teamInvites.userId, testUsers[NORMAL_USER]!.userId));
   });
 
   test('cannot accept an invite if team is full', async () => {
@@ -364,7 +368,7 @@ describe('Team module > POST /acceptInvite', () => {
     for (let i = 0; i < sixUsers.length - 1; i++) {
       await db.insert(teamMembers).values({
         teamId: firstTeamId,
-        userId: sixUsers[i].userId,
+        userId: sixUsers[i]!.userId,
         isLeader: false
       });
     }
@@ -372,7 +376,7 @@ describe('Team module > POST /acceptInvite', () => {
     // Add an illegal invite for the 6th user
     await db.insert(teamInvites).values({
       teamId: firstTeamId,
-      userId: sixUsers[sixUsers.length - 1].userId
+      userId: sixUsers[sixUsers.length - 1]!.userId
     });
 
     // Try and accept this illegal invite
@@ -384,12 +388,13 @@ describe('Team module > POST /acceptInvite', () => {
       },
       {
         headers: {
-          Cookie: `auth_session=${sixUsers[sixUsers.length - 1].sessionId}`
+          Cookie: `auth_session=${sixUsers[sixUsers.length - 1]!.sessionId}`
         }
       }
     );
 
-    expect(res.status).toBe(403);
+    expect(res.status).toBe(400);
+    expect(res.text()).resolves.toBe('The team is full');
 
     // Remove the invite and users
     await db.delete(teamInvites).where(eq(teamInvites.teamId, firstTeamId));
@@ -398,7 +403,7 @@ describe('Team module > POST /acceptInvite', () => {
       .where(
         and(
           eq(teamMembers.teamId, firstTeamId),
-          not(eq(teamMembers.userId, testUsers[FIRST_TEAM_LEADER].userId))
+          not(eq(teamMembers.userId, testUsers[FIRST_TEAM_LEADER]!.userId))
         )
       );
   });
@@ -409,7 +414,7 @@ describe('Team module > POST /acceptInvite', () => {
     for (i = 0; i < sixUsers.length - 2; i++) {
       await db.insert(teamMembers).values({
         teamId: firstTeamId,
-        userId: sixUsers[i].userId,
+        userId: sixUsers[i]!.userId,
         isLeader: false
       });
     }
@@ -418,7 +423,7 @@ describe('Team module > POST /acceptInvite', () => {
     for (; i < sixUsers.length; i++) {
       await db.insert(teamInvites).values({
         teamId: firstTeamId,
-        userId: sixUsers[i].userId
+        userId: sixUsers[i]!.userId
       });
     }
 
@@ -431,7 +436,7 @@ describe('Team module > POST /acceptInvite', () => {
       },
       {
         headers: {
-          Cookie: `auth_session=${sixUsers[sixUsers.length - 1].sessionId}`
+          Cookie: `auth_session=${sixUsers[sixUsers.length - 1]!.sessionId}`
         }
       }
     );
@@ -451,7 +456,7 @@ describe('Team module > POST /acceptInvite', () => {
       .where(
         and(
           eq(teamMembers.teamId, firstTeamId),
-          not(eq(teamMembers.userId, testUsers[FIRST_TEAM_LEADER].userId))
+          not(eq(teamMembers.userId, testUsers[FIRST_TEAM_LEADER]!.userId))
         )
       );
   });
@@ -462,7 +467,7 @@ describe('Team module > POST /removeInvite', () => {
     // Add invite & deny it
     await db.insert(teamInvites).values({
       teamId: firstTeamId,
-      userId: testUsers[NORMAL_USER].userId
+      userId: testUsers[NORMAL_USER]!.userId
     });
 
     const res = await baseRoute.removeInvite.$post(
@@ -473,7 +478,7 @@ describe('Team module > POST /removeInvite', () => {
       },
       {
         headers: {
-          Cookie: `auth_session=${testUsers[NORMAL_USER].sessionId}`
+          Cookie: `auth_session=${testUsers[NORMAL_USER]!.sessionId}`
         }
       }
     );
@@ -484,7 +489,7 @@ describe('Team module > POST /removeInvite', () => {
     const invite = await db
       .select()
       .from(teamInvites)
-      .where(eq(teamInvites.userId, testUsers[NORMAL_USER].userId));
+      .where(eq(teamInvites.userId, testUsers[NORMAL_USER]!.userId));
     expect(invite.length).toBe(0);
   });
 
@@ -499,18 +504,12 @@ describe('Team module > POST /removeInvite', () => {
       },
       {
         headers: {
-          Cookie: `auth_session=${testUsers[NEVER_IN_TEAM].sessionId}`
+          Cookie: `auth_session=${testUsers[NEVER_IN_TEAM]!.sessionId}`
         }
       }
     );
 
     expect(res.status).toBe(404);
+    expect(res.text()).resolves.toBe('Invite does not exist');
   });
-});
-
-// As to not break other tests, which can't delete because foreign key.
-afterAll(async () => {
-  await db.delete(teamMembers);
-  await db.delete(teamInvites);
-  await db.delete(teams);
 });

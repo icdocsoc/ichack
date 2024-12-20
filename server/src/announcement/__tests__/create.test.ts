@@ -95,6 +95,9 @@ describe('Announcement Module > POST /', () => {
 
     // @ts-ignore this can return 403
     expect(res.status).toBe(403);
+    expect(res.text()).resolves.toBe(
+      'You do not have access to POST /api/announcement'
+    );
   });
   test('Invalid session of user cannot create an announcement', async () => {
     await lucia.invalidateSession(adminSession);
@@ -115,6 +118,9 @@ describe('Announcement Module > POST /', () => {
 
     // @ts-ignore this can return 403
     expect(res.status).toBe(403);
+    expect(res.text()).resolves.toBe(
+      'You do not have access to POST /api/announcement'
+    );
 
     // Restoring the session
     await lucia.createSession(adminId, {}, { sessionId: adminSession });
@@ -138,6 +144,7 @@ describe('Announcement Module > POST /', () => {
 
     // @ts-ignore this can return 400
     expect(res.status).toBe(400);
+    expect(res.text()).resolves.toBe("Property 'id' is not allowed");
 
     const res2 = await client.announcement.$post(
       {
@@ -157,5 +164,6 @@ describe('Announcement Module > POST /', () => {
 
     // @ts-ignore this can return 400
     expect(res2.status).toBe(400);
+    expect(res2.text()).resolves.toBe("Property 'createdAt' is not allowed");
   });
 });

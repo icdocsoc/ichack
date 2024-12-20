@@ -5,8 +5,8 @@ import { teamInvites, teams, updateTeamSchema, teamMembers } from './schema';
 import { and, eq, ilike, not, or, sql } from 'drizzle-orm';
 import { users } from '../auth/schema';
 import { apiLogger } from '../logger';
-import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
+import { simpleValidator } from '../validators';
 
 // TODO: Move to `admin` table.
 const MAX_TEAM_SIZE = 6;
@@ -53,26 +53,18 @@ const team = factory
   .createApp()
   .post(
     '/',
-    zValidator(
-      'json',
-      z.object({ teamName: z.string() }),
-      async (zRes, ctx) => {
-        if (!zRes.success) {
-          return ctx.text('Invalid request, please supply a team name.', 400);
-        }
-      }
-    ),
+    simpleValidator('json', z.object({ teamName: z.string() })),
     grantAccessTo('hacker'),
     async ctx => {
       // Creates a team in the DB using supplied team, and user who requested as leader.
       const user = ctx.get('user')!;
-      const body = await ctx.req.json();
+      const body = ctx.req.valid('json');
 
       const currentTeam = await selectTeamLinkFromMember.execute({
         userId: user.id
       });
       if (currentTeam.length > 0) {
-        return ctx.text('User is already in a team.', 400);
+        return ctx.text('You are already in a team', 400);
       }
 
       const teamId = await db.transaction(async tx => {
@@ -106,25 +98,15 @@ const team = factory
   .put(
     '/',
     grantAccessTo('hacker'),
-    zValidator('json', updateTeamSchema, (zRes, ctx) => {
-      if (!zRes.success) {
-        return ctx.text(`Invalid team body:\n${zRes.error.message}`, 400);
-      }
-    }),
+    simpleValidator('json', updateTeamSchema),
     async ctx => {
       // A leader can update anything but ID
-      const body = await ctx.req.json();
+      const body = ctx.req.valid('json');
       const user = ctx.get('user')!;
 
       const currTeam = await selectTeamFromLeader.execute({ userId: user.id });
       if (currTeam.length < 1) {
         return ctx.text('User does not own any teams.', 403);
-      } else if (currTeam.length > 1) {
-        apiLogger.warn(
-          ctx,
-          'PUT /team',
-          `User ${user.id} is a leader of many teams.`
-        );
       }
 
       const updatedTeam = await db
@@ -140,12 +122,6 @@ const team = factory
           `Error while updating team ${currTeam[0]!.id} owned by ${user.id}.`
         );
         return ctx.text('Failed to update team. Internal error.', 500);
-      } else if (updatedTeam.length > 1) {
-        apiLogger.warn(
-          ctx,
-          'PUT /team',
-          `User ${user.id} is a leader of multiple teams.`
-        );
       }
 
       return ctx.text('', 204);
@@ -159,15 +135,7 @@ const team = factory
     });
 
     if (teamLink.length == 0) {
-      return ctx.text('User is not in a team.', 404);
-    } else if (teamLink.length > 1) {
-      apiLogger.error(
-        ctx,
-        'GET /team',
-        `User ${user.id} is in multiple teams.`
-      );
-      // This could be removed, but then we'd be returning whatever the first team returned is; undefined behaviour
-      return ctx.text('User is in multiple teams.', 500);
+      return ctx.text('You are not in a team', 404);
     }
 
     const team = await db
@@ -183,15 +151,15 @@ const team = factory
       return ctx.text(`Internal error.`, 500);
     }
 
-    return ctx.json(team[0], 200);
+    return ctx.json(team[0]!, 200);
   })
   .put(
     '/transfer',
-    zValidator('json', userIdSchema),
+    simpleValidator('json', userIdSchema),
     grantAccessTo('hacker'),
     async ctx => {
       const oldLeader = ctx.get('user')!;
-      const { userId: newLeaderId } = await ctx.req.json();
+      const { userId: newLeaderId } = ctx.req.valid('json');
 
       const leaderTeamLink = await selectTeamLinkFromMember.execute({
         userId: oldLeader.id
@@ -207,7 +175,7 @@ const team = factory
         newLeaderTeamLink.length < 1 ||
         leaderTeamLink[0]!.teamId != newLeaderTeamLink[0]!.teamId
       ) {
-        return ctx.text('Target must be in the same team.', 400);
+        return ctx.text('The user is not in the team', 400);
       }
 
       await db
@@ -220,7 +188,7 @@ const team = factory
           )
         );
 
-      return ctx.text('', 204);
+      return ctx.json({}, 204);
     }
   )
   .delete('/', grantAccessTo('hacker'), async ctx => {
@@ -228,14 +196,7 @@ const team = factory
 
     const team = await selectTeamFromLeader.execute({ userId: user.id });
     if (team.length < 1) {
-      return ctx.text('User does not lead any team.', 404);
-    } else if (team.length > 1) {
-      apiLogger.error(
-        ctx,
-        'DELETE /team',
-        `User ${user.id} leads multiple teams.`
-      );
-      return ctx.text('Internal error, failed to delete team.', 500);
+      return ctx.text('Only a leader can delete the team', 400);
     }
 
     const success = await db.transaction(async tx => {
@@ -276,64 +237,71 @@ const team = factory
       return ctx.text('Internal error, failed to delete team.', 500);
     }
 
-    return ctx.text('', 204);
+    return ctx.json({}, 204);
   })
-  .get('/search', grantAccessTo('hacker'), async ctx => {
-    // Returns full name as well as whether they're in a team or not
-    const { name, email } = ctx.req.query();
-    const user = ctx.get('user')!;
-
-    if (!name && !email) {
-      return ctx.text('Must provide a name or email.', 400);
-    }
-
-    // Can only search by name OR email; update Obsidian to note this.
-    // Name takes precedence.
-    const searchRes = await db
-      .select({
-        id: users.id,
-        name: users.name,
-        inTeam:
-          sql<boolean>`CASE WHEN ${teamMembers.teamId} IS NOT NULL THEN true ELSE false END`.as(
-            'inTeam'
-          )
+  .get(
+    '/search',
+    simpleValidator(
+      'query',
+      z.object({
+        name: z.string().optional(),
+        email: z.string().optional()
       })
-      .from(users)
-      .leftJoin(teamMembers, eq(users.id, teamMembers.userId))
-      .where(
-        and(
-          name == undefined
-            ? ilike(users.email, email!)
-            : ilike(users.name, `${name}%`),
-          eq(users.role, 'hacker'),
-          not(eq(users.id, user.id))
-        )
-      );
+    ),
+    grantAccessTo('hacker'),
+    async ctx => {
+      // Returns full name as well as whether they're in a team or not
+      const { name, email } = ctx.req.valid('query');
+      const user = ctx.get('user')!!;
 
-    if (searchRes.length == 0) {
-      return ctx.text('User not found.', 404);
+      if (!name && !email) {
+        return ctx.text('Must provide a name or email.', 400);
+      }
+
+      // Can only search by name OR email; update Obsidian to note this.
+      // Name takes precedence.
+      const searchRes = await db
+        .select({
+          id: users.id,
+          name: users.name,
+          inTeam:
+            sql<boolean>`CASE WHEN ${teamMembers.teamId} IS NOT NULL THEN true ELSE false END`.as(
+              'inTeam'
+            )
+        })
+        .from(users)
+        .leftJoin(teamMembers, eq(users.id, teamMembers.userId))
+        .where(
+          and(
+            !name
+              ? ilike(users.email, email!) // either name or email is undefined, but not both
+              : ilike(users.name, `${name}%`),
+            eq(users.role, 'hacker'),
+            not(eq(users.id, user.id))
+          )
+        );
+
+      if (searchRes.length == 0) {
+        return ctx.text('Cannot find user with the filter', 404);
+      }
+
+      return ctx.json(searchRes, 200);
     }
-
-    return ctx.json(searchRes, 200);
-  })
+  )
   .post(
     '/invite',
     grantAccessTo('hacker'),
-    zValidator('json', userIdSchema, (zRes, ctx) => {
-      if (!zRes.success) {
-        return ctx.text(`Invalid post body: \n${zRes.error.message}`, 400);
-      }
-    }),
+    simpleValidator('json', userIdSchema),
     async ctx => {
       // Leader can invite a user
-      const { userId } = await ctx.req.json();
+      const { userId } = ctx.req.valid('json');
 
       const userInDb = await db
         .select()
         .from(users)
         .where(eq(users.id, userId));
       if (userInDb.length < 1) {
-        return ctx.text('User with this ID does not exist.', 404);
+        return ctx.text('User does not exist', 404);
       }
 
       const invitedUserTeam = await selectTeamLinkFromMember.execute({
@@ -348,16 +316,7 @@ const team = factory
         userId: currentUser.id
       });
       if (currentTeam.length < 1) {
-        return ctx.text('User does not lead a team.', 400);
-      } else if (currentTeam.length > 1) {
-        apiLogger.error(
-          ctx,
-          'POST /team/invite',
-          `User ${currentUser.id} leads multiple teams.`
-        );
-        return ctx.text('User leads multiple teams.', 500);
-        // We could also invite them to multiple teams but that's poor behaviour I think.
-        // Though, we should never hit this case anyways.
+        return ctx.text('Only a leader can invite users', 400);
       }
 
       const invId = currentTeam[0]!.id;
@@ -371,7 +330,7 @@ const team = factory
       }
 
       if (currUsers.some(entry => userId == entry.userId)) {
-        return ctx.text('User is already in this team.', 409);
+        return ctx.text('User is already in this team', 409);
       }
 
       const currInvites = await db
@@ -381,7 +340,7 @@ const team = factory
           and(eq(teamInvites.userId, userId), eq(teamInvites.teamId, invId))
         );
       if (currInvites.length > 0) {
-        return ctx.text('User is already invited.', 409);
+        return ctx.text('User is already invited', 409);
       }
 
       const invite = await db
@@ -399,12 +358,6 @@ const team = factory
           `Failed to invite user ${userId} to team ${invId} lead by ${currentUser.id}.`
         );
         return ctx.text('Failed to invite user to team.', 500);
-      } else if (invite.length > 1) {
-        apiLogger.error(
-          ctx,
-          'POST /team/invite',
-          `Severe issue with drizzle: inserting one value inserted multiple, while attempting to invite ${userId} to ${invId} lead by ${currentUser.id}.`
-        );
       }
 
       return ctx.text('', 204);
@@ -416,21 +369,17 @@ const team = factory
   .post(
     '/acceptInvite',
     grantAccessTo('hacker'),
-    zValidator('json', teamIdSchema, (zRes, ctx) => {
-      if (!zRes.success) {
-        return ctx.text(`Invalid request:\n${zRes.error.message}`, 400);
-      }
-    }),
+    simpleValidator('json', teamIdSchema),
     async ctx => {
       // Remove all invites, and accept invite
-      const { teamId } = await ctx.req.json();
+      const { teamId } = ctx.req.valid('json');
 
       const user = ctx.get('user')!;
       const existingTeam = await selectTeamLinkFromMember.execute({
         userId: user.id
       });
       if (existingTeam.length > 0) {
-        return ctx.text('User is already in a team.', 409);
+        return ctx.text('User is already in a team', 409);
       }
 
       const invite = await db
@@ -442,7 +391,7 @@ const team = factory
       if (invite.length < 1) {
         // Also hits this case for "team ID does not exist" but hey, that's true.
         // The user was not invited to a nonexistent team!
-        return ctx.text('User was not invited to this team.', 400);
+        return ctx.text('Invite does not exist', 400);
       }
       // Doesn't really matter if they've been invited to this team multiple times so we don't check > 1.
 
@@ -467,7 +416,7 @@ const team = factory
           500
         );
       } else if (currMembers.length >= MAX_TEAM_SIZE) {
-        return ctx.text('Team is already at max users.', 403);
+        return ctx.text('The team is full', 400);
       }
 
       const success = await db.transaction(async tx => {
@@ -500,16 +449,6 @@ const team = factory
             `Failed to add ${user.id} to team ${teamId}.`
           );
           return false;
-        } else if (addedTeam.length > 1) {
-          apiLogger.error(
-            ctx,
-            'POST /team/acceptInvite',
-            `Severe issue with drizzle: inserting one value inserted multiple, while attempting to add ${user.id} to ${teamId}.`
-          );
-          return ctx.text(
-            'Internal server error, added user to multiple teams, THIS SHOULD NEVER HAPPEN!',
-            500
-          );
         }
 
         return true;
@@ -523,17 +462,13 @@ const team = factory
         await db.delete(teamInvites).where(eq(teamInvites.teamId, teamId));
       }
 
-      return ctx.text('', 204);
+      return ctx.json({}, 204);
     }
   )
   .post(
     '/removeInvite',
     grantAccessTo('hacker'),
-    zValidator('json', teamIdSchema, async (zRes, ctx) => {
-      if (!zRes.success) {
-        return ctx.text(`Invalid request:\n ${zRes.error.message}`, 400);
-      }
-    }),
+    simpleValidator('json', teamIdSchema),
     async ctx => {
       // Declines an invite
       const { teamId } = await ctx.req.json();
@@ -548,33 +483,23 @@ const team = factory
         .returning();
       if (deletedInvite.length < 1) {
         // Is it worth first checking if the invite exists so we can deduce if this is a database issue or the invite doesn't exist?
-        return ctx.text('Invite does not exist.', 404);
-      } else if (deletedInvite.length > 1) {
-        apiLogger.warn(
-          ctx,
-          'POST /team/removeInvite',
-          `User ${user.id} had multiple invites from team ${teamId}`
-        );
+        return ctx.text('Invite does not exist', 404);
       }
 
-      return ctx.text('', 204);
+      return ctx.json({}, 204);
     }
   )
   .post(
     '/removeUser/:userId',
     grantAccessTo('hacker'),
-    zValidator('param', userIdSchema, (zRes, ctx) => {
-      if (!zRes.success) {
-        return ctx.text(`Invalid request:\n${zRes.error.message}`, 400);
-      }
-    }),
+    simpleValidator('param', userIdSchema),
     async ctx => {
       // Removes user from team
       const { userId: userIdToRemove } = ctx.req.param();
       const teamLeader = ctx.get('user')!;
 
       if (userIdToRemove == teamLeader.id) {
-        return ctx.text('User is trying to remove self.', 400);
+        return ctx.text('You cannot remove this user', 400);
       }
 
       const team = await selectTeamFromLeader.execute({
@@ -586,14 +511,6 @@ const team = factory
           'User does not lead any teams to remove someone from.',
           400
         );
-      } else if (team.length > 1) {
-        apiLogger.error(
-          ctx,
-          'POST /team/removeUser',
-          `User ${teamLeader.id} leads multiple teams.`
-        );
-        // This could be removed, but then we'd be removing from whatever the first team returned is; undefined behaviour
-        return ctx.text('User leads multiple teams.', 500);
       }
 
       const removedEntry = await db
@@ -607,13 +524,7 @@ const team = factory
         .returning();
       if (removedEntry.length < 1) {
         // Is it worth first checking if the user is not in a team so we can deduce if this is a database issue or?
-        return ctx.text('Target is not in the team exist.', 404);
-      } else if (removedEntry.length > 1) {
-        apiLogger.warn(
-          ctx,
-          'POST /team/removeUser',
-          `User ${userIdToRemove} was in team ${team[0]!.id} multiple times.`
-        );
+        return ctx.text('You cannot remove this user', 404);
       }
 
       return ctx.text('', 204);
@@ -627,7 +538,7 @@ const team = factory
       userId: user.id
     });
     if (teamsLeading.length > 0) {
-      return ctx.text('Leaders cannot leave teams.', 400);
+      return ctx.text('You cannot leave the team', 400);
     }
 
     const team = await db
@@ -635,15 +546,10 @@ const team = factory
       .where(eq(teamMembers.userId, user.id))
       .returning();
     if (team.length < 1) {
-      return ctx.text('User is not in a team.', 400);
-    } else if (team.length > 1) {
-      apiLogger.warn(
-        ctx,
-        'POST /team/leave',
-        `User ${user.id} was in multiple teams.`
-      );
+      return ctx.text('You are not in a team', 400);
     }
 
-    return ctx.text('', 204);
+    return ctx.json({}, 204);
   });
+
 export default team;

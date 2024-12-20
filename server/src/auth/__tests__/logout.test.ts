@@ -41,6 +41,9 @@ describe('Auth Module > POST /logout', () => {
 
     // @ts-ignore this can return 403
     expect(res.status).toBe(403);
+    expect(res.text()).resolves.toBe(
+      'You do not have access to POST /api/auth/logout'
+    );
   });
 
   test('user session is invalidated after logout', async () => {
@@ -67,5 +70,8 @@ describe('Auth Module > POST /logout', () => {
 
     // @ts-ignore this can return 403
     expect(res.status).toBe(403);
+    expect(res.text()).resolves.toBe(
+      'You do not have access to POST /api/auth/logout'
+    );
   });
 });

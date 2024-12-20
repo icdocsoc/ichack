@@ -70,7 +70,7 @@ describe('Profiles module > PUT /', () => {
       .from(profiles)
       .where(eq(profiles.id, userIds.hacker!));
     expect(res.status).toBe(200);
-    expect(userInDb[0].pronouns).toBe(newPronouns);
+    expect(userInDb[0]!.pronouns).toBe(newPronouns);
 
     const newDietaryRestrictions = ['halal', 'blue cheese'];
     res = await baseRoute.$put(
@@ -92,9 +92,9 @@ describe('Profiles module > PUT /', () => {
       .from(profiles)
       .where(eq(profiles.id, userIds.hacker!));
     expect(res.status).toBe(200);
-    expect(userInDb[0].pronouns).toBe(newPronouns);
-    expect(userInDb[0].photos_opt_out).toBe(true);
-    expect(userInDb[0].dietary_restrictions).toEqual(newDietaryRestrictions);
+    expect(userInDb[0]!.pronouns).toBe(newPronouns);
+    expect(userInDb[0]!.photos_opt_out).toBe(true);
+    expect(userInDb[0]!.dietary_restrictions).toEqual(newDietaryRestrictions);
   });
 });
 
@@ -120,7 +120,7 @@ describe('Profile smodule > PUT /meals', () => {
       .where(eq(profiles.id, userIds.hacker!));
 
     expect(res.status).toBe(200);
-    expect(userInDb[0].meals[0]).toBeTrue();
+    expect(userInDb[0]!.meals[0]).toBeTrue();
   });
 
   test('only volunteer can update meals', async () => {
@@ -139,6 +139,10 @@ describe('Profile smodule > PUT /meals', () => {
 
     // @ts-expect-error code is from middleware
     expect(res.status).toBe(403);
+    expect(res.text()).resolves.toBe(
+      // @ts-ignore error message is from middleware
+      'You do not have access to PUT /api/profile/meal'
+    );
   });
 });
 
@@ -150,6 +154,7 @@ describe.skip('Profiles module > GET/POST /cv', () => {
       }
     });
     expect(res.status).toBe(400);
+    // TODO add a test for the error message
 
     const cvPdf = Bun.file('src/profile/__tests__/cv.pdf');
     res = await baseRoute.cv.$post(
@@ -229,10 +234,11 @@ describe('Profiles module > GET /discord', () => {
       }
     );
 
-    console.log(await res.text());
     // Expect a failure, as the Discord routes won't work in tests
     // due to an invalid code being provided.
     expect(res.status).toBe(500);
+    // TODO I don't know what the error message is.
+    // expect(await res.text()).toMatch('Error adding to Discord server');
   });
 
   test('invalid state returns error', async () => {
@@ -251,6 +257,7 @@ describe('Profiles module > GET /discord', () => {
     );
 
     expect(res.status).toBe(400);
+    expect(res.text()).resolves.toBe('Invalid request.');
   });
 
   test.skip('can link discord', async () => {

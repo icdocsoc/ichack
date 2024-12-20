@@ -80,6 +80,9 @@ describe('Category Module > GET /', () => {
 
     // @ts-ignore this can return 403
     expect(res.status).toBe(403);
+    expect(res.text()).resolves.toBe(
+      'You do not have access to GET /api/category'
+    );
   });
   test.skip('Hackers & Volunteers cannot see categories until time', async () => {
     expect(true).toBe(false); // dummy test fails
@@ -87,7 +90,7 @@ describe('Category Module > GET /', () => {
   });
 });
 
-describe('Category Module > GET /:title', () => {
+describe('Category Module > GET /:slug', () => {
   test('Successfully get a category', async () => {
     const res = await client.category[':slug'].$get(
       {
@@ -109,12 +112,15 @@ describe('Category Module > GET /:title', () => {
   test('Unauthenticated user cannot get any categories', async () => {
     const res = await client.category[':slug'].$get({
       param: {
-        slug: kotlinCategory.title
+        slug: kotlinCategory.slug
       }
     });
 
     // @ts-ignore this can return 403
     expect(res.status).toBe(403);
+    expect(res.text()).resolves.toBe(
+      `You do not have access to GET /api/category/${kotlinCategory.slug}`
+    );
   });
   test('Invalid category returns 404', async () => {
     const res = await client.category[':slug'].$get(
@@ -131,6 +137,9 @@ describe('Category Module > GET /:title', () => {
     );
 
     expect(res.status).toBe(404);
+    expect(res.text()).resolves.toBe(
+      "Category with slug 'terra-title' does not exist"
+    );
   });
   test.skip('Hackers & Volunteers cannot see categories until time', async () => {
     expect(true).toBe(false); // dummy test fails

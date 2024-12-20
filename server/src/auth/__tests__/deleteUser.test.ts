@@ -26,7 +26,7 @@ beforeAll(async () => {
   }
 });
 
-describe('Auth Module > DELETE /user', () => {
+describe('Auth Module > DELETE /:id', () => {
   test('A god can delete users', async () => {
     const res = await client.auth[':id'].$delete(
       {
@@ -67,6 +67,9 @@ describe('Auth Module > DELETE /user', () => {
     );
 
     expect(res.status).toBe(404);
+    expect(res.text()).resolves.toBe(
+      "User with id 'nonexistent' does not exist"
+    );
   });
 
   test('Nobody else can delete a user', async () => {
@@ -91,6 +94,9 @@ describe('Auth Module > DELETE /user', () => {
       expect(res.ok).toBeFalse();
       // @ts-ignore this can return 403.
       expect(res.status).toBe(403);
+      expect(res.text()).resolves.toBe(
+        `You do not have access to DELETE /api/auth/${userIds.hacker!}`
+      );
     }
   });
 
@@ -108,6 +114,7 @@ describe('Auth Module > DELETE /user', () => {
       }
     );
 
-    expect(res.status).toBe(403);
+    expect(res.status).toBe(400);
+    expect(res.text()).resolves.toBe("You can't delete yourself");
   });
 });

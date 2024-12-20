@@ -65,7 +65,9 @@ describe('Auth Module > POST /resetPassword', () => {
     // Verify if passsword is updated
     const updatedPassword = updatedUser[0].password;
     expect(updatedPassword).not.toBeNull();
-    expect(await verify(updatedPassword!, newPassword, hashOptions)).toBeTrue();
+    expect(
+      verify(updatedPassword!, newPassword, hashOptions)
+    ).resolves.toBeTrue();
 
     // Verify if the token is deleted
     const tokens = await db
@@ -100,7 +102,8 @@ describe('Auth Module > POST /resetPassword', () => {
     );
 
     // Assert failure
-    expect(res.status).toBe(409);
+    expect(res.status).toBe(403);
+    expect(res.text()).resolves.toBe('You cannot reset your password');
 
     // Teardown
     await db.delete(userSession).where(eq(userSession.id, sessionId));
@@ -116,7 +119,7 @@ describe('Auth Module > POST /resetPassword', () => {
     });
 
     expect(res.status).toBe(401);
-    expect(await res.text()).toBe('An invalid token was provided');
+    expect(res.text()).resolves.toBe('An invalid token was provided');
   });
   test('should reject expired token', async () => {
     const expiredToken = {
@@ -135,7 +138,7 @@ describe('Auth Module > POST /resetPassword', () => {
     });
 
     expect(res.status).toBe(401);
-    expect(await res.text()).toBe('An invalid token was provided');
+    expect(res.text()).resolves.toBe('An expired token was provided');
 
     const tokens = await db.select().from(userToken);
     expect(tokens).not.toContainEqual(expiredToken);
@@ -150,7 +153,9 @@ describe('Auth Module > POST /resetPassword', () => {
 
     // @ts-ignore this can return 400
     expect(res.status).toBe(400);
-    // expect(await res.text()).toBe('Password is too weak'); TODO with error handling
+    expect(res.text()).resolves.toBe(
+      "Property 'password' does not satisfy the conditions"
+    );
   });
   test('should reject wrong token type', async () => {
     await db.insert(userToken).values({
@@ -168,7 +173,7 @@ describe('Auth Module > POST /resetPassword', () => {
     });
 
     expect(res.status).toBe(401);
-    expect(await res.text()).toBe('An invalid token was provided');
+    expect(res.text()).resolves.toBe('An invalid token was provided');
   });
   test('should reject token reuse', async () => {
     // Reset the password once
@@ -190,7 +195,7 @@ describe('Auth Module > POST /resetPassword', () => {
     });
 
     expect(res2.status).toBe(401);
-    expect(await res2.text()).toBe('An invalid token was provided');
+    expect(res2.text()).resolves.toBe('An invalid token was provided');
   });
   test('should reject token/password not sent', async () => {
     const res = await client.resetPassword.$post({
@@ -202,7 +207,9 @@ describe('Auth Module > POST /resetPassword', () => {
 
     // @ts-ignore this can return 400
     expect(res.status).toBe(400);
-    // expect(await res.text()).toBe('Password is required'); TODO with error handling
+    expect(res.text()).resolves.toBe(
+      "'password' is either missing or not a string"
+    );
 
     const res2 = await client.resetPassword.$post({
       // @ts-ignore token is missing for testing purposes
@@ -213,6 +220,8 @@ describe('Auth Module > POST /resetPassword', () => {
 
     // @ts-ignore this can return 400
     expect(res2.status).toBe(400);
-    // expect(await res2.text()).toBe('Token is required'); TODO with error handling
+    expect(res2.text()).resolves.toBe(
+      "'token' is either missing or not a string"
+    );
   });
 });

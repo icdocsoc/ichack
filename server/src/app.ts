@@ -7,6 +7,7 @@ import event from './event';
 import profile from './profile';
 import team from './team';
 import factory from './factory';
+import { HTTPException } from 'hono/http-exception';
 
 const api = factory
   .createApp()
@@ -21,7 +22,14 @@ const app = factory
   .createApp()
   .use(logger())
   .use(sessionMiddleware())
-  .route('', api);
+  .route('', api)
+  .onError((err, c) => {
+    if (err instanceof HTTPException) {
+      return err.getResponse();
+    }
+
+    return c.text('Internal Server Error', 500);
+  });
 
 export default app;
 

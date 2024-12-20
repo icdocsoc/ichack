@@ -106,6 +106,9 @@ describe('Category Module > PUT /:slug', () => {
     );
 
     expect(res.status).toBe(404);
+    expect(res.text()).resolves.toBe(
+      "Category with slug 'non-existent' does not exist"
+    );
   });
   test("Cannot edit another company's category", async () => {
     const res = await client.category[':slug'].$put(
@@ -126,6 +129,9 @@ describe('Category Module > PUT /:slug', () => {
 
     // sponsor 'jetbrains' attempting to edit optiver's category
     expect(res.status).toBe(404);
+    expect(res.text()).resolves.toBe(
+      `Category with slug '${quantCategory.slug}' does not exist`
+    );
   });
   test('Sponsor without a company returns 404', async () => {
     await db.delete(sponsorCompany);
@@ -147,6 +153,7 @@ describe('Category Module > PUT /:slug', () => {
     );
 
     expect(res.status).toBe(404);
+    expect(res.text()).resolves.toBe('Your company cannot be resolved');
 
     // Restore the sponsor company
     await db.insert(sponsorCompany).values({
@@ -174,5 +181,6 @@ describe('Category Module > PUT /:slug', () => {
     );
 
     expect(res.status).toBe(400);
+    expect(res.text()).resolves.toBe("Property 'owner' is not allowed");
   });
 });

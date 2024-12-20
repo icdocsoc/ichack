@@ -97,6 +97,9 @@ describe('Announcement Module > PUT /:id', () => {
 
     // @ts-ignore this can return 403
     expect(res.status).toBe(403);
+    expect(res.text()).resolves.toBe(
+      'You do not have access to PUT /api/announcement/1'
+    );
 
     // To that volunteer, no you can't. :)
   });
@@ -122,6 +125,9 @@ describe('Announcement Module > PUT /:id', () => {
 
     // @ts-ignore this can return 403
     expect(res.status).toBe(403);
+    expect(res.text()).resolves.toBe(
+      'You do not have access to PUT /api/announcement/1'
+    );
 
     // Restoring the session
     await lucia.createSession(adminId, {}, { sessionId: adminSession });
@@ -147,6 +153,9 @@ describe('Announcement Module > PUT /:id', () => {
 
     // @ts-ignore this can return 400
     expect(res.status).toBe(400);
+    expect(res.text()).resolves.toBe(
+      "Properties 'id', 'createdAt' are not allowed"
+    );
   });
 
   test('Cannot edit a non-existant announcement', async () => {
@@ -167,5 +176,6 @@ describe('Announcement Module > PUT /:id', () => {
     );
 
     expect(res.status).toBe(404);
+    expect(res.text()).resolves.toBe("Announcement of id '100' not found");
   });
 });

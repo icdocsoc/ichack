@@ -1,10 +1,10 @@
-import { zValidator } from '@hono/zod-validator';
 import factory from '../factory';
 import { grantAccessTo } from '../security';
 import { announcements, insertAnnouncementSchema } from './schema';
 import { db } from '../drizzle';
 import { z } from 'zod';
 import { eq } from 'drizzle-orm';
+import { simpleValidator } from '../validators';
 
 const updateAnnouncementBody = insertAnnouncementSchema.partial();
 
@@ -22,11 +22,7 @@ const announcement = factory
   .post(
     '/',
     grantAccessTo('admin'),
-    zValidator('json', insertAnnouncementSchema, (result, c) => {
-      if (!result.success) {
-        return c.text('Invalid announcement data', 400);
-      }
-    }),
+    simpleValidator('json', insertAnnouncementSchema),
     async c => {
       const announcement = c.req.valid('json');
       const affectedRows = await db
@@ -56,20 +52,8 @@ const announcement = factory
    */
   .put(
     '/:id',
-    zValidator(
-      'param',
-      z.object({ id: z.coerce.number().positive() }),
-      (result, c) => {
-        if (!result.success) {
-          return c.text('Invalid announcement ID', 400);
-        }
-      }
-    ),
-    zValidator('json', updateAnnouncementBody, (result, c) => {
-      if (!result.success) {
-        return c.text('Invalid announcement data', 400);
-      }
-    }),
+    simpleValidator('param', z.object({ id: z.coerce.number().positive() })),
+    simpleValidator('json', updateAnnouncementBody),
     grantAccessTo('admin'),
     async c => {
       const { id } = c.req.valid('param');
@@ -80,7 +64,7 @@ const announcement = factory
         .where(eq(announcements.id, id));
 
       if (announcementInDb.length < 1) {
-        return c.text('Announcement not found', 404);
+        return c.text(`Announcement of id '${id}' not found`, 404);
       } else if (announcementInDb.length > 1) {
         return c.text(
           'More than one announcement found. Please report this to the developer',
@@ -114,15 +98,7 @@ const announcement = factory
    */
   .delete(
     '/:id',
-    zValidator(
-      'param',
-      z.object({ id: z.coerce.number().positive() }),
-      (result, c) => {
-        if (!result.success) {
-          return c.text('Invalid announcement ID', 400);
-        }
-      }
-    ),
+    simpleValidator('param', z.object({ id: z.coerce.number().positive() })),
     grantAccessTo('admin'),
     async c => {
       const { id } = c.req.valid('param');
@@ -133,7 +109,7 @@ const announcement = factory
         .returning();
 
       if (affectedRows.length < 1) {
-        return c.text('Announcement not found', 404);
+        return c.text(`Announcement of id '${id}' not found`, 404);
       } else if (affectedRows.length > 1) {
         return c.text(
           'More than one announcement found. Please report this to the developer',

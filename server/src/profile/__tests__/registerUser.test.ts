@@ -100,9 +100,9 @@ describe('Profiles module > GET /register', () => {
     const body = await res.json();
 
     // Verify return is correct
-    expect(body.name).toBe(expected[0].name);
-    expect(body.email).toBe(expected[0].email);
-    expect(body.role).toBe(expected[0].role);
+    expect(body.name).toBe(expected[0]!.name);
+    expect(body.email).toBe(expected[0]!.email);
+    expect(body.role).toBe(expected[0]!.role);
 
     // Return deleted profile & delete token
     await db.insert(profiles).values(deleted);
@@ -121,6 +121,7 @@ describe('Profiles module > GET /register', () => {
 
     // Verify return is correct
     expect(res.status).toBe(403);
+    expect(res.text()).resolves.toBe('Invalid token.');
   });
 
   test('cannot get with an expired token', async () => {
@@ -150,6 +151,7 @@ describe('Profiles module > GET /register', () => {
 
     // Verify return is correct
     expect(res.status).toBe(403);
+    expect(res.text()).resolves.toBe('Token is expired.');
 
     // Return deleted profile & delete token
     await db.insert(profiles).values(deleted);
@@ -183,6 +185,7 @@ describe('Profiles module > GET /register', () => {
 
     // Verify return is correct
     expect(res.status).toBe(403);
+    expect(res.text()).resolves.toBe('Invalid token.');
 
     // Return deleted profile & delete token
     await db.insert(profiles).values(deleted);
@@ -220,10 +223,11 @@ describe('Profiles module > GET /register', () => {
 
     // Verify return is correct
     expect(res.status).toBe(400);
+    expect(res.text()).resolves.toBe('You have already registered.');
 
     // Return deleted profile & delete token
     await db.insert(profiles).values(deleted);
-    await db.delete(userToken).where(eq(userToken.userId, userIds.hacker!!));
+    await db.delete(userToken).where(eq(userToken.id, token));
   });
 });
 
@@ -299,11 +303,12 @@ describe('Profiles module > POST /register', () => {
       .from(users)
       .where(eq(users.id, userIds.hacker!!));
     expect(
-      await verify(userInDb[0].password!!, postBody.password, hashOptions)
+      await verify(userInDb[0]!.password!!, postBody.password, hashOptions)
     ).toBeTrue();
 
     // Verify token is consumed
     expect(failRes.status).toBe(403);
+    expect(failRes.text()).resolves.toBe('Invalid token.');
     const tokenInDb = await db
       .select()
       .from(userToken)
@@ -312,6 +317,7 @@ describe('Profiles module > POST /register', () => {
 
     // Return deleted profile & delete token
     await db.insert(profiles).values(deleted);
+    await db.delete(userToken).where(eq(userToken.id, token));
   });
 
   test('cannot post with invalid token', async () => {
@@ -327,6 +333,7 @@ describe('Profiles module > POST /register', () => {
 
     // Verify return is correct
     expect(res.status).toBe(403);
+    expect(res.text()).resolves.toBe('Invalid token.');
   });
 
   test('cannot post with an expired token', async () => {
@@ -357,10 +364,11 @@ describe('Profiles module > POST /register', () => {
 
     // Verify return is correct
     expect(res.status).toBe(403);
+    expect(res.text()).resolves.toBe('Token has expired.');
 
     // Return deleted profile & delete token
     await db.insert(profiles).values(deleted);
-    await db.delete(userToken).where(eq(userToken.userId, userIds.hacker!!));
+    await db.delete(userToken).where(eq(userToken.id, token));
   });
 
   test('cannot post with wrong token type', async () => {
@@ -391,10 +399,11 @@ describe('Profiles module > POST /register', () => {
 
     // Verify return is correct
     expect(res.status).toBe(403);
+    expect(res.text()).resolves.toBe('Invalid token.');
 
     // Return deleted profile & delete token
     await db.insert(profiles).values(deleted);
-    await db.delete(userToken).where(eq(userToken.userId, userIds.hacker!!));
+    await db.delete(userToken).where(eq(userToken.id, token));
   });
 
   test('cannot post if signed in', async () => {
@@ -429,9 +438,10 @@ describe('Profiles module > POST /register', () => {
 
     // Verify return is correct
     expect(res.status).toBe(400);
+    expect(res.text()).resolves.toBe('You have already registered.');
 
     // Return deleted profile & delete token
     await db.insert(profiles).values(deleted);
-    await db.delete(userToken).where(eq(userToken.userId, userIds.hacker!!));
+    await db.delete(userToken).where(eq(userToken.id, token));
   });
 });

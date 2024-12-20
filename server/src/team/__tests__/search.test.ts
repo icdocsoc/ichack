@@ -1,11 +1,11 @@
-import { afterAll, beforeAll, describe, expect, test } from 'bun:test';
+import { beforeAll, describe, expect, test } from 'bun:test';
 import { db } from '../../drizzle';
 import { users, userSession } from '../../auth/schema';
-import { teamInvites, teams, teamMembers } from '../schema';
+import { teams, teamMembers } from '../schema';
 import { tomorrow } from '../../testHelpers';
 import app from '../../app';
 import { testClient } from 'hono/testing';
-import { eq, sql } from 'drizzle-orm';
+import { sql } from 'drizzle-orm';
 
 const baseRoute = testClient(app).team;
 const testUsers: { userId: string; sessionId: string }[] = [];
@@ -16,9 +16,6 @@ const IN_TEAM = 1;
 beforeAll(async () => {
   await db.execute(sql`TRUNCATE ${users} CASCADE`);
   await db.execute(sql`TRUNCATE ${teams} CASCADE`);
-  await db.execute(sql`TRUNCATE ${userSession} CASCADE`);
-  await db.execute(sql`TRUNCATE ${teamMembers} CASCADE`);
-  await db.execute(sql`TRUNCATE ${teamInvites} CASCADE`);
 
   // Create users to be used during the test.
   // See constants for the purpose of each user.
@@ -50,8 +47,8 @@ beforeAll(async () => {
     })
     .returning();
   await db.insert(teamMembers).values({
-    teamId: team[0].id,
-    userId: testUsers[IN_TEAM].userId,
+    teamId: team[0]!.id,
+    userId: testUsers[IN_TEAM]!.userId,
     isLeader: true
   });
 });
@@ -66,7 +63,7 @@ describe('Team module > POST /search', () => {
       },
       {
         headers: {
-          Cookie: `auth_session=${testUsers[SEARCHER].sessionId}`
+          Cookie: `auth_session=${testUsers[SEARCHER]!.sessionId}`
         }
       }
     );
@@ -81,7 +78,7 @@ describe('Team module > POST /search', () => {
       if (i == SEARCHER) continue;
 
       expect(users).toContainEqual({
-        id: testUsers[i].userId,
+        id: testUsers[i]!.userId,
         name: `Jay ver0.${i}`,
         inTeam: i == IN_TEAM
       });
@@ -97,12 +94,13 @@ describe('Team module > POST /search', () => {
       },
       {
         headers: {
-          Cookie: `auth_session=${testUsers[SEARCHER].sessionId}`
+          Cookie: `auth_session=${testUsers[SEARCHER]!.sessionId}`
         }
       }
     );
 
     expect(res.status).toBe(404);
+    expect(res.text()).resolves.toBe('Cannot find user with the filter');
 
     res = await baseRoute.search.$get(
       {
@@ -112,7 +110,7 @@ describe('Team module > POST /search', () => {
       },
       {
         headers: {
-          Cookie: `auth_session=${testUsers[SEARCHER].sessionId}`
+          Cookie: `auth_session=${testUsers[SEARCHER]!.sessionId}`
         }
       }
     );
@@ -120,16 +118,9 @@ describe('Team module > POST /search', () => {
     const resUsers = await res.json();
     expect(resUsers.length).toBe(1);
     expect(resUsers[0]).toMatchObject({
-      id: testUsers[IN_TEAM].userId,
+      id: testUsers[IN_TEAM]!.userId,
       name: `Jay ver0.${IN_TEAM}`,
       inTeam: true
     });
   });
-});
-
-// As to not break other tests, which can't delete because foreign key.
-afterAll(async () => {
-  await db.delete(teamMembers);
-  await db.delete(teamInvites);
-  await db.delete(teams);
 });

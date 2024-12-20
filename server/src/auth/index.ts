@@ -7,7 +7,6 @@ import {
   userSession,
   userToken
 } from './schema';
-import { zValidator } from '@hono/zod-validator';
 import { db } from '../drizzle';
 import { generateIdFromEntropySize } from 'lucia';
 import { and, eq, isNotNull, lt } from 'drizzle-orm';
@@ -16,17 +15,15 @@ import { hash, verify } from 'argon2';
 import factory from '../factory';
 import { grantAccessTo } from '../security';
 import { z } from 'zod';
+import { simpleValidator } from '../validators';
+import { HTTPException } from 'hono/http-exception';
 
 const auth = factory
   .createApp()
   .post(
     '/create',
     grantAccessTo('god'),
-    zValidator('json', postCreateBody, ({ success }, c) => {
-      if (!success) {
-        return c.text('Name, email and role are required', 400);
-      }
-    }),
+    simpleValidator('json', postCreateBody),
     async c => {
       const userBody = c.req.valid('json');
 
@@ -49,20 +46,16 @@ const auth = factory
         return c.json({}, 201);
       } catch (e) {
         // User with email already exists
-        return c.text('Failed to create user', 409);
+        throw new HTTPException(409, { message: (e as Error).message });
       }
     }
   )
   .post(
     '/login',
     grantAccessTo('all'), // Effectively a no-op - just being explicit
-    zValidator('json', postLoginBody, ({ success }, c) => {
-      if (!success) {
-        return c.text('Email and password are required', 400);
-      }
-    }),
+    simpleValidator('json', postLoginBody),
     async c => {
-      if (c.get('session')) return c.text('User already logged in', 409);
+      if (c.get('session')) return c.text('You are already logged in', 409);
 
       const rejectionMessage =
         'Invalid email or password. Have you completed the sign up process?';
@@ -125,20 +118,17 @@ const auth = factory
   .delete(
     '/:id',
     grantAccessTo('god'),
-    zValidator('param', z.object({ id: z.string() }), ({ success }, c) => {
-      if (!success) {
-        return c.text('User ID is required', 400);
-      }
-    }),
+    simpleValidator('param', z.object({ id: z.string() })),
     async c => {
       const { id } = c.req.valid('param');
       const session = c.get('session')!; // Non-null because of grantAccessTo('god')
 
-      if (session.userId === id) return c.text('Cannot delete yourself', 403);
+      if (session.userId === id)
+        return c.text("You can't delete yourself", 400);
 
       const exists = await db.select().from(users).where(eq(users.id, id));
       if (!exists || !exists.length) {
-        return c.text(`User with id ${id} not found`, 404);
+        return c.text(`User with id '${id}' does not exist`, 404);
       }
 
       await db.transaction(async tx => {
@@ -165,16 +155,12 @@ const auth = factory
   .post(
     '/resetPassword',
     grantAccessTo('all'),
-    zValidator('json', postResetPasswordBody, (result, c) => {
-      if (!result.success) {
-        return c.text(result.error.message, 400);
-      }
-    }),
+    simpleValidator('json', postResetPasswordBody),
     async c => {
       const session = c.get('session')!;
       if (session) {
         // Dude, you're already logged in.
-        return c.text('You are already logged in', 409);
+        return c.text('You cannot reset your password', 403);
       }
 
       const { token, password } = c.req.valid('json');
@@ -195,7 +181,7 @@ const auth = factory
       const now = new Date();
       if (tokenResult.expiresAt < now) {
         await db.delete(userToken).where(lt(userToken.expiresAt, now));
-        return c.text('An invalid token was provided', 401);
+        return c.text('An expired token was provided', 401);
       }
 
       const hashedPassword = await hash(password, hashOptions);
@@ -216,14 +202,14 @@ const auth = factory
   .put(
     '/changePassword',
     grantAccessTo('authenticated'),
-    zValidator('json', postChangePasswordBody),
+    simpleValidator('json', postChangePasswordBody),
     async c => {
       const user = c.get('user')!; // Non-null because of grantAccessTo('authenticated')
 
       const { oldPassword, newPassword } = c.req.valid('json');
       if (oldPassword === newPassword) {
         return c.text(
-          'New password cannot be the same as the old password',
+          "The new password can't be the same as the old password",
           400
         );
       }
@@ -250,7 +236,8 @@ const auth = factory
         oldPassword,
         hashOptions
       );
-      if (!passwordMatch) return c.text('Incorrect current password', 401);
+      if (!passwordMatch)
+        return c.text("The current password doesn't match", 401);
 
       await db.transaction(async tx => {
         await tx

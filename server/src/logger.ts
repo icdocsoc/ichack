@@ -1,43 +1,71 @@
 import type { Context } from 'hono';
-import { logger } from 'hono/logger';
 import pc from 'picocolors';
+import factory from './factory';
+import type { Env } from './types';
+import { getConnInfo } from 'hono/bun';
+import type { User } from 'lucia';
+import { format } from 'date-fns';
 
-enum Level {
-  DEBUG = 'D',
-  INFO = 'I',
-  WARN = 'W',
-  ERROR = 'E'
+class Level {
+  word: string;
+  background: (input: string | number | null | undefined) => string;
+
+  private constructor(
+    letter: string,
+    background: (input: string | number | null | undefined) => string
+  ) {
+    this.word = letter;
+    this.background = background;
+  }
+
+  static DEBUG = new Level('DEBUG', pc.bgBlue);
+  static INFO = new Level('INFO', pc.bgGreen);
+  static WARN = new Level('WARN', pc.bgYellow);
+  static ERROR = new Level('ERROR', pc.bgRed);
 }
 
 export const apiLogger = {
-  debug(c: Context, name: string, ...messages: [any, ...any[]]): void {
-    const level = Level.DEBUG;
-
-    customLogger(pc.bgBlue(level), [name, ...messages].join(' -- '));
+  debug(c: Context, tag: string, ...messages: string[]): void {
+    customLogger(c, Level.DEBUG, [`[${tag}]`, ...messages]);
   },
-  info(c: Context, name: string, ...messages: [any, ...any[]]): void {
-    const level = Level.INFO;
-
-    customLogger(pc.bgWhite(level), [name, ...messages].join(' -- '));
+  info(c: Context, tag: string, ...messages: string[]): void {
+    customLogger(c, Level.INFO, [`[${tag}]`, ...messages]);
   },
-  warn(c: Context, name: string, ...messages: [any, ...any[]]): void {
-    const level = Level.WARN;
-
-    customLogger(pc.bgYellow(level), [name, ...messages].join(' -- '));
+  warn(c: Context, tag: string, ...messages: string[]): void {
+    customLogger(c, Level.WARN, [`[${tag}]`, ...messages]);
   },
-  error(c: Context, name: string, ...messages: [any, ...any[]]): void {
-    const level = Level.ERROR;
-
-    customLogger(pc.bgRed(level), [name, ...messages].join(' -- '));
+  error(c: Context, tag: string, ...messages: string[]): void {
+    customLogger(c, Level.ERROR, [`[${tag}]`, ...messages]);
   }
 };
 
-const customLogger = (message: string, ...rest: string[]) => {
-  if (Bun.env.NODE_ENV === 'test') {
-    return;
-  }
+const customLogger = (c: Context<Env>, level: Level, messages: string[]) => {
+  if (Bun.env.NODE_ENV == 'test') return;
+
+  const formatUser = (user: User | null): string => {
+    if (!user) return '-';
+
+    return `${user.email} (${user.role})`;
+  };
+  const formatDate = (date: Date): string => {
+    return format(date, 'dd/MM/yyyy HH:mm:ss xx');
+  };
+
+  const user = c.get('user');
   const date = new Date();
-  console.log(pc.yellow(date.toISOString()), message, ...rest);
+  const { method, path } = c.req;
+  const status = c.res.status;
+
+  console.log(
+    `${level.background(` ${level.word} `)} [${formatUser(user)}] [${formatDate(date)}] "${method} ${path}" -> ${status}: ${messages.join(' ')}`
+  );
 };
 
-export default () => logger(customLogger);
+export default () =>
+  factory.createMiddleware(async (c, next) => {
+    await next();
+
+    if (c.res.status >= 500) apiLogger.error(c, 'Response');
+    else if (c.res.status >= 400) apiLogger.warn(c, 'Response');
+    else apiLogger.info(c, 'Response');
+  });

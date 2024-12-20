@@ -8,8 +8,8 @@ import {
   insertCategorySchema,
   companies
 } from './schema';
-import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
+import { simpleValidator } from '../validators';
 
 const createCategorySchema = insertCategorySchema.omit({ slug: true });
 const sponsorUpdateCategorySchema = insertCategorySchema
@@ -48,7 +48,7 @@ const category = factory
   .get(
     '/:slug',
     grantAccessTo('authenticated'),
-    zValidator('param', z.object({ slug: z.string().regex(slugPattern) })),
+    simpleValidator('param', z.object({ slug: z.string().regex(slugPattern) })),
     async c => {
       const { slug } = c.req.valid('param');
 
@@ -57,7 +57,8 @@ const category = factory
         .from(categories)
         .where(eq(categories.slug, slug));
 
-      if (category.length < 1) return c.text(`Category ${slug} not found`, 404);
+      if (category.length < 1)
+        return c.text(`Category with slug '${slug}' does not exist`, 404);
 
       // slug is primary key. So, there can be only one category
       return c.json(category[0], 200);
@@ -69,11 +70,7 @@ const category = factory
   .post(
     '/',
     grantAccessTo('admin'),
-    zValidator('json', createCategorySchema, (result, c) => {
-      if (!result.success) {
-        return c.text('Invalid request', 400); // TODO make this better
-      }
-    }),
+    simpleValidator('json', createCategorySchema),
     async c => {
       const category = c.req.valid('json');
 
@@ -110,12 +107,8 @@ const category = factory
   .put(
     '/:slug',
     grantAccessTo('admin', 'sponsor'),
-    zValidator('param', z.object({ slug: z.string().regex(slugPattern) })),
-    zValidator('json', adminUpdateCategorySchema, (result, c) => {
-      if (!result.success) {
-        return c.text('Invalid request', 400); // TODO make this better
-      }
-    }),
+    simpleValidator('param', z.object({ slug: z.string().regex(slugPattern) })),
+    simpleValidator('json', adminUpdateCategorySchema),
     async c => {
       // Admins can change everything about the category
       // Slug is auto-generated based on the owner and title
@@ -127,7 +120,8 @@ const category = factory
         .from(categories)
         .where(eq(categories.slug, slug));
 
-      if (categoriesInDb.length === 0) return c.text('Category not found', 404);
+      if (categoriesInDb.length === 0)
+        return c.text(`Category with slug '${slug}' does not exist`, 404);
       // slug is primary key. So, there can be only one category
 
       const category = categoriesInDb[0]!;
@@ -149,7 +143,7 @@ const category = factory
           .where(eq(sponsorCompany.userId, user.id));
 
         if (sponsorCompanies.length === 0)
-          return c.text("You don't not have your company registered", 404);
+          return c.text('Your company cannot be resolved', 404);
         // user id is primary key. So, there can be only one sponsor company
 
         if (category.owner !== sponsorCompanies[0]!.companyName)
@@ -179,7 +173,7 @@ const category = factory
   .delete(
     '/:slug',
     grantAccessTo('admin'),
-    zValidator('param', z.object({ slug: z.string().regex(slugPattern) })),
+    simpleValidator('param', z.object({ slug: z.string().regex(slugPattern) })),
     async c => {
       const { slug } = c.req.valid('param');
 
@@ -189,7 +183,8 @@ const category = factory
           .where(eq(categories.slug, slug))
           .returning();
 
-        if (affectedRows.length === 0) return c.text('Category not found', 404);
+        if (affectedRows.length === 0)
+          return c.text(`Category with slug '${slug}' does not exist`, 404);
         // slug is primary key. So, there can be only one category
 
         return c.json({}, 200);

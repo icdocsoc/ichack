@@ -1,7 +1,6 @@
 import { verifyRequestOrigin, type Session, type User } from 'lucia';
 import factory from './factory';
 import type { AccessPermission } from './types';
-import { apiLogger } from './logger';
 
 export const validateOriginAndHost = () =>
   factory.createMiddleware(async (c, next) => {
@@ -47,11 +46,6 @@ export const grantAccessTo = (
 ) =>
   factory.createMiddleware(async (c, next) => {
     if (!roles.length) {
-      apiLogger.error(
-        c,
-        'Grant Access',
-        'Typescript failed to enforce required parameter'
-      );
       return c.text('Typescript failed to enforce required parameter', 500);
     }
 
@@ -63,13 +57,8 @@ export const grantAccessTo = (
     const user = c.get('user');
     const session = c.get('session');
     if (user === null || session === null) {
-      apiLogger.error(
-        c,
-        'Grant Access',
-        `Unauthenticated user attemped to access ${c.req.method} ${c.req.path}`
-      );
       return c.text(
-        `You do not have access to ${c.req.method} ${c.req.path}`,
+        `You do not have access to ${c.req.method} /api${c.req.path}`,
         403
       );
     }
@@ -81,13 +70,8 @@ export const grantAccessTo = (
 
     // Restrict access to the route based on the user's role
     if (!roles.includes(user.role)) {
-      apiLogger.error(
-        c,
-        'Grant Access',
-        `${user.email} of role ${user.role} attemped to access ${c.req.method} ${c.req.path}`
-      );
       return c.text(
-        `You do not have access to ${c.req.method} ${c.req.path}`,
+        `You do not have access to ${c.req.method} /api${c.req.path}`,
         403
       );
     }

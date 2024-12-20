@@ -3,12 +3,8 @@ import { grantAccessTo } from '../security';
 import { db } from '../drizzle';
 import { events, createEventBody, updateEventBody } from './schema';
 import { eq } from 'drizzle-orm';
-import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
-
-const validIdSchema = z.object({
-  id: z.coerce.number()
-});
+import { simpleValidator } from '../validators';
 
 const event = factory
   .createApp()
@@ -29,14 +25,7 @@ const event = factory
   .post(
     '/',
     grantAccessTo('admin'),
-    zValidator('json', createEventBody, async (zRes, ctx) => {
-      if (!zRes.success) {
-        return ctx.text(
-          `Invalid event JSON passed:\n${zRes.error.message}`,
-          400
-        );
-      }
-    }),
+    simpleValidator('json', createEventBody),
     async ctx => {
       const body = ctx.req.valid('json');
       const eventInDb = await db.insert(events).values(body).returning();
@@ -47,16 +36,13 @@ const event = factory
   .put(
     '/:id',
     grantAccessTo('admin'),
-    zValidator('json', updateEventBody, async (zRes, ctx) => {
-      if (!zRes.success) {
-        return ctx.text('Invalid event JSON passed.', 400);
-      }
-    }),
-    zValidator('param', validIdSchema, async (zRes, ctx) => {
-      if (!zRes.success) {
-        return ctx.text('Invalid ID', 400);
-      }
-    }),
+    simpleValidator('json', updateEventBody),
+    simpleValidator(
+      'param',
+      z.object({
+        id: z.coerce.number()
+      })
+    ),
     async ctx => {
       const body = ctx.req.valid('json');
       const { id } = ctx.req.valid('param');
@@ -81,11 +67,12 @@ const event = factory
   )
   .delete(
     '/:id',
-    zValidator('param', validIdSchema, async (zRes, ctx) => {
-      if (!zRes.success) {
-        return ctx.text('Invalid ID', 400);
-      }
-    }),
+    simpleValidator(
+      'param',
+      z.object({
+        id: z.coerce.number()
+      })
+    ),
     grantAccessTo('admin'),
     async ctx => {
       const { id } = ctx.req.valid('param');

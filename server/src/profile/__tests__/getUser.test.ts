@@ -81,6 +81,9 @@ describe('Profiles module > GET /', () => {
 
     // @ts-expect-error As it's the middleware we're hitting.
     expect(res.status).toBe(403);
+    expect(res.text()).resolves.toBe(
+      'You do not have access to GET /api/profile'
+    );
   });
 });
 
@@ -117,6 +120,9 @@ describe('Profiles module > GET /:id', () => {
 
     // @ts-expect-error As it's the middleware we're hitting.
     expect(res.status).toBe(403);
+    expect(res.text()).resolves.toBe(
+      `You do not have access to GET /api/profile/${userIds.hacker!}`
+    );
 
     const res2 = await baseRoute[':id'].$get(
       {
@@ -131,6 +137,9 @@ describe('Profiles module > GET /:id', () => {
 
     // @ts-expect-error As it's the middleware we're hitting.
     expect(res2.status).toBe(403);
+    expect(res2.text()).resolves.toBe(
+      `You do not have access to GET /api/profile/${userIds.hacker!}`
+    );
   });
 });
 
@@ -215,6 +224,9 @@ describe('Profiles module > GET /search', () => {
 
     // @ts-expect-error As it's the middleware we're hitting.
     expect(res.status).toBe(403);
+    expect(res.text()).resolves.toBe(
+      'You do not have access to GET /api/profile/search'
+    );
   });
 
   test('minimum length for email/user searches', async () => {
@@ -233,6 +245,7 @@ describe('Profiles module > GET /search', () => {
 
     // @ts-expect-error from zod middleware
     expect(res.status).toBe(400);
+    expect(res.text()).resolves.toBe("'name' is too small");
 
     const res2 = await baseRoute.search.$get(
       {
@@ -249,5 +262,6 @@ describe('Profiles module > GET /search', () => {
 
     // @ts-expect-error from zod middleware
     expect(res2.status).toBe(400);
+    expect(res2.text()).resolves.toBe("'email' is too small");
   });
 });

@@ -1,7 +1,7 @@
-import { afterAll, beforeAll, describe, expect, test } from 'bun:test';
+import { beforeAll, describe, expect, test } from 'bun:test';
 import { db } from '../../drizzle';
 import { users, userSession } from '../../auth/schema';
-import { teamInvites, teams, teamMembers } from '../schema';
+import { teams, teamMembers } from '../schema';
 import { tomorrow } from '../../testHelpers';
 import app from '../../app';
 import { testClient } from 'hono/testing';
@@ -18,9 +18,6 @@ let teamId: number;
 beforeAll(async () => {
   await db.execute(sql`TRUNCATE ${users} CASCADE`);
   await db.execute(sql`TRUNCATE ${teams} CASCADE`);
-  await db.execute(sql`TRUNCATE ${userSession} CASCADE`);
-  await db.execute(sql`TRUNCATE ${teamMembers} CASCADE`);
-  await db.execute(sql`TRUNCATE ${teamInvites} CASCADE`);
 
   // Create users to be used during the test.
   // See constants for the purpose of each user.
@@ -52,10 +49,10 @@ beforeAll(async () => {
     })
     .returning();
 
-  teamId = team[0].id;
+  teamId = team[0]!.id;
   await db.insert(teamMembers).values({
-    teamId: team[0].id,
-    userId: testUsers[TEAM_LEADER].userId,
+    teamId: team[0]!.id,
+    userId: testUsers[TEAM_LEADER]!.userId,
     isLeader: true
   });
 });
@@ -64,7 +61,7 @@ describe('Team module > POST /removeUser/:userId', () => {
   test('leader can remove user', async () => {
     // Add a user to the team & try and remove them.
     await db.insert(teamMembers).values({
-      userId: testUsers[NORMAL_USER].userId,
+      userId: testUsers[NORMAL_USER]!.userId,
       teamId: teamId,
       isLeader: false
     });
@@ -72,12 +69,12 @@ describe('Team module > POST /removeUser/:userId', () => {
     const res = await baseRoute.removeUser[':userId'].$post(
       {
         param: {
-          userId: testUsers[NORMAL_USER].userId
+          userId: testUsers[NORMAL_USER]!.userId
         }
       },
       {
         headers: {
-          Cookie: `auth_session=${testUsers[TEAM_LEADER].sessionId}`
+          Cookie: `auth_session=${testUsers[TEAM_LEADER]!.sessionId}`
         }
       }
     );
@@ -88,7 +85,7 @@ describe('Team module > POST /removeUser/:userId', () => {
     const userTeamLink = await db
       .select()
       .from(teamMembers)
-      .where(eq(teamMembers.userId, testUsers[NORMAL_USER].userId));
+      .where(eq(teamMembers.userId, testUsers[NORMAL_USER]!.userId));
     expect(userTeamLink.length).toBe(0);
   });
 
@@ -96,40 +93,42 @@ describe('Team module > POST /removeUser/:userId', () => {
     const res = await baseRoute.removeUser[':userId'].$post(
       {
         param: {
-          userId: testUsers[TEAM_LEADER].userId
+          userId: testUsers[TEAM_LEADER]!.userId
         }
       },
       {
         headers: {
-          Cookie: `auth_session=${testUsers[TEAM_LEADER].sessionId}`
+          Cookie: `auth_session=${testUsers[TEAM_LEADER]!.sessionId}`
         }
       }
     );
 
     expect(res.status).toBe(400);
+    expect(res.text()).resolves.toBe('You cannot remove this user');
   });
 
   test("can't remove user who is not in team", async () => {
     const res = await baseRoute.removeUser[':userId'].$post(
       {
         param: {
-          userId: testUsers[NEVER_IN_TEAM].userId
+          userId: testUsers[NEVER_IN_TEAM]!.userId
         }
       },
       {
         headers: {
-          Cookie: `auth_session=${testUsers[TEAM_LEADER].sessionId}`
+          Cookie: `auth_session=${testUsers[TEAM_LEADER]!.sessionId}`
         }
       }
     );
 
     expect(res.status).toBe(404);
+    expect(res.text()).resolves.toBe('You cannot remove this user');
   });
 
   test('only leader can remove user', async () => {
     // Add user-team link in DB.
     await db.insert(teamMembers).values({
-      userId: testUsers[NORMAL_USER].userId,
+      userId: testUsers[NORMAL_USER]!.userId,
       teamId: teamId,
       isLeader: false
     });
@@ -137,36 +136,37 @@ describe('Team module > POST /removeUser/:userId', () => {
     const res = await baseRoute.removeUser[':userId'].$post(
       {
         param: {
-          userId: testUsers[NORMAL_USER].userId
+          userId: testUsers[NORMAL_USER]!.userId
         }
       },
       {
         headers: {
-          Cookie: `auth_session=${testUsers[NORMAL_USER].sessionId}`
+          Cookie: `auth_session=${testUsers[NORMAL_USER]!.sessionId}`
         }
       }
     );
 
     expect(res.status).toBe(400);
+    expect(res.text()).resolves.toBe('You cannot remove this user');
 
     // Now remove them anyways, because we hate them.
     await db
       .delete(teamMembers)
-      .where(eq(teamMembers.userId, testUsers[NORMAL_USER].userId));
+      .where(eq(teamMembers.userId, testUsers[NORMAL_USER]!.userId));
   });
 });
 
 describe('Team module > POST /removeUser', () => {
   test('can leave a team', async () => {
     await db.insert(teamMembers).values({
-      userId: testUsers[NORMAL_USER].userId,
+      userId: testUsers[NORMAL_USER]!.userId,
       teamId: teamId,
       isLeader: false
     });
 
     const res = await baseRoute.removeUser.$post(undefined, {
       headers: {
-        Cookie: `auth_session=${testUsers[NORMAL_USER].sessionId}`
+        Cookie: `auth_session=${testUsers[NORMAL_USER]!.sessionId}`
       }
     });
 
@@ -176,34 +176,29 @@ describe('Team module > POST /removeUser', () => {
     const userTeamLink = await db
       .select()
       .from(teamMembers)
-      .where(eq(teamMembers.userId, testUsers[NORMAL_USER].userId));
+      .where(eq(teamMembers.userId, testUsers[NORMAL_USER]!.userId));
     expect(userTeamLink.length).toBe(0);
   });
 
   test('leader cannot leave a team', async () => {
     const res = await baseRoute.removeUser.$post(undefined, {
       headers: {
-        Cookie: `auth_session=${testUsers[TEAM_LEADER].sessionId}`
+        Cookie: `auth_session=${testUsers[TEAM_LEADER]!.sessionId}`
       }
     });
 
     expect(res.status).toBe(400);
+    expect(res.text()).resolves.toBe('You cannot leave the team');
   });
 
   test('can only leave a team if you have a team', async () => {
     const res = await baseRoute.removeUser.$post(undefined, {
       headers: {
-        Cookie: `auth_session=${testUsers[NEVER_IN_TEAM].sessionId}`
+        Cookie: `auth_session=${testUsers[NEVER_IN_TEAM]!.sessionId}`
       }
     });
 
     expect(res.status).toBe(400);
+    expect(res.text()).resolves.toBe('You are not in a team');
   });
-});
-
-// As to not break other tests, which can't delete because foreign key.
-afterAll(async () => {
-  await db.delete(teamMembers);
-  await db.delete(teamInvites);
-  await db.delete(teams);
 });

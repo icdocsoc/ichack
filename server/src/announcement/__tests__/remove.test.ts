@@ -83,6 +83,9 @@ describe('Announcement Module > DELETE /:id', () => {
 
     // @ts-ignore this can return 403
     expect(res.status).toBe(403);
+    expect(res.text()).resolves.toBe(
+      'You do not have access to DELETE /api/announcement/1'
+    );
   });
   test('Invalid session of user cannot create an announcement', async () => {
     await lucia.invalidateSession(adminSession);
@@ -102,6 +105,9 @@ describe('Announcement Module > DELETE /:id', () => {
 
     // @ts-ignore this can return 403
     expect(res.status).toBe(403);
+    expect(res.text()).resolves.toBe(
+      'You do not have access to DELETE /api/announcement/1'
+    );
 
     // Restoring the session
     await lucia.createSession(adminId, {}, { sessionId: adminSession });
@@ -122,5 +128,6 @@ describe('Announcement Module > DELETE /:id', () => {
     );
 
     expect(res.status).toBe(404);
+    expect(res.text()).resolves.toBe("Announcement of id '100' not found");
   });
 });

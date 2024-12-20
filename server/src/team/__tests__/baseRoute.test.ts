@@ -1,11 +1,11 @@
 import { beforeAll, describe, expect, test } from 'bun:test';
 import { db } from '../../drizzle';
 import { users, userSession } from '../../auth/schema';
-import { teamInvites, teams, teamMembers } from '../schema';
+import { teams, teamMembers } from '../schema';
 import { tomorrow } from '../../testHelpers';
 import app from '../../app';
 import { testClient } from 'hono/testing';
-import { eq, not, sql } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 
 const baseRoute = testClient(app).team;
 const leader = {
@@ -21,9 +21,6 @@ let teamId: number;
 beforeAll(async () => {
   await db.execute(sql`TRUNCATE ${users} CASCADE`);
   await db.execute(sql`TRUNCATE ${teams} CASCADE`);
-  await db.execute(sql`TRUNCATE ${userSession} CASCADE`);
-  await db.execute(sql`TRUNCATE ${teamMembers} CASCADE`);
-  await db.execute(sql`TRUNCATE ${teamInvites} CASCADE`);
 
   // Add the two users we need.
   await db.insert(users).values([
@@ -62,11 +59,11 @@ beforeAll(async () => {
     })
     .returning();
   await db.insert(teamMembers).values({
-    teamId: team[0].id,
+    teamId: team[0]!.id,
     userId: leader.userId,
     isLeader: true
   });
-  teamId = team[0].id;
+  teamId = team[0]!.id;
 });
 
 describe('Team module > POST /', () => {
@@ -95,15 +92,15 @@ describe('Team module > POST /', () => {
     // Ensure the team & user-team link was created
     const resTeam = await db.select().from(teams).where(eq(teams.id, id));
     expect(resTeam.length).toBe(1);
-    expect(resTeam[0].teamName).toBe("Jay's Team");
+    expect(resTeam[0]!.teamName).toBe("Jay's Team");
 
     const userTeamLink = await db
       .select()
       .from(teamMembers)
       .where(eq(teamMembers.teamId, id));
     expect(userTeamLink.length).toBe(1);
-    expect(userTeamLink[0].userId).toBe(leader.userId);
-    teamId = resTeam[0].id;
+    expect(userTeamLink[0]!.userId).toBe(leader.userId);
+    teamId = resTeam[0]!.id;
   });
 
   test("can't create team if in a team - leader", async () => {
@@ -121,6 +118,7 @@ describe('Team module > POST /', () => {
     );
 
     expect(res.status).toBe(400);
+    expect(res.text()).resolves.toBe('You are already in a team');
   });
 
   test("can't create team if in a team - member", async () => {
@@ -145,6 +143,7 @@ describe('Team module > POST /', () => {
     );
 
     expect(res.status).toBe(400);
+    expect(res.text()).resolves.toBe('You are already in a team');
 
     // Remove member from team.
     await db.delete(teamMembers).where(eq(teamMembers.userId, member.userId));
@@ -172,8 +171,8 @@ describe('Team module > PUT /', () => {
     expect(res.status).toBe(204);
     let resTeam = await db.select().from(teams).where(eq(teams.id, teamId));
     expect(resTeam.length).toBe(1);
-    expect(resTeam[0].teamName).toBe('winners');
-    expect(resTeam[0].phone).toBe(dummyNumber);
+    expect(resTeam[0]!.teamName).toBe('winners');
+    expect(resTeam[0]!.phone).toBe(dummyNumber);
   });
 
   test('leader cannot transfer ownership to user not in team', async () => {
@@ -192,6 +191,7 @@ describe('Team module > PUT /', () => {
     );
 
     expect(res.status).toBe(400);
+    expect(res.text()).resolves.toBe('The user is not in the team');
   });
 
   test('leader can transfer ownership to a user in team', async () => {
@@ -222,13 +222,13 @@ describe('Team module > PUT /', () => {
       .from(teamMembers)
       .where(eq(teamMembers.userId, member.userId));
     expect(newLeaderLink.length).toBe(1);
-    expect(newLeaderLink[0].isLeader).toBeTrue();
+    expect(newLeaderLink[0]!.isLeader).toBeTrue();
     const oldLeaderLink = await db
       .select()
       .from(teamMembers)
       .where(eq(teamMembers.userId, leader.userId));
     expect(oldLeaderLink.length).toBe(1);
-    expect(oldLeaderLink[0].isLeader).toBeFalse();
+    expect(oldLeaderLink[0]!.isLeader).toBeFalse();
 
     // Return the team leader to the first leader, and remove the added user.
     await db.delete(teamMembers).where(eq(teamMembers.userId, member.userId));
@@ -242,7 +242,7 @@ describe('Team module > PUT /', () => {
 });
 
 describe('Team module > GET /', () => {
-  test('cannot get without a team', async () => {
+  test('cannot retrieve the team when user is not in one', async () => {
     // Ensure member is not in the team.
     await db.delete(teamMembers).where(eq(teamMembers.userId, member.userId));
 
@@ -253,6 +253,7 @@ describe('Team module > GET /', () => {
     });
 
     expect(res.status).toBe(404);
+    expect(res.text()).resolves.toBe('You are not in a team');
   });
 
   test('can get team', async () => {
@@ -266,7 +267,7 @@ describe('Team module > GET /', () => {
     const teamRes = await res.json();
 
     const teamInDb = await db.select().from(teams).where(eq(teams.id, teamId));
-    expect(teamRes).toEqual(teamInDb[0]);
+    expect(teamRes).toEqual(teamInDb[0]!);
   });
 });
 
@@ -304,11 +305,11 @@ describe('Team module > DELETE /', () => {
       })
       .returning();
     await db.insert(teamMembers).values({
-      teamId: team[0].id,
+      teamId: team[0]!.id,
       userId: leader.userId,
       isLeader: true
     });
-    teamId = team[0].id;
+    teamId = team[0]!.id;
   });
 
   test('only leader can delete team', async () => {
@@ -325,7 +326,9 @@ describe('Team module > DELETE /', () => {
         Cookie: `auth_session=${member.sessionId}`
       }
     });
-    expect(res.status).toBe(404);
+
+    expect(res.status).toBe(400);
+    expect(res.text()).resolves.toBe('Only a leader can delete the team');
 
     // Remove member
     await db.delete(teamMembers).where(eq(teamMembers.userId, member.userId));
