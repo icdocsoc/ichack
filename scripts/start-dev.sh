@@ -1,3 +1,8 @@
+# Usage: Start the development server for the website or landing page
+# Arguments:
+#   $1: Target to start the dev server for. Can be "website", "landing" or "both". Default: "both"
+
+
 # Check the target of this dev script
 target=$1
 if [ -z "$target" ]; then
@@ -12,7 +17,7 @@ if [ "$target" != "website" ] && [ "$target" != "landing" ] && [ "$target" != "b
 fi
 
 # Only start the docker container if it is not in CI
-if [ "$CI" == "true" || -n "$CI" ]; then
+if [[ -z "$CI" || "$CI" == "false" ]]; then
   # Check if a container with name postgres exists
   if docker ps -a --format '{{.Names}}' | grep -Eq "^postgres$"; then
     docker start postgres
@@ -34,11 +39,11 @@ if [ "$CI" == "true" || -n "$CI" ]; then
 fi
 
 # Start the dev server based on the target
-if [ "$target" == "website" ]; then
+if [[ "$target" == "website" ]]; then
   bun --bun nuxt dev
-elif [ "$target" == "landing" ]; then
+elif [[ "$target" == "landing" ]]; then
   bun --bun nuxt dev --cwd packages/www --port 3001
-elif [ "$target" == "both" ]; then
+elif [[ "$target" == "both" ]]; then
   bunx concurrently -n "website,landing" -c "blue,green" "bun --bun nuxt dev" "bun --bun nuxt dev --cwd packages/www --port 3001"
 fi
 

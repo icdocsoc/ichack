@@ -19,7 +19,7 @@ test.describe('All subdomains must be accessible', () => {
   test('Landing page is accessible', async ({ page }) => {
     await page.goto('http://localhost:3001/');
 
-    const headingElem = page.getByText('LANDING');
+    const headingElem = page.getByText('IC HACK');
     await expect(headingElem).toBeVisible();
   });
 });

@@ -12,14 +12,9 @@ RUN bun run build
 
 FROM oven/bun:1.1.38-alpine AS website
 WORKDIR /prod
-COPY --from=builder /app/package.json /app/bun.lockb ./
-RUN bun install --production
-COPY --from=builder /app/.output ./.output
-CMD ["bun", "run", ".output/server/index.mjs"]
+COPY --from=builder /app/.output ./
+CMD ["bun", "run", "server/index.mjs"]
 
 FROM oven/bun:1.1.38-alpine AS landing
-WORKDIR /prod
-COPY --from=builder /app/package.json /app/bun.lockb ./
-RUN bun install --production
-COPY --from=builder /app/packages/www/dist ./dist
-CMD ["bunx", "serve", "dist"]
+COPY --from=builder /app/packages/www/dist ./prod
+CMD ["bunx", "serve", "prod"]

@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .font-expanded {
+    font-stretch: expanded;
+  }
+
+  .text-horizontal {
+    writing-mode: vertical-rl;
+  }
+
+  .vertical-border::before,
+  .vertical-border::after {
+    @apply absolute top-0 w-px content-normal bg-black opacity-50;
+  }
+
+  .vertical-border.vb-before::before {
+    @apply -left-4;
+  }
+
+  .vertical-border.vb-after::after {
+    @apply -right-4;
+  }
+}
