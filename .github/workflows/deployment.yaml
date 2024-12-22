@@ -130,11 +130,18 @@ jobs:
           path: dist
 
       - name: Deploy to Cloudflare Pages
+        id: deploy-step
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy dist --project-name=ichack25 --branch=staging
+
+      - name: Send Deployment URL
+        run: python3 ./scripts/send-embed.py --url $URL
+        env:
+          URL: ${{ steps.deploy-step.outputs.deployment-url }}
+          DISCROD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
 
   hold-prod-deployment:
     needs: [deploy-landing-staging]

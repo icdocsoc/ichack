@@ -1,13 +1,10 @@
 <template>
-  <!-- <ICNavBar :buttons="buttons" /> -->
+  <ICNavBar :buttons="buttons" />
 
-  <!-- <main> -->
-  <!-- <SectionJumbotron /> -->
-  <!-- <SectionCountdown class="py-12" /> -->
-  <!-- </main> -->
-  <div class="grid place-items-center">
-    <h1>Nothing to see here...</h1>
-  </div>
+  <main>
+    <SectionJumbotron />
+    <SectionCountdown class="py-12" />
+  </main>
 </template>
 
 <script setup lang="ts">
