@@ -134,7 +134,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy dist --project-name=ichack25
+          command: pages deploy dist --project-name=ichack25 --branch=staging
 
   hold-prod-deployment:
     needs: [deploy-landing-staging]
@@ -148,7 +148,7 @@ jobs:
           secret: ${{ github.TOKEN }}
           approvers: cybercoder-naj,dropheart
           minimum-approvals: 1
-          issue-title: 'deploy: actions ${{ github.run_number }} to production'
+          issue-title: 'deploy website to production'
           issue-body: 'Please approve or deny the deployment.'
 
   deploy-landing-prod:
