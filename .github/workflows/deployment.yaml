@@ -29,12 +29,6 @@ jobs:
           name: landing-static
           path: packages/www/dist
 
-      - name: Upload send-embed.py
-        uses: actions/upload-artifact@v4
-        with:
-          name: send-embed
-          path: scripts/send-embed.py
-
   testServer:
     needs: build
     runs-on: ubuntu-latest
@@ -141,19 +135,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy dist --project-name=ichack25 --branch=staging
-
-      - name: Download send-embed.py
-        uses: actions/download-artifact@v4
-        with:
-          name: send-embed
-          path: send-embed.py
-
-      - name: Send Deployment URL
-        run: python3 send-embed.py --url $URL
-        env:
-          URL: ${{ steps.deploy-step.outputs.deployment-url }}
-          DISCROD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          command: pages deploy dist --project-name=ichack25 --branch=isabella
 
   hold-prod-deployment:
     needs: [deploy-landing-staging]
