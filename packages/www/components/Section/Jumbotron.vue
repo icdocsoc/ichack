@@ -64,10 +64,9 @@ import {
   MouseConstraint
 } from 'matter-js';
 
-const urlPrefix =
-  process.env.NODE_ENV !== 'PRODUCTION'
-    ? '/_nuxt/public/physics/'
-    : '/public/physics/';
+const config = useRuntimeConfig();
+
+const urlPrefix = config.public.physicsUrlPrefix;
 const letters = ['hollow_cube', 'i', 'c', 'h', 'a', 'yellow_c', 'k'].map(
   v => v + '.png'
 );
