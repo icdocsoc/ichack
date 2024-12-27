@@ -8,6 +8,7 @@ import profile from './profile';
 import team from './team';
 import factory from './factory';
 import { HTTPException } from 'hono/http-exception';
+import sudo from './sudo';
 
 const api = factory
   .createApp()
@@ -22,6 +23,7 @@ const app = factory
   .createApp()
   .use(logger())
   .use(sessionMiddleware())
+  .use(sudo())
   .route('', api)
   .onError((err, c) => {
     if (err instanceof HTTPException) {
