@@ -17,22 +17,10 @@ if [ "$target" != "website" ] && [ "$target" != "landing" ] && [ "$target" != "b
 fi
 
 # Only start the docker container if it is not in CI
-if [[ -z "$CI" || "$CI" == "false" ]]; then
-  # Check if a container with name postgres exists
-  if docker ps -a --format '{{.Names}}' | grep -Eq "^postgres$"; then
-    docker start postgres
-  else
-    docker run -d \
-      --name postgres \
-      -e POSTGRES_USER=admin \
-      -e POSTGRES_PASSWORD=rootpasswd \
-      -e POSTGRES_DB=postgres \
-      -p 5432:5432 \
-      -v ichack_postgres_data:/var/lib/postgresql/data \
-      postgres:16
-  fi
+if [[ -z "$CI" || "$CI" == "false" ]] && [ "$target" != "landing" ]; then
+  docker compose up postgres -d
 
-  while ! docker exec postgres pg_isready -U test > /dev/null; do
+  while ! docker exec ichack_postgres pg_isready -U test > /dev/null; do
     echo "--- Waiting for Postgres to start ---"
     sleep 1
   done
@@ -48,7 +36,7 @@ elif [[ "$target" == "both" ]]; then
 fi
 
 function cleanup() {
-  docker stop postgres
+  docker compose down postgres
   if [ "$target" == "website" ]; then
     bunx kill-port 3000
   elif [ "$target" == "landing" ]; then

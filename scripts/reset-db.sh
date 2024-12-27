@@ -2,7 +2,7 @@ export PGHOST=0.0.0.0
 export PGPORT=5432 
 export PGUSER=admin
 export PGDB=postgres
-export DOCKER_CONTAINER_NAME=postgres
+export DOCKER_CONTAINER_NAME=ichack_postgres
 export PGPASSWORD=rootpasswd
 
 while ! docker exec $DOCKER_CONTAINER_NAME pg_isready -U test > /dev/null; do

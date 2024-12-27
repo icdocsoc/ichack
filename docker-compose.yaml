@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgres:16
-    container_name: postgres
+    container_name: ichack_postgres
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: rootpasswd
@@ -12,7 +12,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   website:
-    container_name: website
+    container_name: ichack_website
     build:
       context: .
       target: website
@@ -28,7 +28,7 @@ services:
       - PGPORT=5432
 
   landing:
-    container_name: landing
+    container_name: ichack_landing
     build:
       context: .
       target: landing
