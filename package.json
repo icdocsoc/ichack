@@ -52,6 +52,7 @@
     "@lucia-auth/adapter-drizzle": "^1.1.0",
     "@nuxt/fonts": "^0.10.3",
     "@nuxt/ui": "^2.19.2",
+    "@nuxtjs/seo": "^2.0.2",
     "@pinia/nuxt": "^0.9.0",
     "argon2": "^0.41.1",
     "build-url-ts": "^6.1.7",

@@ -4,7 +4,9 @@ export default defineNuxtConfig({
   alias: {
     '@common': fileURLToPath(new URL('.', import.meta.url))
   },
-
+  future: {
+    compatibilityVersion: 4
+  },
   imports: {
     dirs: ['stores']
   },

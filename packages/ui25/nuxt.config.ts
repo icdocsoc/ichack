@@ -2,7 +2,9 @@ import { fileURLToPath } from 'url';
 
 export default defineNuxtConfig({
   css: ['@ui25/assets/css/base.css'],
-
+  future: {
+    compatibilityVersion: 4
+  },
   alias: {
     '@ui25': fileURLToPath(new URL('.', import.meta.url))
   },
