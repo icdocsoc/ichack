@@ -1,0 +1,1907 @@
+openapi: 3.0.0
+
+info:
+  version: 1.0.0
+  title: IC Hack'25 API Reference
+  description: |
+    Building a custom server comes with many challenges. With a currently unstable version
+    of the server, it is important to have a reference to the API. This reference would help future
+    webmasters of ICHack understand the server and its routes. But more importantly, it is for
+    the frontend developers who would be building the website and constantly interacting with the server.
+servers:
+  - url: http://{subdomain}.example.org/api
+    variables:
+      subdomain:
+        default: admin
+        description: the subdomain of the website accessing the API
+
+tags:
+  - name: Authentication
+    description: |
+      Users on the website do not sign themselves. They are created by gods with a null password. Here is the entire authentication process.
+
+      1. A god creates a user with a null password.
+      2. A god generates tokens and sends a frontend link with the token to the user.
+      3. The user clicks on the link, sets their password and other details.
+      4. The token is validated and consumed and their details are updated.
+  - name: Announcement
+    description: |
+      Announcements are made by admins. They are displayed on the website for all users to see. They are not editable by the users.
+  - name: Category
+    description: |
+      Category is a challenge that a **sponsor company** proposes. Each team will have to submit their solution to 2 categories, one from a **sponsor company**, and one from DoCSoc.
+      For the sake of simplicity of the API, we consider DoCSoc to be a **sponsor company** and the judges (who are DoC professors) are assigned the **sponsor** user role.
+  - name: Profile
+    description: |
+      Each user has a profile, which contains information such as their ID, name, email, dietary info, and more.
+      These are queried & updated by the users, and by the volunteers for meals.
+  - name: Event
+    description: |
+      Events such as talks, Mario Kart tournaments, and more take place throughout the hackathon.
+      Admins and gods should be able to CRUD events, and users should be able to view events.
+  - name: Teams
+    description: |
+      A team is a group of hackers working together on a project. Teams are created by hackers and can be joined by other hackers.
+      Teams can be created, joined, and left by hackers. Teams can also be deleted by the creator.
+
+components:
+  securitySchemas:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: auth_session
+  schemas:
+    UserRole:
+      type: string
+      enum: [god, admin, sponsor, volunteer, hacker]
+    Category:
+      type: object
+      properties:
+        slug:
+          type: string
+          description: This field is auto-generated from the owner and title.
+        title:
+          type: string
+        owner:
+          type: string
+        image:
+          type: string
+          format: uri
+          description: This is the company's logo.
+        shortDescription:
+          type: string
+        longDescription:
+          type: string
+          format: uri
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        role:
+          $ref: '#/components/schemas/UserRole'
+        photos_opt_out:
+          type: boolean
+        dietary_restrictions:
+          type: array
+          items:
+            type: string
+          minItems: 0
+        allergies:
+          type: array
+          items:
+            type: string
+          minItems: 0
+        pronouns:
+          type: string
+        meals:
+          type: array
+          items:
+            type: boolean
+          minItems: 3
+          maxItems: 3
+    Event:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 1
+        title:
+          type: string
+          example: Mario Kart Tournament
+        description:
+          type: string
+          example: A tournament to see who is the best at Mario Kart.
+        start:
+          type: string
+          format: date-time
+          example: 2025-01-01T00:00:00Z
+        end:
+          type: string
+          format: date-time
+          example: 2025-01-01T01:00:00Z
+        public:
+          type: boolean
+    Team:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 1
+        team_name:
+          type: string
+          example: Team Rocket
+        sponsorCategory:
+          type: string
+          example: /jetbrains-app-development-in-kotlin
+        submissionLink:
+          type: string
+          format: uri
+          example: https://github.com/icdocsoc/ichack
+        phone:
+          type: string
+          example: '+444444444444'
+        phone2:
+          type: string
+          example: '+966555555555'
+
+  examples:
+    KotlinCategory:
+      slug: /jetbrains-app-development-in-kotlin
+      title: App Development in Kotlin
+      owner: JetBrains
+      image: https://example.org/static/jetbrains.png
+      shortDescription: Develop an app in Kotlin.
+      longDescription: https://example.org/static/kotlin.md
+    EducationCategory:
+      slug: /docsoc-education
+      title: Education
+      owner: DoCSoc
+      image: https://example.org/static/docsoc.png
+      shortDescription: Create an app for students
+      longDescription: https://example.org/static/education.md
+    ExampleProfile:
+      id: cryptographicallySecureId
+      name: Silver the Cat
+      email: silver@cats.com
+      role: hacker
+      photos_opt_out: false
+      dietary_restrictions: ['halal']
+      allergies: ['peanuts']
+      pronouns: they/them
+      meals: [false, false, false]
+
+  parameters:
+    cookie:
+      in: cookie
+      name: auth_session
+      schema:
+        type: string
+      required: true
+      example: vjfewy1423rb31hia
+      description: The authentication cookie token.
+
+paths:
+  /auth/create:
+    post:
+      tags:
+        - Authentication
+      security:
+        - cookieAuth: []
+      summary: Create a new user
+      parameters:
+        - $ref: '#/components/parameters/cookie'
+      description: |
+        Creates a new user with a null password which is later filled by the user
+        in the registration process. Only a `god` can create a new user.
+      requestBody:
+        description: The minimum information required to create a new user.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: John Doe
+                  required: true
+                email:
+                  type: string
+                  format: email
+                  example: john.doe@gmail.com
+                  required: true
+                role:
+                  $ref: '#/components/schemas/UserRole'
+                  example: hacker
+                  required: true
+      responses:
+        '201':
+          description: A new user has been created.
+        '400':
+          description: The request was malformed.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: 'Name, email and role are required'
+        '403':
+          description: When a user other than a god accesses this route.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: 'You do not have access to POST /api/create'
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Login a user
+      description: |
+        Logs in a user and creates a session cookie. The session cookie is
+        valid for 24 hours, which is refreshed after 12 hours since previous refresh.
+        Anyone can log in, without a session token.
+      requestBody:
+        description: The email and password of the user.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: john.doe@gmail.com
+                  required: true
+                password:
+                  type: string
+                  example: Password1234
+                  pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}$'
+                  format: password
+                  description: The password must be at least 8 characters long, contain at least one uppercase letter, and one lowercase letter.
+                  required: true
+      responses:
+        '200':
+          description: The user has been logged in.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: njfq13r14bjf15
+                  name:
+                    type: string
+                    example: John Doe
+                  email:
+                    type: string
+                    format: email
+                    example: john.doe@example.com
+                  role:
+                    $ref: '#/components/schemas/UserRole'
+          headers:
+            Set-Cookie:
+              description: The session cookie that is valid for 24 hours.
+              schema:
+                type: string
+                example: auth_session=ab13rbad8beiu1; Path=/; Expires=Wed, 09 Jun 2021 10:18:14 GMT;
+        '400':
+          description: The request was malformed.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: 'Email and password are required'
+        '409':
+          description: The user was already logged in. A valid session cookie was found.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: 'User already logged in'
+        '401':
+          description: |
+            There are multiple reasons for this response.
+
+            1. The user was not found.
+            2. The password was incorrect.
+            3. The password was null.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Invalid email or password. Have you completed the sign up process?
+  /auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: Logout a user
+      description: |
+        Logs out a user and deletes the session cookie. Only a logged in user can
+        log out.
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/cookie'
+      responses:
+        '403':
+          description: When a user is not logged in.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: 'You do not have access to POST /api/create'
+        '204':
+          description: The user has been logged out.
+          headers:
+            Set-Cookie:
+              description: The session cookie that is deleted.
+              schema:
+                type: string
+                example: auth_session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT;
+  /auth/{id}:
+    delete:
+      tags:
+        - Authentication
+      summary: Delete a user
+      description: |
+        Deletes a user from the database. Only a `god` can delete a user.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The id of the user to delete.
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/cookie'
+      responses:
+        '200':
+          description: The user has been deleted.
+        '403':
+          description: When a user other than a god accesses this route.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: 'You do not have access to DELETE /api/{id}'
+        '404':
+          description: The user was not found.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: 'User with id nfqub1228vbfvj not found'
+        '422':
+          description: The user was not deleted.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: 'Failed to delete user'
+  /auth/resetPassword:
+    post:
+      tags:
+        - Authentication
+      summary: Forgot password
+      description: This route completes the forgot password process. Anyone can call this route.
+      requestBody:
+        description: The token and the new password.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                  example: 1b2c3d4e5f6g7h8i9j0k
+                  required: true
+                password:
+                  type: string
+                  example: Password1234
+                  pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}$'
+                  format: password
+                  description: The password must be at least 8 characters long, contain at least one uppercase letter, and one lowercase letter.
+                  required: true
+      responses:
+        '200':
+          description: The password has been reset.
+        '400':
+          description: The request was malformed.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: TODO - Add example
+        '401':
+          description: The token was invalid.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: An invalid token was provided.
+        '409':
+          description: The user is already logged in.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: You are already logged in.
+  /auth/changePassword:
+    put:
+      tags:
+        - Authentication
+      summary: Change the password
+      description: The user can change their password. Only a logged in user can call this route.
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/cookie'
+      requestBody:
+        description: The old and new password.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                oldPassword:
+                  type: string
+                  example: Password1234
+                  pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}$'
+                  format: password
+                  description: The password must be at least 8 characters long, contain at least one uppercase letter, and one lowercase letter.
+                  required: true
+                newPassword:
+                  type: string
+                  example: 1234Password
+                  pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}$'
+                  format: password
+                  description: The password must be at least 8 characters long, contain at least one uppercase letter, and one lowercase letter.
+                  required: true
+      responses:
+        '200':
+          description: The password has been changed.
+        '400':
+          description: |
+            There can be multiple reasons for this. 
+
+            1. The request was malformed. 
+            2. The old password was same as the new password.
+            3. When the old password is null, i.e. user is unregistered.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: New password cannot be the same as the old password
+        '404':
+          description: The user was not found.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: User of id wnrf13414nufb145851b not found
+        '401':
+          description: The old password was incorrect.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Incorrect current password
+  /announcement:
+    get:
+      tags:
+        - Announcement
+      summary: Get all announcements
+      description: Get all announcements made by the admins. Only logged in users can access this route.
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/cookie'
+      responses:
+        '418':
+          description: This route is not implemented yet.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: 'I am a teapot'
+    post:
+      tags:
+        - Announcement
+      summary: Create an announcement
+      description: Create an announcement. Admins and gods can create announcements.
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/cookie'
+      requestBody:
+        description: The announcement details.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: Welcome to IC Hack'25
+                  required: true
+                description:
+                  type: string
+                  example: We are excited to announce the IC Hack in 2025.
+                  required: true
+                pinUntil:
+                  type: string
+                  format: date-time
+                  example: 2025-01-01T00:00:00Z
+      responses:
+        '201':
+          description: The announcement has been created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: number
+                    example: 4
+        '403':
+          description: When a user other than an admin or god accesses this route.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: 'You do not have access to POST /api/announcement'
+        '400':
+          description: The request was malformed.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Invalid announcement data
+  /announcement/{id}:
+    put:
+      tags:
+        - Announcement
+      summary: Update an announcement
+      description: Update an announcement. Admins and gods can update announcements.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The positive integer id of the announcement to update.
+          required: true
+          schema:
+            type: number
+          example: 4
+        - $ref: '#/components/parameters/cookie'
+      requestBody:
+        description: The announcement details.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: Welcome to IC Hack'26
+                description:
+                  type: string
+                  example: We are excited to announce the IC Hack in 2026.
+                pinUntil:
+                  type: string
+                  format: date-time
+                  example: 2026-01-01T00:00:00Z
+      responses:
+        '200':
+          description: The announcement has been updated.
+        '400':
+          description: The request body or id parameter was malformed.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Invalid announcement data
+        '403':
+          description: When a user other than an admin or god accesses this route.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: 'You do not have access to PUT /api/announcement/4'
+        '404':
+          description: The announcement was not found.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Announcement not found
+    delete:
+      tags:
+        - Announcement
+      summary: Delete an announcement
+      description: Delete an announcement. Admins and gods can delete announcements.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The positive integer id of the announcement to delete.
+          required: true
+          schema:
+            type: number
+          example: 4
+        - $ref: '#/components/parameters/cookie'
+      responses:
+        '200':
+          description: The announcement has been deleted.
+        '403':
+          description: When a user other than an admin or god accesses this route.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: 'You do not have access to DELETE /api/announcement/4'
+        '404':
+          description: The announcement was not found.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Announcement not found
+  /category:
+    get:
+      tags:
+        - Category
+      summary: Get all categories
+      description: Get all categories available for the hackathon. Possibly empty list. Any logged in user can access this route.
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/cookie'
+      responses:
+        '200':
+          description: The categories have been fetched successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+                example:
+                  - $ref: '#/components/examples/KotlinCategory'
+                  - $ref: '#/components/examples/EducationCategory'
+        '403':
+          description: When a user is not logged in.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: You do not have access to GET /api/category
+    post:
+      tags:
+        - Category
+      summary: Create a category
+      description: Create a category. Only admins and gods can create a category.
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/cookie'
+      requestBody:
+        description: The category details without the slug.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  required: true
+                  example: App Development in Kotlin
+                owner:
+                  type: string
+                  required: true
+                  example: JetBrains
+                image:
+                  type: string
+                  format: uri
+                  required: true
+                  example: https://example.org/static/jetbrains.png
+                shortDescription:
+                  type: string
+                  required: true
+                  example: Develop an app in Kotlin.
+                longDescription:
+                  type: string
+                  format: uri
+                  required: true
+                  example: https://example.org/static/kotlin.md
+      responses:
+        '201':
+          description: The category has been created.
+        '400':
+          description: The request was malformed.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Invalid request
+        '403':
+          description: When a user other than an admin or god accesses this route.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: 'You do not have access to POST /api/category'
+        '404':
+          description: The category's owner isn't registered as a **sponsor company**.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Category's owner Microsoft was not found
+        '409':
+          description: The category already exists.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: duplicate key value violates unique constraint "category_pkey"
+  /category/{slug}:
+    get:
+      tags:
+        - Category
+      summary: Get a category
+      description: Get a category by its slug. Any logged in user can access this route.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: slug
+          in: path
+          description: The slug of the category to fetch.
+          required: true
+          schema:
+            type: string
+            pattern: ^[a-z0-9-]+$
+          example: /jetbrains-app-development-in-kotlin
+        - $ref: '#/components/parameters/cookie'
+      responses:
+        '200':
+          description: The category has been fetched successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+              example:
+                $ref: '#/components/examples/KotlinCategory'
+        '403':
+          description: When a user is not logged in.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: You do not have access to GET /api/category/{slug}
+        '404':
+          description: The category was not found.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Category /jetbrains-app-development-in-kotlin not found
+    put:
+      tags:
+        - Category
+      summary: Update a category
+      description: |
+        Update a category by its slug. Admins and gods can update a category **including the title**.
+        Sponsors can only update their own categories, but not their title.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: slug
+          in: path
+          description: The slug of the category to update.
+          required: true
+          schema:
+            type: string
+            pattern: ^[a-z0-9-]+$
+          example: /jetbrains-app-development-in-kotlin
+        - $ref: '#/components/parameters/cookie'
+      requestBody:
+        description: The category details.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: App Development in Kotlin
+                  description: Only admins and gods can update the title.
+                owner:
+                  type: string
+                  example: JetBrains
+                image:
+                  type: string
+                  format: uri
+                  example: https://example.org/static/jetbrains.png
+                shortDescription:
+                  type: string
+                  example: Develop an app in Kotlin.
+                longDescription:
+                  type: string
+                  format: uri
+                  example: https://example.org/static/kotlin.md
+      responses:
+        '200':
+          description: The category has been updated.
+        '400':
+          description: The request body or slug parameter was malformed.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Invalid request
+        '403':
+          description: When a user other than an admin, god or sponsor accesses this route.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: 'You do not have access to PUT /api/category/{slug}'
+        '404':
+          description: The category or the sponsor's company was not found.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Category not found
+        '409':
+          description: The update category's auto-generated slug already exists.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: duplicate key value violates unique constraint "category_pkey"
+    delete:
+      tags:
+        - Category
+      summary: Delete a category
+      description: Delete a category by its slug. Admins and gods can delete a category.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: slug
+          in: path
+          description: The slug of the category to delete.
+          required: true
+          schema:
+            type: string
+            pattern: ^[a-z0-9-]+$
+          example: /jetbrains-app-development-in-kotlin
+        - $ref: '#/components/parameters/cookie'
+      responses:
+        '200':
+          description: The category has been deleted.
+        '400':
+          description: The slug parameter was malformed.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Invalid request
+        '403':
+          description: When a user other than an admin or god accesses this route.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: 'You do not have access to DELETE /api/category/{slug}'
+        '404':
+          description: The category was not found.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Category not found
+  /profile:
+    get:
+      tags:
+        - Profile
+      summary: Get the logged in user's profile
+      description: Returns the profile object for the logged in user.
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/cookie'
+      responses:
+        '200':
+          description: Returns profile object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+              example:
+                $ref: '#/components/examples/ExampleProfile'
+        '403':
+          description: When a user is not logged in.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: You do not have access to GET /api/profile
+
+    put:
+      tags:
+        - Profile
+      summary: Update the logged in user's profile
+      description: Update the profile object for the logged in user.
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/cookie'
+      requestBody:
+        description: A partial object of the profile details.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                photos_opt_out:
+                  type: boolean
+                  example: false
+                dietary_restrictions:
+                  type: array
+                  items:
+                    type: string
+                  minItems: 0
+                  example: ['lactose intolerant']
+                allergies:
+                  type: array
+                  items:
+                    type: string
+                  minItems: 0
+                  example: []
+                pronouns:
+                  type: string
+                  example: she/her
+                meals:
+                  type: array
+                  items:
+                    type: boolean
+                  minItems: 3
+                  maxItems: 3
+                  example: [false, false, false]
+      responses:
+        '200':
+          description: The profile has been updated.
+        '400':
+          description: The request was malformed.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Invalid request
+        '403':
+          description: When a user is not logged in.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: You do not have access to PUT /api/profile
+
+  /profile/all:
+    get:
+      tags:
+        - Profile
+      summary: Get all users
+      description: |
+        Returns all users. Only admins and gods can access this route.
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/cookie'
+      responses:
+        '200':
+          description: Returns all users.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserProfile'
+              example:
+                - $ref: '#/components/examples/ExampleProfile'
+        '403':
+          description: When a user other than an admin or god accesses this route.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: You do not have access to GET /api/profile/all
+
+  /profile/search:
+    get:
+      tags:
+        - Profile
+      summary: Search for a user.
+      description: |
+        Allows volunteers to search for a user by name OR email. 
+        Returns all users that match the search query.
+        Only volunteers can access this route.
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/cookie'
+        - name: query
+          in: query
+          description: The search query.
+          required: true
+          schema:
+            type: string
+          example: Silver
+      responses:
+        '200':
+          description: Returns all users that match the search query.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserProfile'
+              example:
+                - $ref: '#/components/examples/ExampleProfile'
+        '403':
+          description: When a user other than a volunteer accesses this route.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: You do not have access to GET /api/profile/search
+
+  /profile/meal:
+    put:
+      tags:
+        - Profile
+      summary: Update the meals for a user
+      description: |
+        Allows volunteers to update the meals for a user.
+        Only volunteers can access this route.
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/cookie'
+      responses:
+        '200':
+          description: The meals have been updated.
+        '403':
+          description: When a user other than a volunteer accesses this route.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: You do not have access to PUT /api/profile/meal
+
+  /profile/register:
+    get:
+      tags:
+        - Profile
+      summary: Returns the user's registration details pertaining to the magic token supplied.
+      parameters:
+        - name: token
+          in: query
+          description: The token sent to the user.
+          required: true
+          schema:
+            type: string
+          example: 1b2c3d4e5f6g7h8i9j0k
+        - $ref: '#/components/parameters/cookie'
+      responses:
+        '200':
+          description: The name, email, and role we have on hand.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: Silver the Cat
+                  email:
+                    type: string
+                    example: silver@cats.com
+                  role:
+                    $ref: '#/components/schemas/UserRole'
+                    example: hacker
+        '400':
+          description: Registration token was missing, or user is already registered.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: User is already registered.
+        '403':
+          description: The token was invalid, or expired.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Invalid token.
+    post:
+      tags:
+        - Profile
+      summary: Register the user corrosponding to the magic token.
+      parameters:
+        - name: token
+          in: query
+          description: The token sent to the user.
+          required: true
+          schema:
+            type: string
+          example: 1b2c3d4e5f6g7h8i9j0k
+        - $ref: '#/components/parameters/cookie'
+      requestBody:
+        description: The user's profile details.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                photos_opt_out:
+                  type: boolean
+                  example: false
+                dietary_restrictions:
+                  type: array
+                  items:
+                    type: string
+                  minItems: 0
+                  example: ['lactose intolerant']
+                allergies:
+                  type: array
+                  items:
+                    type: string
+                  minItems: 0
+                  example: []
+                pronouns:
+                  type: string
+                  example: she/her
+                meals:
+                  type: array
+                  items:
+                    type: boolean
+                  minItems: 3
+                  maxItems: 3
+                  example: [false, false, false]
+      responses:
+        '204':
+          description: The user has been successfully registered.
+        '400':
+          description: The token was missing, the body was invalid, or the user is already registered.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Missing registration token.
+        '403':
+          description: The token was invalid, or expired.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Invalid token.
+
+  /profile/{id}:
+    get:
+      tags:
+        - Profile
+      summary: Get a user's profile
+      description: |
+        Returns the profile object for the user with the given id.
+        Only volunteers and gods can access this route.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The id of the user to fetch.
+          required: true
+          schema:
+            type: string
+          example: cryptographicallySecureId
+        - $ref: '#/components/parameters/cookie'
+      responses:
+        '200':
+          description: Returns profile object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+              example:
+                $ref: '#/components/examples/ExampleProfile'
+        '404':
+          description: The user was not found.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: User not found.
+        '403':
+          description: When a user is not logged in.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: You do not have access to GET /api/profile/{id}
+
+  /event:
+    get:
+      tags:
+        - Event
+      summary: Get all events
+      description: |
+        Returns all events.
+        Only returns public events if a user is not logged in.
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/cookie'
+      responses:
+        '200':
+          description: Returns all events.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+    post:
+      tags:
+        - Event
+      summary: Create an event
+      description: |
+        Create an event.
+        Only admins and gods can create events.
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/cookie'
+      requestBody:
+        description: The event details.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Event'
+      responses:
+        '400':
+          description: The request was malformed.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Invalid request
+        '403':
+          description: When a user other than an admin or god accesses this route.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: You do not have access to POST /api/event
+        '201':
+          description: The event has been created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: number
+                    example: 1
+
+  /event/{id}:
+    put:
+      tags:
+        - Event
+      summary: Update an event
+      description: |
+        Update an event.
+        Only admins and gods can update events.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The id of the event to update.
+          required: true
+          schema:
+            type: number
+          example: 1
+        - $ref: '#/components/parameters/cookie'
+      requestBody:
+        description: The event details.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: Perry VS Doofenshmirtz
+                description:
+                  type: string
+                  example: The ultimate showdown between Perry and Doofenshmirtz.
+                pinUntil:
+                  type: string
+                  format: date-time
+                  example: 2025-01-01T00:00:00Z
+      responses:
+        '400':
+          description: The request was malformed.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Invalid request
+        '403':
+          description: When a user other than an admin or god accesses this route.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: You do not have access to PUT /api/event/1
+        '404':
+          description: The event was not found.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Event not found
+        '201':
+          description: The event has been updated.
+
+    delete:
+      tags:
+        - Event
+      summary: Delete an event
+      description: |
+        Delete an event.
+        Only admins and gods can delete events.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          description: The id of the event to delete.
+          required: true
+          schema:
+            type: number
+          example: 1
+        - $ref: '#/components/parameters/cookie'
+      responses:
+        '403':
+          description: When a user other than an admin or god accesses this route.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: You do not have access to DELETE /api/event/1
+        '404':
+          description: The event was not found.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Event not found
+        '400':
+          description: Invalid event id.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Invalid event id
+        '204':
+          description: The event has been deleted.
+
+  /team:
+    post:
+      tags:
+        - Team
+      summary: Create a team.
+      description: |
+        Create a team.
+        Only hackers can create a team.
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/cookie'
+      requestBody:
+        description: The team name.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Team Rocket
+      responses:
+        '400':
+          description: User was already in a team, or did not supply a team name.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: User is already in a team.
+        '403':
+          description: When a user other than a hacker accesses this route.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: You do not have access to POST /api/team
+        '201':
+          description: The team has been created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: number
+                    example: 1
+    put:
+      tags:
+        - Team
+      summary: Update a team.
+      description: |
+        Update a team.
+        Only the leader of a team can update a team.
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/cookie'
+      requestBody:
+        description: The partial team body.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                team_name:
+                  type: string
+                  example: Team Rocket
+                sponsorCategory:
+                  type: string
+                  example: /jetbrains-app-development-in-kotlin
+                submissionLink:
+                  type: string
+                  format: uri
+                  example: https://github.com/icdocsoc/ichack
+                phone:
+                  type: string
+                  example: '+444444444444'
+                phone2:
+                  type: string
+                  example: '+966555555555'
+      responses:
+        '400':
+          description: Invalid request body.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Invalid team body.
+        '403':
+          description: When a user other than a hacker accesses this route.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: You do not have access to PUT /api/team
+        '204':
+          description: The team has been updated.
+
+    get:
+      tags:
+        - Team
+      summary: Get signed in user's team.
+      description: |
+        Get signed in user's team.
+        Only hackers can access this route.
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/cookie'
+      responses:
+        '200':
+          description: Returns your team.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+        '403':
+          description: When a user other than a hacker accesses this route.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: You do not have access to GET /api/team
+        '404':
+          description: The user does not have a team.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: User is not in a team.
+
+    delete:
+      tags:
+        - Team
+      summary: Delete a team.
+      description: |
+        Delete a team.
+        Only the leader of a team can delete a team.
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/cookie'
+      responses:
+        '403':
+          description: When a user other than a hacker accesses this route.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: You do not have access to DELETE /api/team
+        '404':
+          description: The user does not lead a team.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: User does not lead any team.
+        '204':
+          description: The team has been deleted.
+
+  /team/transfer:
+    put:
+      tags:
+        - Team
+      summary: Transfer team leadership.
+      description: |
+        Transfer team leadership.
+        Only the leader of a team can transfer leadership.
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/cookie'
+      requestBody:
+        description: The new leader's id.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  example: cryptographicallySecureId
+      responses:
+        '400':
+          description: Invalid request body - did not supply a user ID to transfer to, or there is no user with this ID in this team.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Invalid request body.
+        '403':
+          description: When a user other than a hacker accesses this route.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: You do not have access to PUT /api/team/transfer
+        '404':
+          description: User does not lead any teams.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: User does not lead any teams.
+        '204':
+          description: The team leadership has been transferred.
+
+  /team/search:
+    get:
+      tags:
+        - Team
+      summary: Search for a hacker to invite to your team.
+      description: |
+        Search for a hacker to invite to your team.
+        Only hackers can access this route.
+        Supplying both an email and a name will cause the name to take precedence.
+        Partial matches on name are returned, only full matches on email are returned.
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/cookie'
+        - name: name
+          in: query
+          description: The name to search for. Takes precedence over email.
+          schema:
+            type: string
+          example: Silver
+        - name: email
+          in: query
+          description: The email to search for.
+          schema:
+            type: string
+          example: silver@cats.com
+      responses:
+        '400':
+          description: Invalid request body. No name or email provided.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Invalid request body.
+        '404':
+          description: No hackers match this search query.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: User not found.
+        '200':
+          description: Returns all hackers that match the search query.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      example: cryptographicallySecureId
+                    name:
+                      type: string
+                      example: Silver the Cat
+                    inTeam:
+                      type: boolean
+                      example: true
+        '403':
+          description: When a user other than a hacker accesses this route.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: You do not have access to GET /api/team/search
+
+  /team/invite:
+    post:
+      tags:
+        - Team
+      summary: Invite a hacker to your team.
+      description: |
+        Invite a hacker to your team.
+        Only the leader of a team can invite a hacker.
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/cookie'
+      requestBody:
+        description: The hacker's id.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  example: cryptographicallySecureId
+      responses:
+        '400':
+          description: Invalid request body - did not supply a user ID to invite, or user does not lead a team.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Invalid post body.
+        '403':
+          description: When a user other than a hacker accesses this route, or team is already at max users.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: You do not have access to POST /api/team/invite
+        '404':
+          description: There is no user with this ID.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: User does not lead any teams.
+        '409':
+          description: The invited user is already in a team, maybe even this team, or is already invited to this team.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: User is already in a team.
+        '204':
+          description: The hacker has been invited to the team.
+
+  /team/acceptInvite:
+    put:
+      tags:
+        - Team
+      summary: Accept an invite to a team.
+      description: |
+        Accept an invite to a team.
+        Only hackers can accept invites.
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/cookie'
+      requestBody:
+        description: The team's id.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                teamId:
+                  type: integer
+                  example: 1
+      responses:
+        '403':
+          description: |
+            When a user other than a hacker accesses this route, or team is already at maximum users.
+            If this user accepting the invite makes the team at max users, then all other invites are deleted.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Team is already at max users.
+        '400':
+          description: This user does not have an invite from this team, or the request was invalid.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: User was not invited to this team.
+        '409':
+          description: The user is already in a team.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: User is already in a team.
+        '204':
+          description: The invite has been accepted.
+
+  /team/removeInvite:
+    post:
+      tags:
+        - Team
+      summary: Declines an invite to a team.
+      description: |
+        Declines an invite to a team.
+        Only a hacker with an invite can decline an invite.
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/cookie'
+      requestBody:
+        description: The team's id.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                teamId:
+                  type: integer
+                  example: 1
+      responses:
+        '403':
+          description: When a user other than a hacker accesses this route.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: You do not have access to POST /api/team/removeInvite
+        '400':
+          description: The request was invalid.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Invalid request.
+        '404':
+          description: The user does not have an invite from this team.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Invite does not exist.
+        '204':
+          description: The invite has been removed.
+
+  /team/removeUser/{userId}:
+    post:
+      tags:
+        - Team
+      summary: Remove a user from a team.
+      description: |
+        Remove a user from team.
+        Only the leader of a team can remove a user.
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/cookie'
+        - name: userId
+          in: path
+          description: The id of the user to kick from the team.
+          required: true
+          schema:
+            type: string
+          example: cryptographicallySecureId
+      responses:
+        '400':
+          description: The request was invalid, the user is trying to remove themselves, or the user does not lead any teams.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: User is trying to remove self.
+        '403':
+          description: When a user other than a hacker accesses this route.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: You do not have access to DELETE /api/team/removeInvite/cryptographicallySecureId
+        '404':
+          description: The user is not in this team.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Target is not in the team.
+        '204':
+          description: The user has been removed.
+
+  /team/removeUser:
+    post:
+      tags:
+        - Team
+      summary: Leave a team.
+      description: |
+        Leave a team.
+        Only a hacker can leave a team.
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/cookie'
+      responses:
+        '403':
+          description: When a user other than a hacker accesses this route.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: You do not have access to POST /api/team/removeUser
+        '400':
+          description: The user is not in a team, or the user is the leader of the team.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: User is not in a team.
+        '204':
+          description: The user has been removed.

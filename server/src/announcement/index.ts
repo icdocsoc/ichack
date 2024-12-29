@@ -13,7 +13,7 @@ const announcement = factory
   /**
    * GET /all
    */
-  .get('/all', grantAccessTo('authenticated'), c => c.text('', 418))
+  .get('/', grantAccessTo('authenticated'), c => c.text('', 418))
   /**
    * POST /
    * This endpoint creates a new announcement. Only admins can access this endpoint.

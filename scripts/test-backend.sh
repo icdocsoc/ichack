@@ -1,6 +1,12 @@
 ROOT_DIR=$(pwd)
 export NODE_ENV=test
+
+export PGUSER=test
+export PGHOST=0.0.0.0
+export PGDB=postgres
 export PGPASSWORD=test
+export PGPORT=5433
+
 DOCKER_CONTAINER_NAME=postgres_test
 
 # Assert that ROOT_DIR is the root directory
@@ -37,9 +43,9 @@ if [[ $processes == *"$DOCKER_CONTAINER_NAME"* ]]; then
 else
   docker run -d \
     --name $DOCKER_CONTAINER_NAME \
-    -e POSTGRES_USER=test \
+    -e POSTGRES_USER=$PGUSER \
     -e POSTGRES_PASSWORD=$PGPASSWORD \
-    -p 5432:5432 \
+    -p $PGPORT:5432 \
     postgres:16 > /dev/null
 fi
 sleep 1
@@ -56,7 +62,7 @@ while ! docker exec $DOCKER_CONTAINER_NAME pg_isready -U test > /dev/null; do
 done
 
 echo "--- Setting up database ---"
-if psql -h 0.0.0.0 -p 5432 -U test -d postgres -f $ROOT_DIR/data/schema.sql 2>&1 | grep error; then
+if psql -h $PGHOST -p $PGPORT -U $PGUSER -d $PGDB -f ./data/schema.sql 2>&1 | grep error; then
   echo "--- Database setup failed ---"
   exit 1
 else

@@ -145,7 +145,7 @@ const auth = factory
           await tx.delete(users).where(eq(users.id, id)).returning();
         } catch (e) {
           // When other tables have a foreign key constraint on users
-          return c.text('Failed to delete user', 400);
+          return c.text('Failed to delete user', 422);
         }
       });
 

@@ -31,6 +31,10 @@ This is the first time IC Hack tech systems will have extensive documentation. O
 1. Install [Obsidian](https://obsidian.md/).
 2. Open the path `./documentation` as an Obsidian Vault.
 
+### API Reference
+
+You can also view the API Reference for the server. Run `bunx serve scalar` and visit the URL to view the documentation.
+
 > [!important]
 > The documentation started authoring from 4th July 2024. The contributors will try to document this code as much as possible and encourage the future volunteers to do so as well. However, it may not be the case that everything is documented perfectly.
 >

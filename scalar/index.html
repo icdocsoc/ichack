@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IC Hack'25 Server Reference</title>
+  </head>
+  <body>
+    <script id="api-reference" data-url="./api.yaml"></script>
+    <script>
+      var configuration = {
+        defaultHttpClient: {
+          targetKey: 'Shell',
+          clientKey: 'cURL'
+        },
+        theme: 'bluePlanet',
+        tagsSorter: 'alpha',
+        hideDownloadButton: true,
+        forceDarkModeState: 'dark',
+        hideDarkModeToggle: true
+      };
+
+      document.getElementById('api-reference').dataset.configuration =
+        JSON.stringify(configuration);
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
+  </body>
+</html>

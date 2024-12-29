@@ -24,7 +24,6 @@ const adminUpdateCategorySchema = insertCategorySchema
     longDescription: true
   })
   .partial()
-  .partial()
   .strict();
 
 const slugPattern = /^[a-z0-9-]+$/;
