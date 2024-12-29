@@ -11,14 +11,19 @@ export const events = pgTable('events', {
   public: boolean('public').notNull()
 });
 
-export const createEventBody = createInsertSchema(events, {
+export const createEventSchema = createInsertSchema(events, {
+  title: schema => schema.title.nonempty(),
+  description: schema => schema.description.nonempty(),
   startsAt: z.coerce.date(),
   endsAt: z.coerce.date()
 })
   .omit({ id: true })
   .strict()
   .refine(data => data.endsAt == undefined || data.startsAt < data.endsAt, {
-    message: 'Event must start before it ends.'
+    message: 'Event must start before it ends.',
+    // Only show the error on the endsAt field (for now)
+    // Issue detailed here: https://github.com/nuxt/ui/pull/2982
+    path: ['endsAt']
   });
 
 export const updateEventBody = createSelectSchema(events, {
@@ -28,3 +33,8 @@ export const updateEventBody = createSelectSchema(events, {
   .partial()
   .strict()
   .omit({ id: true });
+
+export const eventSchema = createSelectSchema(events, {
+  startsAt: z.date(),
+  endsAt: z.date()
+});

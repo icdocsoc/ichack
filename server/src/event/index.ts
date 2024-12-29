@@ -1,7 +1,7 @@
 import factory from '../factory';
 import { grantAccessTo } from '../security';
 import { db } from '../drizzle';
-import { events, createEventBody, updateEventBody } from './schema';
+import { events, createEventSchema, updateEventBody } from './schema';
 import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { simpleValidator } from '../validators';
@@ -25,7 +25,7 @@ const event = factory
   .post(
     '/',
     grantAccessTo('admin'),
-    simpleValidator('json', createEventBody),
+    simpleValidator('json', createEventSchema),
     async ctx => {
       const body = ctx.req.valid('json');
       const eventInDb = await db.insert(events).values(body).returning();

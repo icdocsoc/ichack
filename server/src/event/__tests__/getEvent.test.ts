@@ -57,7 +57,7 @@ describe('Events Module > GET /', () => {
       id: expect.any(Number),
       endsAt: null
     });
-    expect(eventFromRes[0].id).toBeTruthy();
+    expect(eventFromRes[0]!.id).toBeTruthy();
 
     // Verify correct response code
     expect(res.status).toBe(200);
