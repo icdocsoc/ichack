@@ -15,7 +15,9 @@ export default defineNuxtConfig({
     }
   },
 
-  extends: ['../ui25'],
+  modules: ['@vueuse/nuxt'],
+
+  extends: ['../ui25', '../common'],
   compatibilityDate: '2024-12-13',
   future: {
     compatibilityVersion: 4

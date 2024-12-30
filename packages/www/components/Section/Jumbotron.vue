@@ -1,7 +1,8 @@
 <template>
-  <section class="bg-cream-ic flex w-screen justify-center gap-x-32 px-40 pb-4">
+  <section
+    class="bg-cream-ic relative z-50 flex w-screen justify-center gap-x-32 px-40 pb-4">
     <div
-      class="vertical-border vb-before vb-after relative flex w-[26em] flex-col before:h-4/5 after:h-1/2">
+      class="vertical-border vb-before vb-after relative z-50 flex w-[26em] flex-col before:h-4/5 after:h-1/2">
       <div class="bg-red-ic flex flex-col items-center gap-2 px-8 py-6">
         <div class="bg-yellow-ic aspect-square w-[10%] self-start" />
         <img
@@ -22,7 +23,7 @@
       </div>
     </div>
 
-    <div class="pt-5">
+    <div class="relative z-50 pt-5">
       <div class="flex flex-col rounded-xl border-2 border-black p-5">
         <div
           class="flex items-center justify-between border-2 border-black px-2 py-3 text-xl">
@@ -50,6 +51,10 @@
         </div>
       </div>
     </div>
+
+    <ClientOnly v-if="!isLessThanLg">
+      <DinoAnimation class="absolute bottom-0 left-0 right-0" />
+    </ClientOnly>
   </section>
 </template>
 
@@ -64,6 +69,8 @@ import {
   MouseConstraint
 } from 'matter-js';
 
+const isLessThanLg = ref(false);
+
 const config = useRuntimeConfig();
 
 const urlPrefix = config.public.physicsUrlPrefix;
@@ -73,6 +80,18 @@ const letters = ['hollow_cube', 'i', 'c', 'h', 'a', 'yellow_c', 'k'].map(
 
 const physWidth = ref(350);
 const physHeight = ref(400);
+
+onBeforeMount(() => {
+  const onResize = () => {
+    isLessThanLg.value = window.innerWidth < 1024;
+  };
+  onResize();
+  window.addEventListener('resize', onResize);
+
+  onBeforeUnmount(() => {
+    window.removeEventListener('resize', onResize);
+  });
+});
 
 onMounted(async () => {
   // create an engine
