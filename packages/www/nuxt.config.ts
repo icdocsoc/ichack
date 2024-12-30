@@ -19,6 +19,9 @@ export default defineNuxtConfig({
     rootAttrs: {
       id: 'app',
       style: 'overflow-x: hidden;'
+    },
+    head: {
+      titleTemplate: '%s'
     }
   },
 
@@ -31,11 +34,6 @@ export default defineNuxtConfig({
   },
   site: {
     url: 'ichack.org',
-    indexable: false // TODO: set to true when ready for production
+    indexable: true
   },
-  app: {
-    head: {
-      titleTemplate: '%s'
-    }
-  }
 });

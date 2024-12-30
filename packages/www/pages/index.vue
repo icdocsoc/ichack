@@ -1,9 +1,10 @@
 <template>
   <ICNavBar />
 
-  <main>
+  <main class="min-h-svh bg-black">
     <SectionJumbotron class="pb-10" />
     <SectionCountdown class="py-8" />
+    <SectionFooter />
   </main>
 </template>
 
