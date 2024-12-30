@@ -1,53 +1,53 @@
 <template>
-  <section
-    class="bg-cream-ic relative z-50 flex w-screen justify-center gap-x-32 px-40 pb-4">
+  <section class="bg-cream-ic relative w-screen px-5">
     <div
-      class="vertical-border vb-before vb-after relative z-50 flex w-[26em] flex-col before:h-4/5 after:h-1/2">
-      <div class="bg-red-ic flex flex-col items-center gap-2 px-8 py-6">
-        <div class="bg-yellow-ic aspect-square w-[10%] self-start" />
-        <img
-          src="@ui25/assets/coloured_cube.svg"
-          class="h-auto w-[70%] place-self-center" />
-        <p
-          class="font-expanded place-self-center text-[32px] font-black text-white">
-          IC HACK ‘25
-        </p>
-      </div>
+      class="flex justify-between gap-12 max-md:flex-col lg:justify-center lg:gap-64">
+      <div
+        class="lg:vertical-border vb-before vb-after max-w-96 self-center before:h-4/5 after:h-1/2">
+        <div class="bg-red-ic flex flex-col items-center gap-8 px-12 py-8">
+          <div class="bg-yellow-ic aspect-square w-12 self-start" />
+          <img
+            src="@ui25/assets/coloured_cube.svg"
+            alt="IC Hack ‘25"
+            class="mx-4" />
+          <h1 class="font-expanded text-[32px] font-black text-white">
+            IC HACK ‘25
+          </h1>
+        </div>
 
-      <div class="flex h-auto pt-4">
-        <img class="flex-shrink-0" src="@ui25/assets/candle.svg" />
-        <div class="ml-auto self-end text-right">
-          <p class="font-expanded text-3xl font-black">POWERED BY</p>
-          <p>&lt;img src="@ui25/public/title_sponsor_DO_NOT_SHARE.png"&gt;</p>
+        <div class="mt-9 flex gap-10">
+          <img src="@ui25/assets/candle.svg" />
+          <div class="flex flex-1 flex-col items-end justify-between gap-3">
+            <p class="text-end text-2xl">
+              The largest student run hackathon in Europe
+            </p>
+            <div>
+              <p class="text-end text-2xl font-black uppercase">Powered By</p>
+              <div
+                class="font-ichack flex flex-col items-center border-4 border-dotted border-black p-2">
+                <p class="text-4xl">404</p>
+                <p class="text-xs">Sponsor not found</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="relative z-50 pt-5">
-      <div class="flex flex-col rounded-xl border-2 border-black p-5">
+      <div
+        class="flex flex-col rounded-xl border-2 border-black p-4 md:mt-10 md:w-[35vw] md:max-w-[500px]">
         <div
-          class="flex items-center justify-between border-2 border-black px-2 py-3 text-xl">
-          <div class="size-8 rounded-lg bg-black" />
-          <p>Feb 1 - 2</p>
-          <p>Imperial College London</p>
+          class="flex items-center justify-between gap-4 rounded-xl border-2 border-black px-2 py-3">
+          <div class="size-6 rounded-lg bg-black" />
+          <p class="min-w-max flex-1 text-center">Feb 1 - 2</p>
+          <p class="text-end">Imperial College London</p>
         </div>
 
-        <p class="pl-4 pt-4 text-xl">
-          The largest student-run
-          <br />
-          hackathon in Europe.
-        </p>
-
-        <div class="flex h-full justify-between">
+        <div class="mt-8 flex flex-1 flex-col justify-between xl:flex-row">
           <p
-            class="text-horizontal font-expanded flex-shrink-0 self-end font-black"
-            style="font-size: 100px; line-height: 100px; letter-spacing: 5px">
+            class="xl:text-horizontal font-expanded self-end text-6xl font-black tracking-wide xl:text-8xl">
             2025
           </p>
-          <div
-            class="flex-shrink-1 mb-2 mr-4"
-            :class="`w-[${physWidth}px] h-[${physHeight}px]`"
-            ref="physics" />
+          <div class="mx-4 mb-2 min-h-[400px] flex-1" ref="physics" />
         </div>
       </div>
     </div>
@@ -73,13 +73,14 @@ const isLessThanLg = ref(false);
 
 const config = useRuntimeConfig();
 
-const urlPrefix = config.public.physicsUrlPrefix;
+let urlPrefix = config.public.physicsUrlPrefix;
 const letters = ['hollow_cube', 'i', 'c', 'h', 'a', 'yellow_c', 'k'].map(
   v => v + '.png'
 );
+const physics = useTemplateRef<HTMLDivElement>('physics');
 
-const physWidth = ref(350);
-const physHeight = ref(400);
+let render: Render;
+let physicsBox: HTMLDivElement | undefined;
 
 onBeforeMount(() => {
   const onResize = () => {
@@ -94,16 +95,21 @@ onBeforeMount(() => {
 });
 
 onMounted(async () => {
+  physicsBox = physics.value ?? undefined;
+
   // create an engine
-  var engine = Engine.create();
+  let engine = Engine.create();
+
+  let height = Math.max(400, physicsBox?.clientHeight ?? 0);
+  let width = physicsBox?.clientWidth ?? 0;
 
   // create a renderer
-  var render = Render.create({
-    element: physics.value,
+  render = Render.create({
+    element: physicsBox,
     engine: engine,
     options: {
-      width: physWidth.value,
-      height: physHeight.value,
+      width: width,
+      height: height,
       wireframes: false,
       background: 'transparent'
     }
@@ -116,10 +122,10 @@ onMounted(async () => {
       fillStyle: 'transparent'
     }
   };
-  var ground = Bodies.rectangle(400, 400, 800, 10, boundry_style);
-  var roof = Bodies.rectangle(0, 0, 800, 10, boundry_style);
-  var left_wall = Bodies.rectangle(0, 0, 10, 800, boundry_style);
-  var right_wall = Bodies.rectangle(350, 0, 10, 800, boundry_style);
+  let ground = Bodies.rectangle(400, height, 800, 10, boundry_style);
+  let roof = Bodies.rectangle(0, 0, 800, 10, boundry_style);
+  let left_wall = Bodies.rectangle(0, 0, 10, 1200, boundry_style);
+  let right_wall = Bodies.rectangle(width, 0, 10, 1200, boundry_style);
 
   Composite.add(engine.world, [ground, left_wall, right_wall, roof]);
 
@@ -127,10 +133,14 @@ onMounted(async () => {
   Render.run(render);
 
   // create runner
-  var runner = Runner.create();
+  let runner = Runner.create();
 
   // run the engine
   Runner.run(runner, engine);
+
+  if ((physicsBox?.clientWidth ?? 0) < 300) {
+    urlPrefix += '_small';
+  }
 
   // add the letters
   let offs = 0;
@@ -140,20 +150,20 @@ onMounted(async () => {
       Bodies.rectangle(75 + offs, 50, 100, 100, {
         render: {
           sprite: {
-            texture: urlPrefix + letter,
+            texture: `${urlPrefix}/${letter}`,
             xScale: 1,
             yScale: 1
           }
         }
       })
     );
-    offs += 40;
+    offs += (width ?? 0) / 10;
     await new Promise(f => setTimeout(f, 500));
   }
 
   // add mouse control
-  var mouse = Mouse.create(render.canvas);
-  var mouseConstraint = MouseConstraint.create(engine, {
+  let mouse = Mouse.create(render.canvas);
+  let mouseConstraint = MouseConstraint.create(engine, {
     mouse: mouse,
     constraint: {
       stiffness: 0.2,
@@ -163,6 +173,23 @@ onMounted(async () => {
     }
   });
   Composite.add(engine.world, mouseConstraint);
+
+  window.addEventListener('resize', onResize, true);
+  onUnmounted(() => {
+    window.removeEventListener('resize', onResize, true);
+    Render.stop(render);
+    Runner.stop(runner);
+  });
 });
-const physics = ref();
+
+function onResize() {
+  render.canvas.hidden = true;
+  const newWidth = physicsBox?.clientWidth ?? 0;
+
+  render.bounds.max.x = newWidth;
+  render.options.width = newWidth;
+  render.canvas.width = newWidth;
+
+  render.canvas.hidden = false;
+}
 </script>

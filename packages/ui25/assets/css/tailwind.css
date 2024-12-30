@@ -11,6 +11,10 @@
     writing-mode: vertical-rl;
   }
 
+  .vertical-border {
+    @apply relative;
+  }
+
   .vertical-border::before,
   .vertical-border::after {
     @apply absolute top-0 w-px content-normal bg-black opacity-50;

@@ -2,7 +2,7 @@ export default defineNuxtConfig({
   $development: {
     runtimeConfig: {
       public: {
-        physicsUrlPrefix: '/_nuxt/public/physics/'
+        physicsUrlPrefix: '/_nuxt/public/physics'
       }
     }
   },
@@ -10,19 +10,25 @@ export default defineNuxtConfig({
   $production: {
     runtimeConfig: {
       public: {
-        physicsUrlPrefix: '/physics/'
+        physicsUrlPrefix: '/physics'
       }
     }
   },
 
-  modules: ['@vueuse/nuxt'],
+  app: {
+    rootAttrs: {
+      id: 'app',
+      style: 'overflow-x: hidden;'
+    }
+  },
+
+  modules: ['@vueuse/nuxt', '@nuxtjs/seo'],
 
   extends: ['../ui25', '../common'],
   compatibilityDate: '2024-12-13',
   future: {
     compatibilityVersion: 4
   },
-  modules: ['@nuxtjs/seo'],
   site: {
     url: 'ichack.org',
     indexable: false // TODO: set to true when ready for production

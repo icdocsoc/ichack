@@ -1,19 +1,19 @@
 <template>
-  <section
-    class="font-ichack flex w-full place-content-center gap-x-7 bg-black text-white">
-    <CountdownBox
-      class="bg-blue-ic row-span-2"
-      :value="days"
-      unit="days"
-      size="large" />
+  <section class="font-ichack bg-black md:flex md:justify-center">
+    <div
+      class="mx-5 grid max-w-[1000px] grid-cols-2 grid-rows-4 gap-3 md:grid-cols-3 md:grid-rows-2 md:gap-x-10">
+      <CountdownBox
+        class="bg-blue-ic row-span-2 text-white max-md:col-span-2"
+        :value="days"
+        unit="days"
+        size="large" />
 
-    <CountdownBox
-      class="bg-red-ic row-span-2"
-      :value="hours"
-      unit="hours"
-      size="large" />
+      <CountdownBox
+        class="bg-red-ic row-span-2 text-white"
+        :value="hours"
+        unit="hours"
+        size="medium" />
 
-    <div class="flex h-auto flex-col gap-y-5 text-black">
       <CountdownBox
         class="bg-yellow-ic"
         :value="minutes"

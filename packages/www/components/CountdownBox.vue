@@ -1,18 +1,32 @@
 <template>
-  <div class="flex min-h-fit items-end gap-x-4 px-5 pb-4 pt-6">
-    <p :class="size == 'large' ? 'text-9xl' : 'text-5xl'">
-      {{ value < 10 ? '0' + value : value }}
-    </p>
-    <p :class="size == 'large' ? 'text-md' : 'text-sm'">{{ unit }}</p>
+  <div class="font-ichack flex items-center justify-center">
+    <div class="mx-2 my-2 flex flex-wrap items-end gap-2">
+      <p :class="displayValueClass">
+        {{ displayValue }}
+      </p>
+      <p>{{ unit }}</p>
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 type Props = {
   value: number;
-  unit: String;
-  size: 'large' | 'small';
+  unit: string;
+  size: 'large' | 'medium' | 'small';
 };
 
-const { value, unit } = defineProps<Props>();
+const displayValue = computed(() => (value < 10 ? '0' + value : value));
+const displayValueClass = computed(() => {
+  switch (size) {
+    case 'large':
+      return 'text-8xl md:text-6xl';
+    case 'medium':
+      return 'text-6xl';
+    case 'small':
+      return 'text-4xl';
+  }
+});
+
+const { value, unit, size } = defineProps<Props>();
 </script>

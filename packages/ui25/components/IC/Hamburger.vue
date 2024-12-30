@@ -13,29 +13,17 @@ function handleToggle() {
 
 <template>
   <div
-    class="flex aspect-[4/3] cursor-pointer flex-col justify-between"
+    class="flex aspect-[4/3] cursor-pointer flex-col items-end justify-between"
     :class="{ active }"
     @click="handleToggle">
-    <span></span>
-    <span></span>
-    <span></span>
+    <span class="w-full"></span>
+    <span class="w-2/3"></span>
+    <span class="w-1/3"></span>
   </div>
 </template>
 
 <style scoped>
 span {
-  @apply h-0.5 w-full origin-left bg-white opacity-100 transition-all duration-500 ease-in-out;
-}
-
-.active span:nth-of-type(1) {
-  @apply rotate-45;
-}
-
-.active span:nth-of-type(2) {
-  @apply opacity-0;
-}
-
-.active span:nth-of-type(3) {
-  @apply -rotate-45;
+  @apply h-1 origin-left bg-white opacity-100 transition-all duration-500 ease-in-out;
 }
 </style>

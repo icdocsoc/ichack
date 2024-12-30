@@ -2,8 +2,8 @@
   <ICNavBar />
 
   <main>
-    <SectionJumbotron />
-    <SectionCountdown class="py-12" />
+    <SectionJumbotron class="pb-10" />
+    <SectionCountdown class="py-8" />
   </main>
 </template>
 

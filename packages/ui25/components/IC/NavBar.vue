@@ -1,10 +1,10 @@
 <template>
-  <nav class="relative flex justify-between bg-black px-12">
+  <nav class="relative flex justify-between bg-black px-5">
     <img src="@ui25/assets/cropped_logo.svg" class="mt-4" />
 
-    <ICHamburger
+    <!-- <ICHamburger
       class="w-8 self-center lg:hidden"
-      @toggle="v => (hamburgerActive = v)" />
+      @toggle="v => (hamburgerActive = v)" /> -->
     <ul :class="menuStyles">
       <li v-for="(button, i) in buttons" :key="i">
         <!-- TODO change this depending on new page or different section -->
@@ -21,9 +21,9 @@
 
 <script lang="ts" setup>
 type Props = {
-  buttons: { title: string; to: string }[];
+  buttons?: { title: string; to: string }[];
 };
-const { buttons } = defineProps<Props>();
+const { buttons = [] } = defineProps<Props>();
 const bgColors = ['bg-blue-ic', 'bg-red-ic', 'bg-yellow-ic'];
 
 const hamburgerActive = ref(false);
