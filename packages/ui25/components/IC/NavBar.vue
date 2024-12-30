@@ -1,6 +1,6 @@
 <template>
   <nav class="relative flex justify-between bg-black px-5">
-    <img src="@ui25/assets/cropped_logo.svg" class="mt-4" />
+    <!-- <img src="@ui25/assets/cropped_logo.svg" class="mt-4" /> -->
 
     <!-- <ICHamburger
       class="w-8 self-center lg:hidden"

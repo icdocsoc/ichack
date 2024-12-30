@@ -34,7 +34,7 @@
       </div>
 
       <div
-        class="flex flex-col rounded-xl border-2 border-black p-4 md:mt-10 md:w-[35vw] md:max-w-[500px]">
+        class="z-50 flex flex-col rounded-xl border-2 border-black p-4 md:mt-10 md:w-[35vw] md:max-w-[500px]">
         <div
           class="flex items-center justify-between gap-4 rounded-xl border-2 border-black px-2 py-3">
           <div class="size-6 rounded-lg bg-black" />

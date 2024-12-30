@@ -35,5 +35,5 @@ export default defineNuxtConfig({
   site: {
     url: 'ichack.org',
     indexable: true
-  },
+  }
 });
