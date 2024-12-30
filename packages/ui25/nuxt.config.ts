@@ -27,6 +27,7 @@ export default defineNuxtConfig({
       theme: {
         extend: {
           colors: {
+            'darkblue-ic': '#2d4061',
             'blue-ic': '#0060E6',
             'red-ic': '#ED4250',
             'yellow-ic': '#FBB03B',
