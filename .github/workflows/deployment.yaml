@@ -147,7 +147,7 @@ jobs:
         uses: trstringer/manual-approval@v1
         with:
           secret: ${{ github.TOKEN }}
-          approvers: cybercoder-naj,dropheart
+          approvers: cybercoder-naj,Dropheart
           minimum-approvals: 1
           issue-title: 'deploy website to production'
           issue-body: 'Please approve or deny the deployment.'

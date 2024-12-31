@@ -1,5 +1,5 @@
 <template>
-  <footer class="mt-12 flex w-screen flex-col gap-y-12 px-5 lg:mb-8 lg:px-8">
+  <footer class="mt-12 flex w-screen flex-col gap-y-12 px-5 lg:px-8">
     <div>
       <p class="text-center text-2xl text-white">Don’t miss a thing.</p>
       <div class="mt-4 flex justify-center">
