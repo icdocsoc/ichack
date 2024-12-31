@@ -1,5 +1,5 @@
 <template>
-  <div class="overflow-x-hidden pt-24">
+  <div class="-z-10 overflow-x-hidden pt-24">
     <div
       class="transform-values inline-block cursor-help"
       @click="showAlert = true">

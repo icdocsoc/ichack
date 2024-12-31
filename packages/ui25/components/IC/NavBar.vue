@@ -32,7 +32,7 @@ const menuStyles = computed(() => {
     'absolute',
     'right-4',
     'top-full',
-    'z-50',
+    'z-40',
     'mt-4',
     'max-w-fit',
     'rounded-xl',

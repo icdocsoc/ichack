@@ -1,5 +1,5 @@
 <template>
-  <section class="bg-cream-ic relative w-screen px-5 text-black xl:px-16">
+  <section class="bg-cream-ic relative z-30 w-screen px-5 text-black xl:px-16">
     <div
       class="lg:gap-128 flex justify-between gap-12 max-lg:flex-col lg:mx-auto lg:max-w-[1080px]">
       <div
@@ -23,11 +23,12 @@
             </p>
             <div>
               <p class="text-end text-2xl font-black uppercase">Powered By</p>
-              <div
-                class="font-ichack flex flex-col items-center border-4 border-dotted border-black p-2">
-                <p class="text-4xl">404</p>
-                <p class="text-xs">Sponsor not found</p>
-              </div>
+              <a href="https://www.mwam.com">
+                <img
+                  class="mt-2"
+                  src="/public/sponsors/mwam.png"
+                  alt="IC Hack - Marshall Wace" />
+              </a>
             </div>
           </div>
         </div>
