@@ -20,9 +20,9 @@ const displayValue = computed(() => (value < 10 ? '0' + value : value));
 const displayValueClass = computed(() => {
   switch (size) {
     case 'large':
-      return 'text-8xl md:text-6xl';
+      return 'text-8xl md:text-7xl';
     case 'medium':
-      return 'text-6xl';
+      return 'text-6xl md:text-6xl lg:text-7xl';
     case 'small':
       return 'text-4xl';
   }

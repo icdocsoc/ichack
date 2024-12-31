@@ -1,10 +1,10 @@
 <template>
-  <section class="bg-cream-ic relative w-screen px-5">
+  <section class="bg-cream-ic relative w-screen px-5 text-black xl:px-16">
     <div
-      class="flex justify-between gap-12 max-md:flex-col lg:justify-center lg:gap-64">
+      class="lg:gap-128 flex justify-between gap-12 max-lg:flex-col lg:mx-auto lg:max-w-[1080px]">
       <div
-        class="lg:vertical-border vb-before vb-after max-w-96 self-center before:h-4/5 after:h-1/2">
-        <div class="bg-red-ic flex flex-col items-center gap-8 px-12 py-8">
+        class="sm:vertical-border vb-before vb-after max-w-96 self-center before:h-4/5 after:h-1/2 lg:self-stretch">
+        <div class="bg-red-ic flex flex-col items-center gap-2 px-10 pb-4 pt-6">
           <div class="bg-yellow-ic aspect-square w-12 self-start" />
           <img
             src="@ui25/assets/coloured_cube.svg"
@@ -15,7 +15,7 @@
           </h1>
         </div>
 
-        <div class="mt-9 flex gap-10">
+        <div class="mt-4 flex gap-10">
           <img src="@ui25/assets/candle.svg" />
           <div class="flex flex-1 flex-col items-end justify-between gap-3">
             <p class="text-end text-2xl">
@@ -34,7 +34,7 @@
       </div>
 
       <div
-        class="z-50 flex flex-col rounded-xl border-2 border-black p-4 md:mt-10 md:w-[35vw] md:max-w-[500px]">
+        class="z-50 flex flex-col rounded-xl border-2 border-black p-4 lg:mt-10 lg:w-[500px]">
         <div
           class="flex items-center justify-between gap-4 rounded-xl border-2 border-black px-2 py-3">
           <div class="size-6 rounded-lg bg-black" />
@@ -147,7 +147,7 @@ onMounted(async () => {
   for (const letter of letters) {
     Composite.add(
       engine.world,
-      Bodies.rectangle(75 + offs, 50, 100, 100, {
+      Bodies.rectangle(Math.min(75 + offs, width - 75), 50, 100, 100, {
         render: {
           sprite: {
             texture: `${urlPrefix}/${letter}`,
@@ -157,22 +157,24 @@ onMounted(async () => {
         }
       })
     );
-    offs += (width ?? 0) / 10;
+    offs += (width ?? 0) / 8;
     await new Promise(f => setTimeout(f, 500));
   }
 
-  // add mouse control
-  let mouse = Mouse.create(render.canvas);
-  let mouseConstraint = MouseConstraint.create(engine, {
-    mouse: mouse,
-    constraint: {
-      stiffness: 0.2,
-      render: {
-        visible: false
+  // add mouse control, only on desktop
+  if (!isLessThanLg.value) {
+    let mouse = Mouse.create(render.canvas);
+    let mouseConstraint = MouseConstraint.create(engine, {
+      mouse: mouse,
+      constraint: {
+        stiffness: 0.2,
+        render: {
+          visible: false
+        }
       }
-    }
-  });
-  Composite.add(engine.world, mouseConstraint);
+    });
+    Composite.add(engine.world, mouseConstraint);
+  }
 
   window.addEventListener('resize', onResize, true);
   onUnmounted(() => {

@@ -1,27 +1,27 @@
 <template>
-  <section class="font-ichack bg-black md:flex md:justify-center">
+  <section class="font-ichack bg-black px-5 xl:px-16">
     <div
-      class="mx-5 grid max-w-[1000px] grid-cols-2 grid-rows-4 gap-3 md:grid-cols-3 md:grid-rows-2 md:gap-x-10">
+      class="mx-auto grid max-w-[1080px] grid-cols-2 grid-rows-4 gap-3 md:grid-cols-3 md:grid-rows-2">
       <CountdownBox
-        class="bg-blue-ic row-span-2 text-white max-md:col-span-2"
+        class="bg-blue-ic row-span-2 max-md:col-span-2"
         :value="days"
         unit="days"
         size="large" />
 
       <CountdownBox
-        class="bg-red-ic row-span-2 text-white"
+        class="bg-red-ic row-span-2"
         :value="hours"
         unit="hours"
         size="medium" />
 
       <CountdownBox
-        class="bg-yellow-ic"
+        class="bg-yellow-ic text-black"
         :value="minutes"
         unit="minutes"
         size="small" />
 
       <CountdownBox
-        class="bg-white"
+        class="bg-white text-black"
         :value="seconds"
         unit="seconds"
         size="small" />

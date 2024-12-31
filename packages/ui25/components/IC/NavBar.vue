@@ -1,5 +1,5 @@
 <template>
-  <nav class="relative flex justify-between bg-black px-5">
+  <nav class="relative flex justify-between px-5">
     <!-- <img src="@ui25/assets/cropped_logo.svg" class="mt-4" /> -->
 
     <!-- <ICHamburger

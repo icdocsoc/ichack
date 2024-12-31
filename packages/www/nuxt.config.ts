@@ -18,7 +18,8 @@ export default defineNuxtConfig({
   app: {
     rootAttrs: {
       id: 'app',
-      style: 'overflow-x: hidden;'
+      style:
+        'overflow-x: hidden; min-height: 100svh; background: black; color: white;'
     },
     head: {
       titleTemplate: '%s'

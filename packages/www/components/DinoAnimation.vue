@@ -91,7 +91,7 @@ onMounted(() => {
   };
 
   // t0 is a time variable that goes from 0 to DURATION in steps of dt
-  let t0 = 0;
+  let t0 = DURATION * 0.45;
   // with this value of dt, the diff applied to all time variables t0 will go from 0 to DURATION in DURATION * FRAME_RATE steps
   const dt = 1 / FRAME_RATE;
   // tJump is a time variable that goes from 0 to JUMP_DURATION in steps of dt
@@ -110,13 +110,13 @@ onMounted(() => {
     // the interpolater function will return a value between 0 and max
     // which is the translateX value of the dino
     if (direction.value === 'right') {
-      if (xTranslate.value >= max) {
+      if (xTranslate.value >= max - width / 10) {
         direction.value = 'left';
       }
       t0 += dt;
       xTranslate.value = Math.min(max, interpolater(t0));
     } else {
-      if (xTranslate.value <= 0) {
+      if (xTranslate.value <= width / 10) {
         direction.value = 'right';
       }
       t0 -= dt;
