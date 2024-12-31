@@ -29,7 +29,7 @@ export default defineNuxtConfig({
           colors: {
             'darkblue-ic': '#2d4061',
             'blue-ic': '#0060E6',
-            'red-ic': '#ED4250',
+            'red-ic': '#D62D3B',
             'yellow-ic': '#FBB03B',
             'cream-ic': '#F2F2F2'
           },
