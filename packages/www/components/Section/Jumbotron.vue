@@ -26,7 +26,7 @@
               <a href="https://www.mwam.com">
                 <img
                   class="mt-2"
-                  src="/public/sponsors/mwam.png"
+                  src="@ui25/assets/sponsors/mwam.svg"
                   alt="IC Hack - Marshall Wace" />
               </a>
             </div>
