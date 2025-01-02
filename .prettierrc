@@ -6,6 +6,5 @@
   "bracketSameLine": true,
   "arrowParens": "avoid",
   "vueIndentScriptAndStyle": false,
-  "htmlWhitespaceSensitivity": "ignore",
   "plugins": ["prettier-plugin-tailwindcss"]
 }

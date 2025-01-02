@@ -4,9 +4,12 @@
   <main>
     <SectionJumbotron class="pb-10" />
     <SectionCountdown class="py-8" />
+    <DividerOne />
+    <SectionAbout class="py-16" />
+    <SectionTicket class="pt-16" />
   </main>
 
-  <ICFooter />
+  <ICFooter class="pt-16" />
 </template>
 
 <script setup lang="ts">
