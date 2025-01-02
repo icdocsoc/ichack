@@ -2,7 +2,7 @@ export default defineNuxtConfig({
   $development: {
     runtimeConfig: {
       public: {
-        physicsUrlPrefix: '/_nuxt/public/physics'
+        publicUrlPrefix: '/_nuxt/public'
       }
     }
   },
@@ -10,7 +10,7 @@ export default defineNuxtConfig({
   $production: {
     runtimeConfig: {
       public: {
-        physicsUrlPrefix: '/physics'
+        publicUrlPrefix: ''
       }
     }
   },

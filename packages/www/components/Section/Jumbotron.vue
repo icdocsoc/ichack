@@ -74,7 +74,7 @@ const isLessThanLg = ref(false);
 
 const config = useRuntimeConfig();
 
-let urlPrefix = config.public.physicsUrlPrefix;
+let urlPrefix = config.public.publicUrlPrefix + '/physics';
 const letters = ['hollow_cube', 'i', 'c', 'h', 'a', 'yellow_c', 'k'].map(
   v => v + '.png'
 );

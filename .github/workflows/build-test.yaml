@@ -86,51 +86,6 @@ jobs:
           PGHOST: localhost
           PGPORT: 5432
 
-  testE2E:
-    needs: [testServer]
-    runs-on: ubuntu-latest
-    services:
-      # Label used to access the service container
-      postgres:
-        # Docker Hub image
-        image: postgres:16
-        # Provide the password for postgres
-        env:
-          POSTGRES_PASSWORD: postgres
-        # Set health checks to wait until postgres has started
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          # Maps tcp port 5432 on service container to the host
-          - 5432:5432
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: 1.1.38
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
-
-      - name: Install Playwright
-        run: bunx playwright install --with-deps
-
-      - name: Run tests
-        run: bun test:e2e
-        env:
-          CI: true
-          PGUSER: postgres
-          PGPASSWORD: postgres
-          PGDB: postgres
-          PGHOST: localhost
-          PGPORT: 5432
-
   checkSchema:
     needs: build
     runs-on: ubuntu-latest

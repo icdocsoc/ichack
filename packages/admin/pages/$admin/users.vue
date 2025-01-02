@@ -133,7 +133,6 @@ definePageMeta({
       <UModal v-model="isAddUserPopupOpen">
         <UContainer class="mb-4 grid grid-flow-row justify-center p-10">
           <UForm
-            data-testid="form"
             :schema="schema"
             :state="userDetails"
             class="p-4"

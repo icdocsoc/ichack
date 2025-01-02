@@ -10,6 +10,9 @@
 </template>
 
 <script setup lang="ts">
+const config = useRuntimeConfig();
+const urlPrefix = config.public.publicUrlPrefix + '/og';
+
 useSeoMeta({
   title: "IC Hack '25",
   description:
@@ -22,10 +25,12 @@ useSeoMeta({
     "Europe's largest student-run hackathon at Imperial College London",
   ogUrl: 'https://ichack.org',
   ogType: 'website',
+  ogImage: `${urlPrefix}/og/regular.png`,
 
   twitterCard: 'summary_large_image',
   twitterTitle: "IC Hack '25",
   twitterDescription:
-    "Europe's largest student-run hackathon at Imperial College London"
+    "Europe's largest student-run hackathon at Imperial College London",
+  twitterImage: `${urlPrefix}/og/twitter.png`
 });
 </script>
