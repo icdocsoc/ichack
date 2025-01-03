@@ -28,12 +28,12 @@ useSeoMeta({
     "Europe's largest student-run hackathon at Imperial College London",
   ogUrl: 'https://ichack.org',
   ogType: 'website',
-  ogImage: `${urlPrefix}/og/regular.png`,
+  ogImage: `${urlPrefix}/regular.png`,
 
   twitterCard: 'summary_large_image',
   twitterTitle: "IC Hack '25",
   twitterDescription:
     "Europe's largest student-run hackathon at Imperial College London",
-  twitterImage: `${urlPrefix}/og/twitter.png`
+  twitterImage: `${urlPrefix}/twitter.png`
 });
 </script>

@@ -5,17 +5,32 @@
     <div
       class="bg-cream-ic relative aspect-[4/3] w-full rounded-2xl rounded-br-[5rem] p-6 outline outline-2 outline-black">
       <!-- Screen -->
-      <div class="h-full w-full rounded-2xl bg-black">
-        <div class="relative h-full w-full overflow-hidden">
-          <!-- Topscreen glare -->
-          <div
-            :class="selectedColorFrom"
-            class="relative z-50 h-full w-full bg-gradient-to-b to-30%"></div>
+      <div class="relative h-full w-full overflow-hidden rounded-2xl bg-black">
+        <video
+          muted
+          autoplay
+          preload="metadata"
+          loading="lazy"
+          loop
+          disablepictureinpicture
+          class="absolute h-full w-full object-cover">
+          <source src="/videos/gameboy-video.mp4" type="video/mp4" />
+          <p>Your browser doesn't support HTML video.</p>
+        </video>
 
-          <!-- Elliptical glare -->
-          <div
-            class="screen-glare absolute right-2 top-[25%] z-0 aspect-square w-24"></div>
-        </div>
+        <!-- Overlay retro theme -->
+        <div
+          :class="overlayColor"
+          class="absolute top-0 z-30 h-full w-full rounded-2xl opacity-35"></div>
+
+        <!-- Topscreen glare -->
+        <div
+          :class="selectedColorFrom"
+          class="absolute top-0 z-50 h-full w-full rounded-2xl bg-gradient-to-b to-30%"></div>
+
+        <!-- Elliptical glare -->
+        <div
+          class="screen-glare absolute right-2 top-[25%] z-0 aspect-square w-24 rounded-full"></div>
       </div>
 
       <!-- Screen Frame bolts -->
@@ -77,6 +92,7 @@
 
 <script setup lang="ts">
 import resolveConfig from 'tailwindcss/resolveConfig';
+// @ts-ignore this file exists
 import tailwindConfig from '@ui25/tailwind.config.js';
 
 const fullConfig = resolveConfig(tailwindConfig);
@@ -106,6 +122,17 @@ const selectedColorFrom = computed(() => colors[selectedColor.value].from);
 const changeColor = (color: Color) => {
   selectedColor.value = color;
 };
+
+const overlayColor = computed(() => {
+  switch (selectedColor.value) {
+    case 'red-ic':
+      return 'bg-[#FF69B4]';
+    case 'blue-ic':
+      return 'bg-[#7DF9FF]';
+    case 'yellow-ic':
+      return 'bg-[#FFFF33]';
+  }
+});
 </script>
 
 <style scoped>
@@ -113,10 +140,9 @@ const changeColor = (color: Color) => {
   background: radial-gradient(
     ellipse 90% 60% at center,
     v-bind(selectedColorHex) 0%,
-    rgba(0, 0, 0, 0.6) 80%,
-    transparent 100%
+    transparent 80%
   );
   transform: rotate(30deg);
-  opacity: 20%;
+  opacity: 30%;
 }
 </style>

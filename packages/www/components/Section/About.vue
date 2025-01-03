@@ -1,6 +1,6 @@
 <template>
   <section
-    class="mx-auto flex max-w-[1080px] items-center justify-between gap-10 px-5 max-md:flex-col">
+    class="mx-auto flex max-w-[1080px] items-start justify-between gap-10 px-5 max-md:flex-col">
     <Gameboy />
 
     <div class="max-w-[512px]">
@@ -8,9 +8,9 @@
         <div class="flex gap-4 text-black">
           <div
             class="[&_span]:text-blue-ic ml-16 self-start text-lg [&>*]:my-4 [&_span]:font-bold">
-            <h1 class="max-w-fit text-3xl font-bold uppercase">
+            <h2 class="max-w-fit text-3xl font-bold uppercase">
               What is IC Hack?
-            </h1>
+            </h2>
             <p>
               IC Hack is an annual hackathon held at Imperial's South Kensington
               campus. It is the

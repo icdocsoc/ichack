@@ -4,7 +4,7 @@
       <ICWindow
         name="tickets.txt"
         color="bg-gold"
-        border="bg-white"
+        border="border-white"
         class="max-w-[720px]">
         <div class="flex gap-10 text-black">
           <div
@@ -27,12 +27,22 @@
         </div>
       </ICWindow>
 
-      <img src="@ui25/assets/caret-down.svg" />
+      <div
+        class="font-gohu space-y-2 text-2xl font-bold uppercase [&>*]:mx-auto">
+        <p>Get Your Ticket - <i>Coming soon!</i></p>
+        <img src="@ui25/assets/caret-down.svg" />
+      </div>
 
-      <img
-        src="@ui25/assets/ticket.svg"
-        alt="IC Hack Tickets"
-        class="w-full max-w-[920px]" />
+      <div class="cursor-pointer">
+        <img
+          src="@ui25/assets/xs-ticket.svg"
+          alt="IC Hack Tickets"
+          class="w-full md:hidden" />
+        <img
+          src="@ui25/assets/ticket.svg"
+          alt="IC Hack Tickets"
+          class="w-full max-w-[920px] max-md:hidden" />
+      </div>
     </div>
   </section>
 </template>
