@@ -6,7 +6,8 @@
     <SectionCountdown class="py-8" />
     <DividerOne />
     <SectionAbout class="py-16" />
-    <SectionTicket class="pt-16" />
+    <SectionTicket class="py-16" />
+    <SectionTeam class="py-16" />
   </main>
 
   <ICFooter class="pt-16" />

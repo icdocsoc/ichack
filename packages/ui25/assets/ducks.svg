@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128.03 189">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #fff;
+      }
+
+      .cls-2 {
+        fill: #ed4250;
+      }
+
+      .cls-3 {
+        fill: #ffae4d;
+      }
+    </style>
+  </defs>
+  <g>
+    <rect class="cls-1" x="12.19" y="12.19" width="6.1" height="24.39"/>
+    <rect class="cls-1" x="54.87" y="12.19" width="6.1" height="36.58"/>
+    <rect class="cls-1" x="48.77" y="48.77" width="6.1" height="30.48"/>
+    <rect class="cls-1" x="24.39" width="24.39" height="6.1"/>
+    <rect class="cls-1" x="48.77" y="6.1" width="6.1" height="6.1"/>
+    <rect class="cls-1" x="18.29" y="6.1" width="6.1" height="6.1"/>
+    <rect class="cls-1" x="18.29" y="54.87" width="6.1" height="6.1"/>
+    <rect class="cls-1" x="6.1" y="36.58" width="6.1" height="6.1"/>
+    <rect class="cls-1" x="6.1" y="48.77" width="12.19" height="6.1"/>
+    <rect class="cls-1" y="42.68" width="6.1" height="6.1"/>
+    <rect class="cls-1" x="24.39" y="60.97" width="6.1" height="18.29"/>
+    <rect class="cls-1" x="18.29" y="79.26" width="6.1" height="6.1"/>
+    <rect class="cls-1" x="12.19" y="85.35" width="6.1" height="6.1"/>
+    <polygon class="cls-1" points="6.1 97.55 6.1 103.65 12.19 103.65 12.19 97.55 12.19 91.45 6.1 91.45 6.1 97.55"/>
+    <rect class="cls-1" y="103.65" width="6.1" height="30.48"/>
+    <rect class="cls-1" x="6.1" y="134.13" width="6.1" height="12.19"/>
+    <rect class="cls-1" x="12.19" y="146.32" width="6.1" height="6.1"/>
+    <rect class="cls-1" x="54.87" y="79.26" width="12.19" height="6.1"/>
+    <rect class="cls-1" x="67.06" y="85.35" width="12.19" height="6.1"/>
+    <rect class="cls-1" x="79.26" y="91.45" width="12.19" height="6.1"/>
+    <rect class="cls-1" x="91.45" y="97.55" width="18.29" height="6.1"/>
+    <rect class="cls-1" x="18.29" y="152.42" width="12.19" height="6.1"/>
+    <rect class="cls-1" x="115.84" y="103.65" width="6.1" height="6.1"/>
+    <rect class="cls-1" x="109.74" y="91.45" width="12.19" height="6.1"/>
+    <rect class="cls-1" x="121.94" y="97.55" width="6.1" height="6.1"/>
+    <polygon class="cls-1" points="109.74 115.84 103.65 115.84 103.65 121.94 115.84 121.94 115.84 128.03 121.94 128.03 121.94 115.84 115.84 115.84 115.84 109.74 109.74 109.74 109.74 115.84"/>
+    <rect class="cls-1" x="103.65" y="134.13" width="6.1" height="6.1"/>
+    <rect class="cls-1" x="109.74" y="128.03" width="6.1" height="6.1"/>
+    <rect class="cls-1" x="79.26" y="146.32" width="18.29" height="6.1"/>
+    <rect class="cls-1" x="97.55" y="140.23" width="6.1" height="6.1"/>
+    <rect class="cls-1" x="91.45" y="109.74" width="12.19" height="6.1"/>
+    <polygon class="cls-1" points="30.48 182.9 36.58 182.9 36.58 164.61 42.68 164.61 42.68 189 48.77 189 48.77 164.61 60.97 164.61 60.97 182.9 67.06 182.9 67.06 164.61 67.06 158.52 30.48 158.52 30.48 164.61 30.48 182.9"/>
+    <rect class="cls-1" x="73.16" y="152.42" width="6.1" height="36.58"/>
+    <rect class="cls-1" x="24.39" y="182.9" width="6.1" height="6.1"/>
+    <rect class="cls-1" x="54.87" y="182.9" width="6.1" height="6.1"/>
+  </g>
+  <rect x="42.68" y="24.39" width="6.1" height="12.19"/>
+  <g>
+    <polygon class="cls-2" points="36.58 182.9 30.48 182.9 30.48 189 36.58 189 42.68 189 42.68 164.61 36.58 164.61 36.58 182.9"/>
+    <polygon class="cls-2" points="67.06 158.52 67.06 182.9 60.97 182.9 60.97 189 67.06 189 73.16 189 73.16 158.52 67.06 158.52"/>
+    <polygon class="cls-2" points="36.58 42.68 36.58 36.58 30.48 36.58 30.48 30.48 18.29 30.48 18.29 36.58 12.19 36.58 12.19 42.68 6.1 42.68 6.1 48.77 36.58 48.77 36.58 42.68"/>
+  </g>
+  <path class="cls-3" d="M109.74,97.55v6.1h-18.29v-6.1h-12.19v-6.1h-12.19v-6.1h-12.19v-6.1h-6.1v-30.48h6.1V12.19h-6.1v-6.1h-24.39v6.1h-6.1v18.29h12.19v6.1h6.1v12.19h-18.29v6.1h6.1v6.1h6.1v18.29h-6.1v6.1h-6.1v6.1h-6.1v12.19h-6.1v30.48h6.1v12.19h6.1v6.1h12.19v6.1h42.68v-6.1h6.1v-6.1h18.29v-6.1h6.1v-6.1h6.1v-6.1h6.1v-6.1h-12.19v-6.1h-12.19v-6.1h12.19v6.1h6.1v-6.1h6.1v-6.1h6.1v-6.1h-12.19ZM42.68,30.48v-6.1h6.1v12.19h-6.1v-6.1Z"/>
+</svg>
