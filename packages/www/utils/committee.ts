@@ -1,13 +1,13 @@
-import nishant from '/committee/nishant.jpg';
+import nishant from '/committee/nishant.png';
 import hashir from '/committee/hashir.png';
-import kishan from '/committee/kishan.jpg';
-import charles from '/committee/charles.jpg';
-import tanvi from '/committee/tanvi.jpeg';
-import jay from '/committee/jay.jpg';
-import anna from '/committee/anna.jpeg';
-import callum from '/committee/callum.jpg';
-import kevin from '/committee/kevin.jpg';
-import royce from '/committee/royce.jpeg';
+import kishan from '/committee/kishan.png';
+import charles from '/committee/charles.png';
+import tanvi from '/committee/tanvi.png';
+import jay from '/committee/jay.png';
+import anna from '/committee/anna.png';
+import callum from '/committee/callum.png';
+import kevin from '/committee/kevin.png';
+import royce from '/committee/royce.png';
 
 type Committee = {
   name: string;
