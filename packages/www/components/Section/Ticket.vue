@@ -19,8 +19,8 @@
             </p>
             <p>
               The first round of tickets will be released at
-              <span>15:00 on 10 Jan</span> with the second round at
-              <span>13:30 on 18th Jan</span>.
+              <span>17:00 on 9th Jan</span> with the second round at
+              <span>16:30 on 13th Jan</span>.
             </p>
             <img src="@ui25/assets/checkbox.svg" />
           </div>
