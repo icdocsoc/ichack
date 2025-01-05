@@ -53,9 +53,7 @@
       </div>
     </div>
 
-    <ClientOnly v-if="!isLessThanLg">
-      <DinoAnimation class="absolute bottom-0 left-0 right-0" />
-    </ClientOnly>
+    <DinoAnimation class="absolute bottom-0 left-0 right-0 max-lg:hidden" />
   </section>
 </template>
 
