@@ -81,7 +81,12 @@ export const teamMembers: Committee[] = [
       other: 'https://charlescalzia.com/'
     }
   },
-  { name: 'Kevin Wang', role: 'Design & Branding Lead', image: kevin },
+  {
+    name: 'Kevin Wang',
+    role: 'Design & Branding Lead',
+    image: kevin,
+    links: { linkedin: 'https://www.linkedin.com/in/kevin-wang-9bb186298/' }
+  },
   {
     name: 'Royce Li Wei Chan',
     role: 'HackerEx Lead',

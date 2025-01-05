@@ -4,7 +4,7 @@
       class="flex items-center justify-between gap-4 px-2 py-1"
       :class="color">
       <div
-        class="font-gohu flex-1 overflow-x-hidden text-ellipsis text-sm text-white">
+        class="font-lores flex-1 overflow-x-hidden text-ellipsis text-sm text-white">
         {{ name }}
       </div>
       <div class="flex space-x-2 py-1 [&>img]:w-4">

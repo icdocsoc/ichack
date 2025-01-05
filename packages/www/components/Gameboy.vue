@@ -20,16 +20,19 @@
 
         <!-- Overlay retro theme -->
         <div
+          v-if="showOverlay"
           :class="overlayColor"
-          class="absolute top-0 z-30 h-full w-full rounded-2xl opacity-35"></div>
+          class="absolute top-0 z-30 h-full w-full rounded-2xl opacity-25"></div>
 
         <!-- Topscreen glare -->
         <div
+          v-if="showOverlay"
           :class="selectedColorFrom"
-          class="absolute top-0 z-50 h-full w-full rounded-2xl bg-gradient-to-b to-30%"></div>
+          class="absolute top-0 z-50 h-full w-full rounded-2xl bg-gradient-to-b to-30% opacity-90"></div>
 
         <!-- Elliptical glare -->
         <div
+          v-if="showOverlay"
           class="screen-glare absolute right-2 top-[25%] z-0 aspect-square w-24 rounded-full"></div>
       </div>
 
@@ -113,6 +116,7 @@ const colors = {
 } as const;
 type Color = keyof typeof colors;
 
+const showOverlay = ref(false);
 const selectedColor = ref<Color>('red-ic');
 const selectedColorHex = computed(
   () => fullConfig.theme.colors[selectedColor.value]
@@ -120,6 +124,7 @@ const selectedColorHex = computed(
 const selectedColorFrom = computed(() => colors[selectedColor.value].from);
 
 const changeColor = (color: Color) => {
+  showOverlay.value = true;
   selectedColor.value = color;
 };
 
@@ -143,6 +148,6 @@ const overlayColor = computed(() => {
     transparent 80%
   );
   transform: rotate(30deg);
-  opacity: 30%;
+  opacity: 25%;
 }
 </style>

@@ -19,7 +19,7 @@
           <img src="@ui25/assets/candle.svg" />
           <div class="flex flex-1 flex-col items-end justify-between gap-3">
             <p class="text-end text-2xl">
-              The largest student run hackathon in Europe
+              The largest student-run hackathon in Europe
             </p>
             <div>
               <p class="text-end text-2xl font-black uppercase">Powered By</p>

@@ -17,7 +17,8 @@ export default {
         sans: ['Archivo', 'sans-serif'],
         archivo: ['Archivo', 'sans-serif'],
         ichack: ['IC Hack', 'sans-serif'],
-        gohu: ['Gohu', 'monospace']
+        gohu: ['Gohu', 'monospace'],
+        lores: ['Lores', 'monospace']
       }
     }
   },

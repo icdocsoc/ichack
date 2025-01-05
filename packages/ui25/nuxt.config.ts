@@ -18,7 +18,8 @@ export default defineNuxtConfig({
         weights: ['100', '200', '300', '400', '500', '600', '700', '800', '900']
       },
       { name: 'IC Hack', provider: 'local', weights: ['400'] },
-      { name: 'Gohu', provider: 'local', weights: ['500', '700'] }
+      { name: 'Gohu', provider: 'local', weights: ['500', '700'] },
+      { name: 'Lores', provider: 'local', weights: ['400'] }
     ]
   },
 

@@ -42,14 +42,14 @@
               class="mt-4 overflow-x-hidden text-ellipsis whitespace-nowrap font-bold">
               {{ committee.name }}
             </p>
-            <p class="font-gohu text-sm">
+            <p class="font-lores text-sm">
               {{ committee.role }}
             </p>
             <p>{{ committee.description }}</p>
             <div class="mt-2 flex space-x-1" v-if="committee.links">
               <a
                 v-if="committee.links.github"
-                :href="committee.github"
+                :href="committee.links.github"
                 target="_blank">
                 <img
                   src="@ui25/assets/socials/github.svg"
@@ -58,7 +58,7 @@
               </a>
               <a
                 v-if="committee.links.linkedin"
-                :href="committee.linkedin"
+                :href="committee.links.linkedin"
                 target="_blank">
                 <img
                   src="@ui25/assets/socials/linkedin.svg"

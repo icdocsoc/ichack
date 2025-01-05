@@ -28,8 +28,9 @@
       </ICWindow>
 
       <div
-        class="font-gohu space-y-2 text-2xl font-bold uppercase [&>*]:mx-auto">
-        <p>Get Your Ticket - <i>Coming soon!</i></p>
+        class="font-lores my-10 space-y-2 text-center text-2xl font-bold uppercase [&>*]:mx-auto">
+        <p>Get Your Ticket</p>
+        <p class="text-[#626060]">Coming Soon</p>
         <img src="@ui25/assets/caret-down.svg" />
       </div>
 
