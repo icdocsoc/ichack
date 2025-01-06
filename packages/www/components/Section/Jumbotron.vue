@@ -53,7 +53,9 @@
       </div>
     </div>
 
-    <DinoAnimation class="absolute bottom-0 left-0 right-0 max-lg:hidden" />
+    <ClientOnly>
+      <DinoAnimation class="absolute bottom-0 left-0 right-0 max-lg:hidden" />
+    </ClientOnly>
   </section>
 </template>
 
