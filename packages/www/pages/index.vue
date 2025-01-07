@@ -1,5 +1,5 @@
 <template>
-  <ICNavBar />
+  <ICNavBar :links="navBarLinks" />
 
   <main>
     <SectionJumbotron class="pb-10" />
@@ -16,6 +16,21 @@
 <script setup lang="ts">
 const config = useRuntimeConfig();
 const urlPrefix = config.public.publicUrlPrefix + '/og';
+
+const navBarLinks = [
+  {
+    label: 'About',
+    to: '#about'
+  },
+  {
+    label: 'Tickets',
+    to: '#tickets'
+  },
+  {
+    label: 'Team',
+    to: '#team'
+  }
+];
 
 useSeoMeta({
   title: "IC Hack '25",

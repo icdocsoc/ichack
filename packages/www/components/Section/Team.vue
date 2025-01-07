@@ -1,5 +1,5 @@
 <template>
-  <section class="mx-auto max-w-[1080px] px-5">
+  <section id="team" class="mx-auto max-w-[1080px] px-5">
     <div class="flex gap-2 md:flex-col">
       <div class="items-center gap-4 md:flex">
         <h2

@@ -1,5 +1,6 @@
 <template>
   <section
+    id="about"
     class="mx-auto flex max-w-[1080px] items-start justify-between gap-10 px-5 max-md:flex-col">
     <Gameboy />
 

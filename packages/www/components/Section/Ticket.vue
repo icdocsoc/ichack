@@ -1,5 +1,5 @@
 <template>
-  <section class="px-5">
+  <section id="tickets" class="px-5">
     <div class="flex flex-col items-center gap-10">
       <ICWindow
         name="tickets.txt"
