@@ -20,9 +20,10 @@
       <div class="grid flex-1 grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4">
         <ICWindow
           name="member.html"
-          v-for="committee in teamMembers"
+          v-for="(committee, index) in teamMembers"
           border="border-white"
-          :key="committee.name">
+          :key="committee.name"
+          :color="colours[index % 3]">
           <div class="text-black">
             <img
               v-if="committee.image"
@@ -65,6 +66,24 @@
                   alt="LinkedIn"
                   class="h-6 w-6" />
               </a>
+              <a
+                v-if="committee.links.instagram"
+                :href="committee.links.instagram"
+                target="_blank">
+                <img
+                  src="@ui25/assets/socials/instagram-dark.svg"
+                  alt="Instagram"
+                  class="h-6 w-6" />
+              </a>
+              <a
+                v-if="committee.links.other"
+                :href="committee.links.other"
+                target="_blank">
+                <img
+                  src="@ui25/assets/socials/globe.svg"
+                  alt="Other Linked Website"
+                  class="h-6 w-6" />
+              </a>
             </div>
           </div>
         </ICWindow>
@@ -73,4 +92,6 @@
   </section>
 </template>
 
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+const colours = ['bg-blue-ic', 'bg-red-ic', 'bg-yellow-ic'];
+</script>

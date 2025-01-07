@@ -5,7 +5,7 @@
       <div class="mt-4 flex justify-center">
         <a href="https://instagram.com/ichackuk" target="_blank">
           <img
-            src="~/assets/svgs/instagram.svg"
+            src="@ui25/assets/socials/instagram.svg"
             class="w-10"
             alt="@ICHackUK Instagram" />
         </a>

@@ -59,7 +59,16 @@ export const teamMembers: Committee[] = [
       github: 'https://gihub.com/cybercoder-naj'
     }
   },
-  { name: 'Jay Abussaud', role: 'Technical Lead', image: jay },
+  {
+    name: 'Jay Abussaud',
+    role: 'Technical Lead',
+    image: jay,
+    links: {
+      linkedin: 'https://www.linkedin.com/in/ahmed-abussaud/',
+      github: 'https://github.com/Dropheart',
+      other: 'https://abussaud.com/'
+    }
+  },
   { name: 'Aidan Madge', role: 'Logistics Lead' },
   {
     name: 'Anna Votin',
