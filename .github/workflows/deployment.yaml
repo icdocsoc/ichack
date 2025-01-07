@@ -35,8 +35,7 @@ jobs:
         id: tags
         run: |
           git fetch --tags
-          tags=$(git tag --list 'v[0-9]{4}\.[0-9]{1,2}\.[0-9]{1,2}-[0-9]+' --sort=-creatordate)
-          latest=$(echo "$tags" | head -n 1)
+          latest=$(git tag --list 'v*' --sort=-creatordate | grep -v -- '-staging' | head -n 1)
 
           echo "base-tag=$latest" >> "$GITHUB_OUTPUT"
           echo "Latest Production Tag: $latest"
@@ -80,23 +79,23 @@ jobs:
           CHANGELOG=$(cat CHANGELOG.md)
 
           payload=$(jq -n \
-            --arg title "Deployed to Production: ${{ github.ref_name }}" \
-            --arg description "Changes since last production deployment '$base_tag':" \
-            --arg changelog "$CHANGELOG" \
-            --arg timestamp "$(date -u +"%Y-%m-%dT%H:%M:%S.%3NZ")" \
-            '{
-              username: "IC Hack Changelog Bot",
-              avatar_url: "https://ichack.org/favicon.ico",
-              embeds: [
-                {
-                  title: $title,
-                  description: $description + "\n\n" + $changelog,
-                  color: 24806,
-                  timestamp: $timestamp,
-                  url: https://github.com/icdocsoc/ichack
-                }
-              ]
-            }'
-          )
+              --arg title "Deployed to Production: ${{ github.ref_name }}" \
+              --arg description "Changes since last production deployment '$base_tag':" \
+              --arg changelog "$CHANGELOG" \
+              --arg timestamp "$(date -u +"%Y-%m-%dT%H:%M:%S.%3NZ")" \
+              '{
+                username: "IC Hack Changelog Bot",
+                avatar_url: "https://ichack.org/favicon.ico",
+                embeds: [
+                  {
+                    title: $title,
+                    description: ($description + "\n\n" + $changelog),
+                    color: 24806,
+                    timestamp: $timestamp,
+                    url: "https://github.com/icdocsoc/ichack"
+                  }
+                ]
+              }'
+            )
 
           curl -X POST -H "Content-Type: application/json" -d "$payload" "$WEBHOOK_URL"

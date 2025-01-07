@@ -35,8 +35,7 @@ jobs:
         id: tags
         run: |
           git fetch --tags
-          tags=$(git tag --list 'v[0-9]{4}\.[0-9]{1,2}\.[0-9]{1,2}-[0-9]+' --sort=-creatordate)
-          latest=$(echo "$tags" | head -n 1)
+          latest=$(git tag --list 'v*' --sort=-creatordate | grep -v -- '-staging' | head -n 1)
 
           echo "base-tag=$latest" >> "$GITHUB_OUTPUT"
           echo "Latest Production Tag: $latest"
@@ -136,10 +135,10 @@ jobs:
               embeds: [
                 {
                   title: $title,
-                  description: $description + "\n\n" + $changelog,
+                  description: ($description + "\n\n" + $changelog),
                   color: 24806,
                   timestamp: $timestamp,
-                  url: https://github.com/icdocsoc/ichack
+                  url: "https://github.com/icdocsoc/ichack"
                 }
               ]
             }'

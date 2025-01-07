@@ -11,15 +11,15 @@ function getCurrentDate(): string {
 }
 
 // Get the latest tag for the current date
-async function getLatestStagingTag(date: string): Promise<string | null> {
+async function getLatestTag(date: string): Promise<string | null> {
   try {
     // Use Git to find all tags, filter by current date, and sort numerically
-    const tag =
-      await $`git tag --list "v${date}-*-staging" --sort=-creatordate | head -n 1`
-        .quiet()
-        .text();
+    const tags = await $`git tag --list "v*" --sort=-creatordate`
+      .quiet()
+      .text();
 
-    return tag && tag.length ? tag : null; // Return the latest tag or null
+    const tag = tags.split('\n').find(t => t.startsWith(`v${date}`));
+    return tag ?? null; // Return the latest tag or null
   } catch (error) {
     console.error('Error getting latest tag:', error.message);
     return null;
@@ -40,22 +40,13 @@ function incrementVersion(tag: string): number {
 // Generate the tag version
 async function generateTag(isStaging: boolean): Promise<string> {
   const date = getCurrentDate();
-  const latestTag = await getLatestStagingTag(date);
 
-  // If staging, then increment the version number.
-  if (isStaging) {
-    const nextVersion = latestTag ? incrementVersion(latestTag) : 1;
-    return `v${date}-${nextVersion}-staging`;
-  }
+  const latestTag = await getLatestTag(date);
+  const nextVersion = latestTag ? incrementVersion(latestTag) : 1;
 
-  // else the version is the same as the latest staging tag
-  if (!latestTag) {
-    console.error('No staging tags found for the current date:', date);
-    console.error('Please create a staging tag first.');
-    process.exit(1);
-  }
-
-  return latestTag.replace('-staging', '');
+  return isStaging
+    ? `v${date}-${nextVersion}-staging`
+    : `v${date}-${nextVersion}`;
 }
 
 // Create the tag in the repository
