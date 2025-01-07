@@ -116,7 +116,7 @@ jobs:
           git fetch --tags
 
           echo "Generating changelog since $base_tag"
-          CHANGELOG=(git log --pretty=format:"- %s (%an)" $base_tag..HEAD)
+          CHANGELOG=$(git log --pretty=format:"- %s (%an)" $base_tag..HEAD)
           echo "changelog=$CHANGELOG" >> "$GITHUB_ENV"
 
       - name: Push to Discord
