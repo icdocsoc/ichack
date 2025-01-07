@@ -1,0 +1,149 @@
+name: staging
+
+on:
+  push:
+    tags:
+      - v[0-9]{4}\.[0-9]{1,2}\.[0-9]{1,2}-[0-9]+-staging
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      latest-prod-tag: ${{ steps.latest_tags.outputs.latest }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.1.38
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build project
+        run: bun run build
+
+      - name: Upload landing static files artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: landing-static
+          path: packages/www/dist
+
+      - name: Fetch and set tags
+        run: |
+          git fetch --tags
+          tags=$(git tag --list 'v[0-9]{4}\.[0-9]{1,2}\.[0-9]{1,2}-[0-9]+' --sort=-creatordate)
+          latest=$(echo "$tags" | head -n 1)
+
+          echo "::set-output name=latest::$latest"
+
+          echo "Latest Production Tag: $latest"
+
+  testServer:
+    needs: build
+    runs-on: ubuntu-latest
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres:16
+        # Provide the password for postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps tcp port 5432 on service container to the host
+          - 5432:5432
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.1.38
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Upload schema
+        run: |
+          PGPASSWORD=postgres psql -U postgres -h localhost -p 5432 -d postgres -f ./data/schema.sql
+
+      - name: Run tests
+        run: bun test server
+        env:
+          PGUSER: postgres
+          PGPASSWORD: postgres
+          PGDB: postgres
+          PGHOST: localhost
+          PGPORT: 5432
+
+  deploy-landing-staging:
+    needs: [testServer, build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download landing artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: landing-static
+          path: dist
+
+      - name: Deploy to Cloudflare Pages
+        id: deploy-step
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=ichack25 --branch=isabella
+
+  generateChangelog:
+    needs: [deploy-landing-staging, build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Generate changelog
+        run: |
+          latest_tag=$(echo ${{ needs.build.outputs.latest-prod-tag }})
+
+          echo "Generating changelog since $latest_tag"
+          git log --pretty=format:"- %s (%an)" $latest_tag..HEAD | tee CHANGELOG.md
+
+      - name: Push to Discord
+        env:
+          WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          latest_tag=$(echo ${{ needs.build.outputs.latest-prod-tag }})
+          CHANGELOG=$(cat CHANGELOG.md)
+
+          payload=$(jq -n \
+            --arg title "Deployed to Staging: ${{ github.ref_name }}" \
+            --arg description "Changes since last production deployment '$latest_tag':" \
+            --arg changelog "$CHANGELOG" \
+            --arg timestamp "$(date -u +"%Y-%m-%dT%H:%M:%S.%3NZ")" \
+
+            '{
+              username: "IC Hack Changelog Bot",
+              avatar_url: "https://ichack.org/favicon.ico",
+              embeds: [
+                {
+                  title: $title,
+                  description: $description + "\n\n" + $changelog,
+                  color: 24806,
+                  timestamp: $timestamp,
+                  url: https://github.com/icdocsoc/ichack
+                }
+              ]
+            }'
+          )
+
+          curl -X POST -H "Content-Type: application/json" -d "$payload" "$WEBHOOK_URL"
