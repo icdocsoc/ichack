@@ -67,20 +67,22 @@ jobs:
       - name: Generate changelog
         run: |
           base_tag=$(echo ${{ needs.build.outputs.base-tag }})
+          git fetch --tags
 
           echo "Generating changelog since $base_tag"
-          git log --pretty=format:"- %s (%an)" $base_tag..HEAD | tee CHANGELOG.md
+          CHANGELOG=(git log --pretty=format:"- %s (%an)" $base_tag..HEAD)
+          echo "changelog=$CHANGELOG" >> "$GITHUB_ENV"
 
       - name: Push to Discord
         env:
           WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          CHANGELOG: ${{ env.changelog }}
         run: |
           base_tag=$(echo ${{ needs.build.outputs.base-tag }})
-          CHANGELOG=$(cat CHANGELOG.md)
 
           payload=$(jq -n \
               --arg title "Deployed to Production: ${{ github.ref_name }}" \
-              --arg description "Changes since last production deployment '$base_tag':" \
+              --arg description "Changes since last production deployment **$base_tag**:" \
               --arg changelog "$CHANGELOG" \
               --arg timestamp "$(date -u +"%Y-%m-%dT%H:%M:%S.%3NZ")" \
               '{
