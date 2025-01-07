@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, test } from 'bun:test';
 import { db } from '../../drizzle';
 import { users, userSession } from '../../auth/schema';
-import { teams, teamMembers } from '../schema';
+import { teams, teamMembers, teamInvites } from '../schema';
 import { tomorrow } from '../../testHelpers';
 import app from '../../app';
 import { testClient } from 'hono/testing';
@@ -267,7 +267,31 @@ describe('Team module > GET /', () => {
     const teamRes = await res.json();
 
     const teamInDb = await db.select().from(teams).where(eq(teams.id, teamId));
-    expect(teamRes).toEqual(teamInDb[0]!);
+
+    const members = await db
+      .select({
+        name: users.name,
+        id: teamMembers.userId,
+        leader: teamMembers.isLeader
+      })
+      .from(teamMembers)
+      .innerJoin(users, eq(users.id, teamMembers.userId))
+      .where(eq(teamMembers.teamId, teamId));
+
+    const invited = await db
+      .select({
+        id: teamInvites.userId,
+        name: users.name
+      })
+      .from(teamInvites)
+      .innerJoin(users, eq(users.id, teamInvites.userId))
+      .where(eq(teamInvites.teamId, teamId));
+
+    expect(teamRes).toEqual({
+      members,
+      invited,
+      ...teamInDb[0]!
+    });
   });
 });
 

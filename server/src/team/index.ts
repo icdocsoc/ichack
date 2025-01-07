@@ -151,7 +151,33 @@ const team = factory
       return ctx.text(`Internal error.`, 500);
     }
 
-    return ctx.json(team[0]!, 200);
+    const members = await db
+      .select({
+        name: users.name,
+        id: teamMembers.userId,
+        leader: teamMembers.isLeader
+      })
+      .from(teamMembers)
+      .innerJoin(users, eq(users.id, teamMembers.userId))
+      .where(eq(teamMembers.teamId, team[0]!.id));
+
+    const invited = await db
+      .select({
+        name: users.name,
+        id: teamInvites.userId
+      })
+      .from(teamInvites)
+      .innerJoin(users, eq(users.id, teamInvites.userId))
+      .where(eq(teamInvites.teamId, team[0]!.id));
+
+    return ctx.json(
+      {
+        ...team[0]!,
+        members: members,
+        invited: invited
+      },
+      200
+    );
   })
   .put(
     '/transfer',
@@ -363,6 +389,21 @@ const team = factory
       return ctx.text('', 204);
     }
   )
+  .get('/invite', grantAccessTo('hacker'), async ctx => {
+    // Returns all invites
+    const user = ctx.get('user')!;
+
+    const invites = await db
+      .select({
+        teamName: teams.teamName,
+        teamId: teamInvites.teamId
+      })
+      .from(teamInvites)
+      .innerJoin(teams, eq(teams.id, teamInvites.teamId))
+      .where(eq(teamInvites.userId, user.id));
+
+    return ctx.json(invites, 200);
+  })
   .get('/invite/ws', grantAccessTo('hacker'), async ctx => {
     // Realtime invites
   })

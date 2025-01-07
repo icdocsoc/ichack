@@ -136,6 +136,9 @@ components:
         team_name:
           type: string
           example: Team Rocket
+        docsocCategory:
+          type: string
+          example: /docsoc-education
         sponsorCategory:
           type: string
           example: /jetbrains-app-development-in-kotlin
@@ -149,6 +152,31 @@ components:
         phone2:
           type: string
           example: '+966555555555'
+        members:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                example: 1
+              name:
+                type: string
+                example: Silver the Cat
+              leader:
+                type: boolean
+                example: true
+        invited:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                example: 2
+              name:
+                type: string
+                example: Golden the Dog
 
   examples:
     KotlinCategory:
@@ -1735,6 +1763,39 @@ paths:
                 example: User is already in a team.
         '204':
           description: The hacker has been invited to the team.
+    get:
+      tags:
+        - Team
+      summary: Get all invites.
+      description: |
+        Returns all pending invites a hacker has.
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/cookie'
+      responses:
+        '403':
+          description: When a user other than a hacker accesses this route.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: You do not have access to POST /api/team/invite
+        '200':
+          description: The hacker has been invited to the team.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    teamId:
+                      type: number
+                      example: 1
+                    teamName:
+                      type: string
+                      example: Team Rocket
 
   /team/acceptInvite:
     put:

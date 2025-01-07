@@ -58,3 +58,19 @@ export const updateTeamSchema = createSelectSchema(teams)
   .omit({ id: true })
   .partial()
   .strict();
+
+export const returnedTeamSchema = createSelectSchema(teams).extend({
+  members: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      leader: z.boolean()
+    })
+  ),
+  invited: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string()
+    })
+  )
+});
