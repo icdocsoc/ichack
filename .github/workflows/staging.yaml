@@ -3,7 +3,7 @@ name: staging
 on:
   push:
     tags:
-      - v[0-9]{4}\.[0-9]{1,2}\.[0-9]{1,2}-[0-9]+-staging
+      - 'v[0-9]+.[0-9]+.[0-9]+-[0-9]+-staging'
 
 jobs:
   build:
