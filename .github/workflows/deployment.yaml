@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     outputs:
-      last-prod-tag: ${{ steps.latest_tags.outputs.last }}
+      base-tag: ${{ steps.tags.outputs.base-tag }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -32,13 +32,14 @@ jobs:
           path: packages/www/dist
 
       - name: Fetch and set tags
+        id: tags
         run: |
           git fetch --tags
           tags=$(git tag --list 'v[0-9]{4}\.[0-9]{1,2}\.[0-9]{1,2}-[0-9]+' --sort=-creatordate)
-          last=$(echo "$tags" | head -n 2 | tail -n 1)
+          latest=$(echo "$tags" | head -n 1)
 
-          echo "::set-output name=last::$last"
-          echo "Previous Prod Tag: $latest"
+          echo "base-tag=$latest" >> "$GITHUB_OUTPUT"
+          echo "Latest Production Tag: $latest"
 
   deploy-landing-prod:
     needs: [build]
@@ -66,24 +67,23 @@ jobs:
 
       - name: Generate changelog
         run: |
-          last_tag=$(echo ${{ needs.build.outputs.last-prod-tag }})
+          base_tag=$(echo ${{ needs.build.outputs.base-tag }})
 
-          echo "Generating changelog since $last_tag"
-          git log --pretty=format:"- %s (%an)" $last_tag..HEAD | tee CHANGELOG.md
+          echo "Generating changelog since $base_tag"
+          git log --pretty=format:"- %s (%an)" $base_tag..HEAD | tee CHANGELOG.md
 
       - name: Push to Discord
         env:
           WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
-          last_tag=$(echo ${{ needs.build.outputs.last-prod-tag }})
+          base_tag=$(echo ${{ needs.build.outputs.base-tag }})
           CHANGELOG=$(cat CHANGELOG.md)
 
           payload=$(jq -n \
             --arg title "Deployed to Production: ${{ github.ref_name }}" \
-            --arg description "Changes since last production deployment '$last_tag':" \
+            --arg description "Changes since last production deployment '$base_tag':" \
             --arg changelog "$CHANGELOG" \
             --arg timestamp "$(date -u +"%Y-%m-%dT%H:%M:%S.%3NZ")" \
-
             '{
               username: "IC Hack Changelog Bot",
               avatar_url: "https://ichack.org/favicon.ico",
