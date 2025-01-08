@@ -63,11 +63,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
 
       - name: Generate changelog
         run: |
           base_tag=$(echo ${{ needs.build.outputs.base-tag }})
-          git fetch --tags
 
           echo "Generating changelog since $base_tag"
           git log --pretty=format:"- %s (%an)" $base_tag..HEAD | tee CHANGELOG.md
