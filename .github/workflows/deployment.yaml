@@ -70,15 +70,14 @@ jobs:
           git fetch --tags
 
           echo "Generating changelog since $base_tag"
-          CHANGELOG=$(git log --pretty=format:"- %s (%an)" $base_tag..HEAD)
-          echo "changelog=$CHANGELOG" >> "$GITHUB_ENV"
+          git log --pretty=format:"- %s (%an)" $base_tag..HEAD | tee CHANGELOG.md
 
       - name: Push to Discord
         env:
           WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          CHANGELOG: ${{ env.changelog }}
         run: |
           base_tag=$(echo ${{ needs.build.outputs.base-tag }})
+          CHANGELOG=$(cat CHANGELOG.md)
 
           payload=$(jq -n \
               --arg title "Deployed to Production: ${{ github.ref_name }}" \
