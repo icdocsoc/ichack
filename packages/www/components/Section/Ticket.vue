@@ -30,13 +30,11 @@
       <div
         class="font-lores my-10 space-y-2 text-center text-2xl font-bold uppercase [&>*]:mx-auto">
         <p>Get Your Ticket</p>
-        <p :class="textColor">Click the big ticket below!</p>
+        <p :class="textColor">2nd Release on 13th January 2025 at 16:30.</p>
         <img src="@ui25/assets/caret-down.svg" />
       </div>
 
-      <a
-        href="https://tickets.ichack.org/events/ichack25/1528767?access=Xcf82sHd3"
-        target="_blank">
+      <div class="cursor-pointer" @click="handleTicketClick">
         <img
           src="@ui25/assets/xs-ticket.svg"
           alt="IC Hack Tickets"
@@ -45,46 +43,46 @@
           src="@ui25/assets/ticket.svg"
           alt="IC Hack Tickets"
           class="w-full max-w-[920px] max-md:hidden" />
-      </a>
+      </div>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
 const defaultColor = 'text-[#626060]';
-// const colors = ['text-red-ic', 'text-yellow-ic', 'text-blue-ic'] as const;
+const colors = ['text-red-ic', 'text-yellow-ic', 'text-blue-ic'] as const;
 const textColor = ref(defaultColor);
 
-// const handleTicketClick = () => {
-//   const n = 3;
-//   for (let i = 0; i < n; i++) {
-//     setTimeout(
-//       () => {
-//         textColor.value = colors[0];
-//       },
-//       1500 * i + 500
-//     );
+const handleTicketClick = () => {
+  const n = 3;
+  for (let i = 0; i < n; i++) {
+    setTimeout(
+      () => {
+        textColor.value = colors[0];
+      },
+      1500 * i + 500
+    );
 
-//     setTimeout(
-//       () => {
-//         textColor.value = colors[1];
-//       },
-//       1500 * i + 1000
-//     );
+    setTimeout(
+      () => {
+        textColor.value = colors[1];
+      },
+      1500 * i + 1000
+    );
 
-//     setTimeout(
-//       () => {
-//         textColor.value = colors[2];
-//       },
-//       1500 * i + 1500
-//     );
-//   }
+    setTimeout(
+      () => {
+        textColor.value = colors[2];
+      },
+      1500 * i + 1500
+    );
+  }
 
-//   setTimeout(
-//     () => {
-//       textColor.value = defaultColor;
-//     },
-//     1500 * n + 2000 // extra delay back to default color
-//   );
-// };
+  setTimeout(
+    () => {
+      textColor.value = defaultColor;
+    },
+    1500 * n + 2000 // extra delay back to default color
+  );
+};
 </script>
