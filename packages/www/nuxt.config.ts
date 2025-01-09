@@ -37,11 +37,16 @@ export default defineNuxtConfig({
     url: 'ichack.org',
     indexable: true
   },
-
   routeRules: {
     '/code-of-conduct': {
       redirect: {
         to: 'https://docs.google.com/document/d/15j6irKFiP-i9cfbk37RxYaBpgsenMjG0t9kM_uyKIDo/edit?usp=sharing',
+        statusCode: 301
+      }
+    },
+    '/privacy-policy': {
+      redirect: {
+        to: 'https://docs.google.com/document/d/1mry0UjbjJE6ODatHnSlY8fei7peSl4ac/edit',
         statusCode: 301
       }
     }

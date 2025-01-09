@@ -30,11 +30,11 @@
       <div
         class="font-lores my-10 space-y-2 text-center text-2xl font-bold uppercase [&>*]:mx-auto">
         <p>Get Your Ticket</p>
-        <p class="text-[#626060]">Coming Soon</p>
+        <p :class="textColor">Tickets Link will be revealed at 16:30.</p>
         <img src="@ui25/assets/caret-down.svg" />
       </div>
 
-      <div class="cursor-pointer">
+      <div class="cursor-pointer" @click="handleTicketClick">
         <img
           src="@ui25/assets/xs-ticket.svg"
           alt="IC Hack Tickets"
@@ -47,3 +47,42 @@
     </div>
   </section>
 </template>
+
+<script setup lang="ts">
+const defaultColor = 'text-[#626060]';
+const colors = ['text-red-ic', 'text-yellow-ic', 'text-blue-ic'] as const;
+const textColor = ref(defaultColor);
+
+const handleTicketClick = () => {
+  const n = 3;
+  for (let i = 0; i < n; i++) {
+    setTimeout(
+      () => {
+        textColor.value = colors[0];
+      },
+      1500 * i + 500
+    );
+
+    setTimeout(
+      () => {
+        textColor.value = colors[1];
+      },
+      1500 * i + 1000
+    );
+
+    setTimeout(
+      () => {
+        textColor.value = colors[2];
+      },
+      1500 * i + 1500
+    );
+  }
+
+  setTimeout(
+    () => {
+      textColor.value = defaultColor;
+    },
+    1500 * n + 2000 // extra delay back to default color
+  );
+};
+</script>
