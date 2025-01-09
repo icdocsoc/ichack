@@ -3,7 +3,7 @@
     <div class="flex flex-col items-center gap-10">
       <ICWindow
         name="tickets.txt"
-        color="bg-gold"
+        color="bg-gold-ic"
         border="border-white"
         class="max-w-[720px]">
         <div class="flex gap-10 text-black">

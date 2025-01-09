@@ -7,6 +7,7 @@
     <DividerOne />
     <SectionAbout class="py-16" />
     <SectionTicket class="py-16" />
+    <SectionSponsors class="py-16" />
     <SectionTeam class="py-16" />
     <SectionFAQ class="py-16" />
   </main>
@@ -26,6 +27,10 @@ const navBarLinks = [
   {
     label: 'Tickets',
     to: '#tickets'
+  },
+  {
+    label: 'Sponsors',
+    to: '#sponsors'
   },
   {
     label: 'Team',

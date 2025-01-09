@@ -10,8 +10,9 @@ export default {
         'red-ic': '#D62D3B',
         'yellow-ic': '#FBB03B',
         'cream-ic': '#F2F2F2',
-
-        gold: '#BD9951'
+        'gold-ic': '#BD9F51',
+        'silver-ic': '#C8C6C3',
+        'bronze-ic': '#B78B70'
       },
       fontFamily: {
         sans: ['Archivo', 'sans-serif'],
