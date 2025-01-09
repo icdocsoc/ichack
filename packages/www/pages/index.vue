@@ -8,9 +8,10 @@
     <SectionAbout class="py-16" />
     <SectionTicket class="py-16" />
     <SectionTeam class="py-16" />
+    <SectionFAQ class="py-16" />
   </main>
 
-  <ICFooter class="pt-16" />
+  <ICFooter />
 </template>
 
 <script setup lang="ts">
@@ -29,6 +30,10 @@ const navBarLinks = [
   {
     label: 'Team',
     to: '#team'
+  },
+  {
+    label: 'FAQ',
+    to: '#faq'
   }
 ];
 
