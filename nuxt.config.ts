@@ -20,8 +20,7 @@ export default defineNuxtConfig({
       public: {
         mainDomain: ['localhost:3000']
       }
-    },
-    modules: ['@nuxt/test-utils/module']
+    }
   },
 
   $production: {
