@@ -2,6 +2,8 @@ import { AsyncResult, Result } from 'typescript-result';
 import type { User, UserCredentials } from '#shared/types';
 
 export default function () {
+  const client = useHttpClient();
+
   const loginUser = (credentials: UserCredentials): AsyncResult<User, Error> =>
     Result.try(async () => {
       const res = await client.auth.login.$post({
@@ -18,12 +20,7 @@ export default function () {
 
   const logout = (): AsyncResult<void, Error> =>
     Result.try(async () => {
-      const sessionToken = useCookie('auth_session');
-      const res = await client.auth.logout.$post(undefined, {
-        headers: {
-          Cookie: `auth_session=${sessionToken}`
-        }
-      });
+      const res = await client.auth.logout.$post();
 
       if (!res.ok) {
         const errorMessage = await res.text();

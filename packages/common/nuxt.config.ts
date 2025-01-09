@@ -11,5 +11,20 @@ export default defineNuxtConfig({
     dirs: ['stores']
   },
 
-  modules: ['@pinia/nuxt']
+  modules: ['@pinia/nuxt'],
+
+  $development: {
+    runtimeConfig: {
+      public: {
+        apiBaseUrl: 'http://localhost:3000/api'
+      }
+    }
+  },
+  $production: {
+    runtimeConfig: {
+      public: {
+        apiBaseUrl: 'https://my.ichack.org/api'
+      }
+    }
+  }
 });

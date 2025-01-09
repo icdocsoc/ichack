@@ -31,5 +31,16 @@ export default defineNuxtConfig({
     }
   },
 
-  extends: ['packages/admin', 'packages/my']
+  extends: ['packages/admin', 'packages/my'],
+
+  app: {
+    rootAttrs: {
+      id: 'app',
+      style:
+        'overflow-x: hidden; min-height: 100svh; background: black; color: white;'
+    },
+    head: {
+      titleTemplate: 'My IC Hack | %s'
+    }
+  }
 });

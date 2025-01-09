@@ -2,16 +2,11 @@ import { AsyncResult, Result } from 'typescript-result';
 import type { Profile } from '#shared/types';
 
 export default () => {
-  const headers = useRequestHeaders(['cookie']);
-  const cookie = headers.cookie ?? '';
+  const client = useHttpClient();
 
   const getProfiles = (): AsyncResult<Profile[], Error> =>
     Result.try(async () => {
-      const res = await client.profile.all.$get(undefined, {
-        headers: {
-          Cookie: cookie
-        }
-      });
+      const res = await client.profile.all.$get();
       if (!res.ok) {
         const errorMessage = await res.text();
         throw new Error(errorMessage);
@@ -23,11 +18,7 @@ export default () => {
 
   const getSelf = (): AsyncResult<Profile, Error> =>
     Result.try(async () => {
-      const res = await client.profile.$get(undefined, {
-        headers: {
-          Cookie: cookie
-        }
-      });
+      const res = await client.profile.$get();
 
       if (!res.ok) {
         const errorMessage = await res.text();

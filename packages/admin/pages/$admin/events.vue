@@ -122,13 +122,14 @@ const dateString = (date: Date) => {
 };
 
 /* Get the initial data */
+const client = useHttpClient();
+
 const {
   data: events,
   refresh: reloadEvents,
   status
 } = await useAsyncData<Event[]>('fetch_all_events', async () => {
-  const headers = useRequestHeaders();
-  const response = await client.event.$get(undefined, { headers });
+  const response = await client.event.$get();
   if (!response.ok) {
     throw new Error('Failed to fetch events');
   }
@@ -147,8 +148,6 @@ const {
 
 async function handleAddEvent() {
   // This is validated by UForm
-  // This request will be in the browser,
-  // So no need to explicitly set the headers
   const response = await client.event.$post({
     json: newEventState
   });
