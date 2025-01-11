@@ -9,6 +9,7 @@ import team from './team';
 import factory from './factory';
 import { HTTPException } from 'hono/http-exception';
 import sudo from './sudo';
+import { cors } from 'hono/cors';
 
 const api = factory
   .createApp()
@@ -24,6 +25,19 @@ const app = factory
   .use(logger())
   .use(sessionMiddleware())
   .use(sudo())
+  .use(
+    '/*',
+    cors({
+      origin: (origin, c) => {
+        if (process.env.NODE_ENV !== 'production') {
+          return origin;
+        }
+
+        const urlRegex = /https:\/\/((my|admin|www)\.)?ichack\.org/;
+        return urlRegex.test(origin) ? origin : 'https://ichack.org';
+      }
+    })
+  )
   .route('', api)
   .onError((err, c) => {
     if (err instanceof HTTPException) {
