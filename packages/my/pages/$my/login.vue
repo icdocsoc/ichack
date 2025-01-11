@@ -72,4 +72,5 @@ const handlePasswordReset = async () => {
 useHead({
   title: 'Login'
 });
+definePageMeta({ layout: 'public' });
 </script>
