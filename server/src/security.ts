@@ -1,7 +1,10 @@
-import { verifyRequestOrigin, type Session, type User } from 'lucia';
+import { verifyRequestOrigin } from 'lucia';
 import factory from './factory';
 import type { AccessPermission } from './types';
 
+/*
+ * The following code is un-used.
+ */
 export const validateOriginAndHost = () =>
   factory.createMiddleware(async (c, next) => {
     if (c.req.method == 'GET')
@@ -22,7 +25,8 @@ export const validateOriginAndHost = () =>
   });
 
 export const testOrigin = (origin: string): boolean => {
-  return /^http:\/\/admin\.example\.org$/.test(origin);
+  const urlRegex = /https:\/\/((my|www)\.)?ichack\.org/;
+  return process.env.NODE_ENV !== 'production' || urlRegex.test(origin);
 };
 
 /**

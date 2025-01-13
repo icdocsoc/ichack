@@ -72,12 +72,11 @@ import {
 
 const isLessThanLg = ref(false);
 
-const config = useRuntimeConfig();
+const bigLetters = import.meta.glob('~/public/physics/*.png', { eager: true });
+const smallLetters = import.meta.glob('~/public/physics/small/*.png', {
+  eager: true
+});
 
-let urlPrefix = config.public.publicUrlPrefix + '/physics';
-const letters = ['hollow_cube', 'i', 'c', 'h', 'a', 'yellow_c', 'k'].map(
-  v => v + '.png'
-);
 const physics = useTemplateRef<HTMLDivElement>('physics');
 
 let render: Render;
@@ -139,9 +138,11 @@ onMounted(async () => {
   // run the engine
   Runner.run(runner, engine);
 
-  if ((physicsBox?.clientWidth ?? 0) < 300) {
-    urlPrefix += '_small';
-  }
+  const useSmall = (physicsBox?.clientWidth ?? 0) < 300;
+  const letters = Object.entries(useSmall ? smallLetters : bigLetters).map(
+    /* @ts-ignore default is a key here */
+    ([_key, value]) => value.default
+  );
 
   // add the letters
   let offs = 0;
@@ -151,7 +152,7 @@ onMounted(async () => {
       Bodies.rectangle(Math.min(75 + offs, width - 75), 50, 100, 100, {
         render: {
           sprite: {
-            texture: `${urlPrefix}/${letter}`,
+            texture: letter,
             xScale: 1,
             yScale: 1
           }

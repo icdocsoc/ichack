@@ -16,8 +16,8 @@
 </template>
 
 <script setup lang="ts">
-const config = useRuntimeConfig();
-const urlPrefix = config.public.publicUrlPrefix + '/og';
+import regular from '/og/regular.png';
+import twitter from '/og/twitter.png';
 
 const navBarLinks = [
   {
@@ -54,12 +54,12 @@ useSeoMeta({
     "Europe's largest student-run hackathon at Imperial College London",
   ogUrl: 'https://ichack.org',
   ogType: 'website',
-  ogImage: `${urlPrefix}/regular.png`,
+  ogImage: regular,
 
   twitterCard: 'summary_large_image',
   twitterTitle: "IC Hack '25",
   twitterDescription:
     "Europe's largest student-run hackathon at Imperial College London",
-  twitterImage: `${urlPrefix}/twitter.png`
+  twitterImage: twitter
 });
 </script>

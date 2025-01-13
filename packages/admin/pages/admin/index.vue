@@ -1,9 +1,10 @@
 <script lang="ts" setup>
 definePageMeta({
-  middleware: ['require-auth']
+  middleware: ['require-auth'],
+  layout: 'toolbar'
 });
 </script>
 
 <template>
-  <NuxtLayout name="toolbar"></NuxtLayout>
+  <div></div>
 </template>

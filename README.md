@@ -8,7 +8,7 @@ This is a gigantic single running Nuxt4 application. The 3 main frontend applica
 
 - [Server (Perry)](./server/) - Backend server written in Hono.
 - [Admin (Ferb)](./packages/admin/) - The admin dashboard website that manages users, teams, announcements.
-- [Internal (Phineas)](./packages/my/) - The Internal Website used by hackers, volunteers, etc.
+- [Internal (Phineas)](./app/) - The Internal Website used by hackers, volunteers, etc.
 - [Landing Page (Isabella)](./packages/www/) - The static landing page.
 
 This application also contains the utility modules:

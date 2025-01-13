@@ -1,69 +1,64 @@
 <template>
-  <NuxtLayout name="toolbar">
-    <div class="px-4">
-      <div class="flex justify-center py-3">
-        <h1 class="text-3xl font-bold">IC Hack Events</h1>
-      </div>
-
-      <div class="px-24">
-        <UAccordion
-          size="xl"
-          open-icon="i-heroicons-plus"
-          close-icon="i-heroicons-minus"
-          :items="[
-            {
-              label: 'Add a new Event',
-              defaultOpen: false, // TODO make this false
-              slot: 'new-event'
-            }
-          ]">
-          <template #new-event>
-            <UForm
-              :schema="createEventSchema"
-              :state="newEventState"
-              class="flex justify-around px-8"
-              @submit="handleAddEvent">
-              <UFormGroup label="Title" name="title">
-                <UInput v-model="newEventState.title" />
-              </UFormGroup>
-
-              <UFormGroup label="Description" name="description">
-                <UTextarea v-model="newEventState.description" resize />
-              </UFormGroup>
-
-              <UFormGroup label="Starts At" name="startsAt">
-                <UInput type="datetime-local" v-model="startsAtDateString" />
-              </UFormGroup>
-
-              <UFormGroup label="Ends At" name="endsAt">
-                <UInput type="datetime-local" v-model="endsAtDateString" />
-              </UFormGroup>
-
-              <UFormGroup label="Public" name="public">
-                <UCheckbox v-model="newEventState.public" />
-              </UFormGroup>
-
-              <UButton type="submit" class="self-center">Submit</UButton>
-            </UForm>
-          </template>
-        </UAccordion>
-        <UTable
-          :rows="events"
-          :columns="columns"
-          :loading="status == 'pending'">
-          <template #startsAt-data="{ row }">
-            {{ dateString(row.startsAt) }}
-          </template>
-          <template #endsAt-data="{ row }">
-            {{ dateString(row.endsAt) }}
-          </template>
-          <template #public-data="{ row }">
-            <UCheckbox v-model="row.public" disabled />
-          </template>
-        </UTable>
-      </div>
+  <div class="px-4">
+    <div class="flex justify-center py-3">
+      <h1 class="text-3xl font-bold">IC Hack Events</h1>
     </div>
-  </NuxtLayout>
+
+    <div class="px-24">
+      <UAccordion
+        size="xl"
+        open-icon="i-heroicons-plus"
+        close-icon="i-heroicons-minus"
+        :items="[
+          {
+            label: 'Add a new Event',
+            defaultOpen: false, // TODO make this false
+            slot: 'new-event'
+          }
+        ]">
+        <template #new-event>
+          <UForm
+            :schema="createEventSchema"
+            :state="newEventState"
+            class="flex justify-around px-8"
+            @submit="handleAddEvent">
+            <UFormGroup label="Title" name="title">
+              <UInput v-model="newEventState.title" />
+            </UFormGroup>
+
+            <UFormGroup label="Description" name="description">
+              <UTextarea v-model="newEventState.description" resize />
+            </UFormGroup>
+
+            <UFormGroup label="Starts At" name="startsAt">
+              <UInput type="datetime-local" v-model="startsAtDateString" />
+            </UFormGroup>
+
+            <UFormGroup label="Ends At" name="endsAt">
+              <UInput type="datetime-local" v-model="endsAtDateString" />
+            </UFormGroup>
+
+            <UFormGroup label="Public" name="public">
+              <UCheckbox v-model="newEventState.public" />
+            </UFormGroup>
+
+            <UButton type="submit" class="self-center">Submit</UButton>
+          </UForm>
+        </template>
+      </UAccordion>
+      <UTable :rows="events" :columns="columns" :loading="status == 'pending'">
+        <template #startsAt-data="{ row }">
+          {{ dateString(row.startsAt) }}
+        </template>
+        <template #endsAt-data="{ row }">
+          {{ dateString(row.endsAt) }}
+        </template>
+        <template #public-data="{ row }">
+          <UCheckbox v-model="row.public" disabled />
+        </template>
+      </UTable>
+    </div>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -172,6 +167,7 @@ function clearState() {
 
 /* Metadata */
 definePageMeta({
-  middleware: ['require-auth']
+  middleware: ['require-auth'],
+  layout: 'toolbar'
 });
 </script>

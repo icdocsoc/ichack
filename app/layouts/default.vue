@@ -2,7 +2,7 @@
   <NuxtLayout name="public">
     <img
       class="fixed bottom-0 mb-4 h-fit cursor-pointer"
-      src="@my/assets/logout.svg"
+      src="~/assets/logout.svg"
       @click="handleLogout" />
 
     <div class="ml-10 mt-4 flex">

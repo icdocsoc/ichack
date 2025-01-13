@@ -1,20 +1,4 @@
 export default defineNuxtConfig({
-  $development: {
-    runtimeConfig: {
-      public: {
-        publicUrlPrefix: '/_nuxt/public'
-      }
-    }
-  },
-
-  $production: {
-    runtimeConfig: {
-      public: {
-        publicUrlPrefix: ''
-      }
-    }
-  },
-
   app: {
     rootAttrs: {
       id: 'app',

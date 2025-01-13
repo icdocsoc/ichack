@@ -35,7 +35,6 @@ const { data, refresh, status, error } = await useAsyncData(
   async () => {
     const res = await getProfiles();
     if (res.isError()) {
-      console.log(res.error);
     } else {
       return res.getOrNull();
     }
@@ -93,63 +92,62 @@ async function handleSubmit() {
 
 // Other misc things
 definePageMeta({
-  middleware: ['require-auth']
+  middleware: ['require-auth'],
+  layout: 'admin'
 });
 </script>
 
 <template>
-  <NuxtLayout name="toolbar">
-    <UContainer class="relative max-h-full overflow-y-scroll">
-      <h2 class="text-center text-5xl font-semibold">Manage Users</h2>
-      <UButton
-        label="Add User"
-        @click="isAddUserPopupOpen = true"
-        v-if="profile!.role == 'god'" />
-      <UAlert v-if="error" :title="error.message" />
-      <UTable
-        v-else
-        :rows="data!"
-        :columns="tableColumns"
-        :loading="status == 'pending'">
-        <template #actions-data="{ row }">
-          <UButton
-            icon="i-heroicons-pencil-square"
-            size="xs"
-            color="primary"
-            square
-            variant="outline"
-            class="mx-2"
-            @click="" />
-          <UButton
-            icon="i-heroicons-solid-user-remove"
-            size="xs"
-            color="primary"
-            square
-            variant="outline"
-            class="mx-2"
-            @click="" />
-        </template>
-      </UTable>
-      <UModal v-model="isAddUserPopupOpen">
-        <UContainer class="mb-4 grid grid-flow-row justify-center p-10">
-          <UForm
-            :schema="schema"
-            :state="userDetails"
-            class="p-4"
-            @submit="handleSubmit">
-            <UFormGroup label="Name" name="name">
-              <UInput v-model="userDetails.name" />
-            </UFormGroup>
-            <UFormGroup label="Email" name="email">
-              <UInput v-model="userDetails.email" />
-            </UFormGroup>
-            <UFormGroup label="Role" name="role" class="justify-center p-1">
-              <DropdownInput v-model="userDetails.role" :items="roleItems" />
-            </UFormGroup>
-            <UButton type="submit" class="justify-center p-4">Submit</UButton>
-          </UForm>
-        </UContainer>
-      </UModal>
-    </UContainer>
-  </NuxtLayout>
+  <UContainer class="relative max-h-full overflow-y-scroll">
+    <h2 class="text-center text-5xl font-semibold">Manage Users</h2>
+    <UButton
+      label="Add User"
+      @click="isAddUserPopupOpen = true"
+      v-if="profile!.role == 'god'" />
+    <UAlert v-if="error" :title="error.message" />
+    <UTable
+      v-else
+      :rows="data!"
+      :columns="tableColumns"
+      :loading="status == 'pending'">
+      <template #actions-data="{ row }">
+        <UButton
+          icon="i-heroicons-pencil-square"
+          size="xs"
+          color="primary"
+          square
+          variant="outline"
+          class="mx-2"
+          @click="" />
+        <UButton
+          icon="i-heroicons-solid-user-remove"
+          size="xs"
+          color="primary"
+          square
+          variant="outline"
+          class="mx-2"
+          @click="" />
+      </template>
+    </UTable>
+    <UModal v-model="isAddUserPopupOpen">
+      <UContainer class="mb-4 grid grid-flow-row justify-center p-10">
+        <UForm
+          :schema="schema"
+          :state="userDetails"
+          class="p-4"
+          @submit="handleSubmit">
+          <UFormGroup label="Name" name="name">
+            <UInput v-model="userDetails.name" />
+          </UFormGroup>
+          <UFormGroup label="Email" name="email">
+            <UInput v-model="userDetails.email" />
+          </UFormGroup>
+          <UFormGroup label="Role" name="role" class="justify-center p-1">
+            <DropdownInput v-model="userDetails.role" :items="roleItems" />
+          </UFormGroup>
+          <UButton type="submit" class="justify-center p-4">Submit</UButton>
+        </UForm>
+      </UContainer>
+    </UModal>
+  </UContainer>
 </template>

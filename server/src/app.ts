@@ -10,6 +10,7 @@ import factory from './factory';
 import { HTTPException } from 'hono/http-exception';
 import sudo from './sudo';
 import { cors } from 'hono/cors';
+import { testOrigin } from './security';
 
 const api = factory
   .createApp()
@@ -26,16 +27,9 @@ const app = factory
   .use(sessionMiddleware())
   .use(sudo())
   .use(
-    '/*',
     cors({
-      origin: (origin, c) => {
-        if (process.env.NODE_ENV !== 'production') {
-          return origin;
-        }
-
-        const urlRegex = /https:\/\/((my|admin|www)\.)?ichack\.org/;
-        return urlRegex.test(origin) ? origin : 'https://ichack.org';
-      }
+      origin: (origin, _) =>
+        testOrigin(origin) ? origin : 'https://ichack.org'
     })
   )
   .route('', api)
@@ -53,19 +47,10 @@ export default app;
  * The following code is commented out because it is not yet implemented.
  * They ensure that the server is secure and that the origin and host are validated.
  *
- * import { testOrigin, validateOriginAndHost } from './security';
- * import { cors } from 'hono/cors';
  * import { csrf } from 'hono/csrf';
  * import { secureHeaders } from 'hono/secure-headers';
  *
  * .use(secureHeaders())
- * .use(
- *   cors({
- *     origin: (origin, _) =>
- *       testOrigin(origin) ? origin : 'http://example.org',
- *     credentials: true
- *   })
- * )
  * .use(
  *   csrf({
  *     origin: (origin, _) => testOrigin(origin)

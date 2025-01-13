@@ -1,17 +1,17 @@
 <script setup lang="ts">
-const { logOut } = useAuth();
+const { logout } = useAuth();
 
 const menu = [
   [
-    { label: 'Dashboard', to: '/', icon: 'heroicons:user-circle' },
-    { label: 'Users', to: '/users', icon: 'heroicons:user-plus' },
+    { label: 'Dashboard', to: '/admin', icon: 'heroicons:user-circle' },
+    { label: 'Users', to: '/admin/users', icon: 'heroicons:user-plus' },
     {
       label: 'Announcements',
-      to: '/announcements',
+      to: '/admin/announcements',
       icon: 'heroicons:megaphone'
     },
-    { label: 'Events', to: '/events', icon: 'heroicons:calendar' },
-    { label: 'Team', to: '/team', icon: 'heroicons:users' }
+    { label: 'Events', to: '/admin/events', icon: 'heroicons:calendar' },
+    { label: 'Team', to: '/admin/team', icon: 'heroicons:users' }
   ],
   [
     {
