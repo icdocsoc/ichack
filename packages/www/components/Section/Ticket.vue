@@ -30,11 +30,12 @@
       <div
         class="font-lores my-10 space-y-2 text-center text-2xl font-bold uppercase [&>*]:mx-auto">
         <p>Get Your Ticket</p>
-        <p :class="textColor">2nd Release on 13th January 2025 at 16:30.</p>
+        <p :class="textColor">Click on the big ticket below</p>
         <img src="@ui25/assets/caret-down.svg" />
       </div>
 
-      <div class="cursor-pointer" @click="handleTicketClick">
+      <a
+        href="https://www.eventbrite.co.uk/e/ic-hack-2025-2nd-release-tickets-1148699022699?password=hdmkimmr">
         <img
           src="@ui25/assets/xs-ticket.svg"
           alt="IC Hack Tickets"
@@ -43,7 +44,7 @@
           src="@ui25/assets/ticket.svg"
           alt="IC Hack Tickets"
           class="w-full max-w-[920px] max-md:hidden" />
-      </div>
+      </a>
     </div>
   </section>
 </template>
