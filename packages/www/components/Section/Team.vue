@@ -25,18 +25,20 @@
           :key="committee.name"
           :color="colours[index % 3]">
           <div class="text-black">
-            <img
-              v-if="committee.image"
-              :src="committee.image"
-              :alt="committee.name"
-              class="aspect-square object-contain" />
-            <div
-              v-else
-              class="bg-blue-ic grid aspect-square place-items-center bg-[#66A5D9]">
+            <div class="max-w-96">
               <img
-                src="@ui25/assets/ducks.svg"
+                v-if="committee.image"
+                :src="committee.image"
                 :alt="committee.name"
-                class="w-1/2" />
+                class="aspect-square object-contain" />
+              <div
+                v-else
+                class="bg-blue-ic grid aspect-square place-items-center bg-[#66A5D9]">
+                <img
+                  src="@ui25/assets/ducks.svg"
+                  :alt="committee.name"
+                  class="w-1/2" />
+              </div>
             </div>
 
             <p
@@ -47,9 +49,9 @@
               {{ committee.role }}
             </p>
             <p>{{ committee.description }}</p>
-            <div class="mt-2 flex space-x-1" v-if="committee.links">
+            <div class="mt-2 flex space-x-1">
               <a
-                v-if="committee.links.github"
+                v-if="committee.links?.github"
                 :href="committee.links.github"
                 target="_blank">
                 <img
@@ -58,7 +60,7 @@
                   class="h-6 w-6" />
               </a>
               <a
-                v-if="committee.links.linkedin"
+                v-if="committee.links?.linkedin"
                 :href="committee.links.linkedin"
                 target="_blank">
                 <img
@@ -67,7 +69,7 @@
                   class="h-6 w-6" />
               </a>
               <a
-                v-if="committee.links.instagram"
+                v-if="committee.links?.instagram"
                 :href="committee.links.instagram"
                 target="_blank">
                 <img
@@ -76,7 +78,7 @@
                   class="h-6 w-6" />
               </a>
               <a
-                v-if="committee.links.other"
+                v-if="committee.links?.other"
                 :href="committee.links.other"
                 target="_blank">
                 <img

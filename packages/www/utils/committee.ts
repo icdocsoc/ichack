@@ -66,7 +66,7 @@ export const teamMembers: Committee[] = [
     links: {
       linkedin: 'https://www.linkedin.com/in/ahmed-abussaud/',
       github: 'https://github.com/Dropheart',
-      other: 'https://abussaud.com/'
+      other: 'https://abussaud.dev/'
     }
   },
   { name: 'Aidan Madge', role: 'Logistics Lead' },
