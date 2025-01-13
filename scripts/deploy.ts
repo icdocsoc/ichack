@@ -14,6 +14,7 @@ function getCurrentDate(): string {
 async function getLatestTag(date: string): Promise<string | null> {
   try {
     // Use Git to find all tags, filter by current date, and sort numerically
+    await $`git fetch --tags`;
     const tags = await $`git tag --list "v*" --sort=-creatordate`
       .quiet()
       .text();

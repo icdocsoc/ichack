@@ -35,7 +35,7 @@ jobs:
         id: tags
         run: |
           git fetch --tags
-          latest=$(git tag --list 'v*' --sort=-creatordate | grep -v -- '-staging' | head -n 1)
+          latest=$(git tag --list 'v*' --sort=-creatordate | grep -v -- '-staging' | head -n 2 | tail -n 1)
 
           echo "base-tag=$latest" >> "$GITHUB_OUTPUT"
           echo "Latest Production Tag: $latest"
