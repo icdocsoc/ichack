@@ -19,6 +19,10 @@
 import regular from '/og/regular.png';
 import twitter from '/og/twitter.png';
 
+onMounted(() => {
+  mounted();
+});
+
 const navBarLinks = [
   {
     label: 'About',
