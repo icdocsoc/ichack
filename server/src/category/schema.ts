@@ -28,6 +28,6 @@ export const sponsorCompany = pgTable('sponsor_company', {
 });
 
 export const insertCategorySchema = createInsertSchema(categories, {
-  image: schema => schema.image.url(),
-  longDescription: schema => schema.longDescription.url()
+  image: schema => schema.url(),
+  longDescription: schema => schema.url()
 }); // The slug is generated from the owner and title

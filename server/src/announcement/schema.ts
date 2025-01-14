@@ -11,7 +11,9 @@ export const announcements = pgTable('announcements', {
 });
 
 export const insertAnnouncementSchema = createInsertSchema(announcements, {
-  pinUntil: z.coerce.date()
+  /* Issue described at https://github.com/drizzle-team/drizzle-orm/issues/3842 */
+  createdAt: z.coerce.date(),
+  pinUntil: z.coerce.date().optional()
 })
   .omit({
     id: true,

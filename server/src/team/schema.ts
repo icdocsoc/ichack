@@ -34,9 +34,11 @@ export const teamInvites = pgTable(
       .notNull()
       .references(() => users.id)
   },
-  table => ({
-    pk: primaryKey({ columns: [table.teamId, table.userId] })
-  })
+  table => [
+    {
+      pk: primaryKey({ columns: [table.teamId, table.userId] })
+    }
+  ]
 );
 
 export const teamMembers = pgTable('team_members', {

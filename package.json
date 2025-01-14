@@ -52,7 +52,7 @@
     "cva": "npm:class-variance-authority",
     "date-fns": "^4.1.0",
     "drizzle-orm": "^0.38.2",
-    "drizzle-zod": "^0.5.1",
+    "drizzle-zod": "^0.6.1",
     "hono": "^4.5.5",
     "lucia": "^3.2.0",
     "matter-js": "^0.20.0",

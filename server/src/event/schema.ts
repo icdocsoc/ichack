@@ -12,23 +12,22 @@ export const events = pgTable('events', {
 });
 
 export const createEventSchema = createInsertSchema(events, {
-  title: schema => schema.title.nonempty(),
-  description: schema => schema.description.nonempty(),
+  title: schema => schema.nonempty(),
+  description: schema => schema.nonempty(),
   startsAt: z.coerce.date(),
-  endsAt: z.coerce.date()
+  endsAt: z.coerce.date().optional()
 })
   .omit({ id: true })
   .strict()
   .refine(data => data.endsAt == undefined || data.startsAt < data.endsAt, {
     message: 'Event must start before it ends.',
-    // Only show the error on the endsAt field (for now)
-    // Issue detailed here: https://github.com/nuxt/ui/pull/2982
     path: ['endsAt']
   });
 
 export const updateEventBody = createSelectSchema(events, {
+  /* Issue described at https://github.com/drizzle-team/drizzle-orm/issues/3842 */
   startsAt: z.coerce.date(),
-  endsAt: z.coerce.date()
+  endsAt: z.coerce.date().optional()
 })
   .partial()
   .strict()

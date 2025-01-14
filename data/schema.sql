@@ -68,8 +68,7 @@ CREATE TABLE "profiles" (
 --> statement-breakpoint
 CREATE TABLE "team_invites" (
 	"team_id" integer NOT NULL,
-	"user_id" text NOT NULL,
-	CONSTRAINT "team_invites_team_id_user_id_pk" PRIMARY KEY("team_id","user_id")
+	"user_id" text NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "team_members" (

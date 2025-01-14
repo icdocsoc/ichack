@@ -65,7 +65,7 @@ describe('Announcement Module > POST /', () => {
     });
 
     // Verify the createdAt is within 10 seconds of the current time
-    expect(announcement[0].createdAt).toEqual(today);
+    expect(announcement[0]!.createdAt).toEqual(today);
 
     jest.clearAllMocks();
   });
