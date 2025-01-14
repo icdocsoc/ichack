@@ -41,7 +41,8 @@
           class="w-full md:hidden" />
         <img
           src="@ui25/assets/gticket.jpg"
-          alt="Ic..Hecc...Ticquets... I'm sorry I am feeling some bits off."
+          title="Ic..Hacc..Ticquets.. I'm sorry I am feeling some bits off."
+          alt="IC Hack Tickets"
           class="w-full max-w-[920px] max-md:hidden" />
       </div>
     </div>
