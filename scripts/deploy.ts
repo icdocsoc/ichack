@@ -1,8 +1,11 @@
 import { format } from 'date-fns';
 import { $ } from 'bun';
+import select from '@inquirer/select';
+import confirm from '@inquirer/confirm';
 
 interface TagOptions {
-  isStaging: boolean;
+  product: 'landing' | 'website';
+  environment: 'staging' | 'production';
 }
 
 // Get the current date in the format YYYY.MM.DD
@@ -39,15 +42,18 @@ function incrementVersion(tag: string): number {
 }
 
 // Generate the tag version
-async function generateTag(isStaging: boolean): Promise<string> {
+async function generateTag({
+  product,
+  environment
+}: TagOptions): Promise<string> {
   const date = getCurrentDate();
 
   const latestTag = await getLatestTag(date);
   const nextVersion = latestTag ? incrementVersion(latestTag) : 1;
 
-  return isStaging
-    ? `v${date}-${nextVersion}-staging`
-    : `v${date}-${nextVersion}`;
+  return environment === 'staging'
+    ? `v${date}-${nextVersion}-${product}-staging`
+    : `v${date}-${nextVersion}-${product}`;
 }
 
 // Create the tag in the repository
@@ -57,10 +63,10 @@ async function createTag(tag: string) {
     console.log(`Tag ${tag} created successfully.`);
 
     // ask for confirmation before pushing the tag
-    const push = prompt(
-      'Do you want to push the tag to the remote repository? (y/N)'
-    );
-    if (!push || push.toLowerCase() !== 'y') {
+    const push = await confirm({
+      message: 'Push the tag to remote'
+    });
+    if (!push) {
       console.log(`Tag ${tag} created but not pushed.`);
       return;
     }
@@ -74,22 +80,46 @@ async function createTag(tag: string) {
 }
 
 // Main function
-async function main({ isStaging }: TagOptions) {
-  const message = isStaging ? 'staging deployment' : 'production deployment';
-  const response = prompt(
-    `Creating a new tag for ${message}... Continue? (y/N)`
-  );
-  if (!response || response.toLowerCase() !== 'y') {
-    console.log('Aborted.');
-    process.exit(0);
-  }
-
-  const tag = await generateTag(isStaging);
+async function main(options: TagOptions) {
+  const tag = await generateTag(options);
   await createTag(tag);
 }
 
 // Run the script
-const args = process.argv.slice(2);
-const isStaging = args.includes('--staging');
+const product: TagOptions['product'] = await select({
+  message: 'Select the product:',
+  choices: [
+    {
+      name: 'landing',
+      value: 'landing'
+    },
+    {
+      name: 'website',
+      value: 'website'
+    }
+  ]
+});
 
-await main({ isStaging });
+const environment: TagOptions['environment'] = await select({
+  message: 'Select the environment:',
+  choices: [
+    {
+      name: 'staging',
+      value: 'staging'
+    },
+    {
+      name: 'production',
+      value: 'production'
+    }
+  ]
+});
+
+const ok = await confirm({
+  message: `Continue deployment of "${product}" to "${environment}"`
+});
+if (!ok) {
+  console.log('Deployment cancelled.');
+  process.exit(0);
+}
+
+await main({ product, environment });

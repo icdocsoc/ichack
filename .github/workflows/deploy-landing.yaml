@@ -1,9 +1,9 @@
-name: deploy
+name: deploy landing
 
 on:
   push:
     tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+-[0-9]+'
+      - 'v[0-9]+.[0-9]+.[0-9]+-[0-9]+-landing*'
 
 jobs:
   build:
@@ -23,7 +23,7 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Build project
-        run: bun run build
+        run: bun run build:landing
 
       - name: Upload landing static files artifact
         uses: actions/upload-artifact@v4
@@ -35,12 +35,12 @@ jobs:
         id: tags
         run: |
           git fetch --tags
-          latest=$(git tag --list 'v*' --sort=-creatordate | grep -v -- '-staging' | head -n 2 | tail -n 1)
+          latest=$(git tag --list 'v*' --sort=-creatordate | grep '-landing$' | head -n 2 | tail -n 1)
 
           echo "base-tag=$latest" >> "$GITHUB_OUTPUT"
           echo "Latest Production Tag: $latest"
 
-  deploy-landing-prod:
+  deploy:
     needs: [build]
     runs-on: ubuntu-latest
     steps:
@@ -50,15 +50,24 @@ jobs:
           name: landing-static
           path: dist
 
+      - name: Set branch name
+        run: |
+          if [[ $GITHUB_REF == refs/tags/*-staging ]]; then
+            echo "BRANCH_NAME=isabella" >> "$GITHUB_ENV"
+          else
+            echo "BRANCH_NAME=production" >> "$GITHUB_ENV"
+          fi
+
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy dist --project-name=ichack25 --branch=production
+          command: pages deploy dist --project-name=ichack25 --branch=${{ env.BRANCH_NAME }}
 
   generateChangelog:
-    needs: [deploy-landing-prod, build]
+    needs: [deploy, build]
+    if: endsWith(github.ref, '-landing')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

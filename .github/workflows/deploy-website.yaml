@@ -1,9 +1,9 @@
-name: staging
+name: deploy website
 
 on:
   push:
     tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+-[0-9]+-staging'
+      - 'v[0-9]+.[0-9]+.[0-9]+-[0-9]+-wesbite*'
 
 jobs:
   build:
@@ -35,7 +35,7 @@ jobs:
         id: tags
         run: |
           git fetch --tags
-          latest=$(git tag --list 'v*' --sort=-creatordate | grep -v -- '-staging' | head -n 1)
+          latest=$(git tag --list 'v*' --sort=-creatordate | grep '-website$' | head -n 2 | tail -n 1)
 
           echo "base-tag=$latest" >> "$GITHUB_OUTPUT"
           echo "Latest Production Tag: $latest"
@@ -85,27 +85,60 @@ jobs:
           PGHOST: localhost
           PGPORT: 5432
 
-  deploy-landing-staging:
-    needs: [testServer, build]
+  build-website-image:
+    needs: testServer
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Login Github Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set tag
+        run: |
+          if [[ $GITHUB_REF == refs/tags/*-staging ]]; then
+            echo "TAG=nightly" >> "$GITHUB_ENV"
+          else
+            echo "TAG=latest" >> "$GITHUB_ENV"
+          fi
+
+      - name: Build and push
+        run: |
+          docker build -t ghcr.io/icdocsoc/ichack-website:${{ env.TAG }} --target website .
+          docker push ghcr.io/icdocsoc/ichack-website:${{ env.TAG }}
+
+  deploy-website:
+    needs: build-website-image
     runs-on: ubuntu-latest
     steps:
-      - name: Download landing artifact
-        uses: actions/download-artifact@v4
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
         with:
-          name: landing-static
-          path: dist
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
-      - name: Deploy to Cloudflare Pages
-        id: deploy-step
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy dist --project-name=ichack25 --branch=isabella
+      - name: Set app
+        run: |
+          if [[ $GITHUB_REF == refs/tags/*-staging ]]; then
+            echo "ID=ichack-website-staging" >> "$GITHUB_ENV"
+          else
+            echo "ID=ichack-website" >> "$GITHUB_ENV"
+          fi
+
+      - name: Deploy to DigitalOcean
+        run: doctl apps create-deployment ${{ env.ID }}
 
   generateChangelog:
-    needs: [deploy-landing-staging, build]
+    needs: [deploy-website, build]
     runs-on: ubuntu-latest
+    if: endsWith(github.ref, '-website')
     steps:
       - name: Checkout
         uses: actions/checkout@v4
