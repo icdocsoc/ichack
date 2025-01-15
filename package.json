@@ -8,6 +8,7 @@
     "build:website": "bun --bun nuxt build",
     "build:landing": "bun --bun nuxt generate --cwd packages/www",
     "dev": "bash ./scripts/start-dev.sh",
+    "deploy": "bun run scripts/deploy.ts",
     "preview": "docker compose up --build",
     "postinstall": "bun --bun nuxt prepare",
     "test:backend": "bash ./scripts/test-backend.sh",
