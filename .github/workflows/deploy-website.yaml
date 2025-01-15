@@ -3,8 +3,7 @@ name: deploy website
 on:
   push:
     tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+-[0-9]+-wesbite'
-      - 'v[0-9]+.[0-9]+.[0-9]+-[0-9]+-wesbite-staging'
+      - 'v[0-9]+.[0-9]+.[0-9]+-[0-9]+-website*'
 
 jobs:
   build:
