@@ -127,10 +127,11 @@ jobs:
         with:
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
+      # These are the DigitalOcean App IDs for the production and staging environments
       - name: Set app
         run: |
           if [[ $GITHUB_REF == refs/tags/*-staging ]]; then
-            echo "ID=ichack-website-staging" >> "$GITHUB_ENV"
+            echo "ID=7c16dfac-7e9b-41bb-96fa-ed5ab016c1b6" >> "$GITHUB_ENV"
           else
             echo "ID=21888743-9b82-4fb1-ac22-8b6e1aeb7f08" >> "$GITHUB_ENV"
           fi
