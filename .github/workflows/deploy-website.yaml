@@ -132,7 +132,7 @@ jobs:
           if [[ $GITHUB_REF == refs/tags/*-staging ]]; then
             echo "ID=ichack-website-staging" >> "$GITHUB_ENV"
           else
-            echo "ID=ichack-website" >> "$GITHUB_ENV"
+            echo "ID=21888743-9b82-4fb1-ac22-8b6e1aeb7f08" >> "$GITHUB_ENV"
           fi
 
       - name: Deploy to DigitalOcean
