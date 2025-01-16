@@ -1,7 +1,7 @@
 <template>
   <input
     type="submit"
-    class="bg-blue-ic hover:bg-yellow-ic cursor-pointer rounded px-1 py-2 text-2xl font-semibold transition-colors duration-200 ease-in-out"
+    class="bg-blue-ic hover:bg-yellow-ic cursor-pointer rounded px-1 py-2 text-2xl font-semibold transition-colors duration-200 ease-in-out hover:text-black"
     :value="value" />
 </template>
 
