@@ -2,8 +2,8 @@
   <Transition name="error-transition">
     <div
       v-if="error"
-      class="border-red-ic fixed left-1/2 top-20 z-50 max-w-[512px] -translate-x-1/2 border-4 bg-black px-6 py-3">
-      <div class="flex items-center justify-between gap-28">
+      class="border-red-ic fixed left-1/2 top-20 z-50 w-[95vw] max-w-[512px] -translate-x-1/2 border-4 bg-black px-6 py-3">
+      <div class="flex items-center justify-between lg:gap-28">
         <p class="text-red-ic font-ichack text-4xl">ERROR</p>
         <img
           src="@ui25/assets/error.svg"

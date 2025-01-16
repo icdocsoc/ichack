@@ -168,6 +168,6 @@ function clearState() {
 /* Metadata */
 definePageMeta({
   middleware: ['require-auth'],
-  layout: 'toolbar'
+  layout: 'admin'
 });
 </script>

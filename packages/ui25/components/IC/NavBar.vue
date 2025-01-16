@@ -2,7 +2,10 @@
   <nav class="relative flex justify-between px-5 lg:overflow-hidden">
     <img src="@ui25/assets/logo-white.svg" class="my-2" />
 
-    <ICHamburger class="w-8 self-center lg:hidden" v-model="hamburgerActive" />
+    <ICHamburger
+      v-if="links.length"
+      class="w-8 self-center lg:hidden"
+      v-model="hamburgerActive" />
     <ul :class="menuStyles" class="flex items-end max-lg:flex-col">
       <li v-for="(item, i) in links">
         <a :href="item.to">

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 definePageMeta({
   middleware: ['require-auth'],
-  layout: 'toolbar'
+  layout: 'admin'
 });
 </script>
 

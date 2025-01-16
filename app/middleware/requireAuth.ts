@@ -9,6 +9,5 @@ export default defineNuxtRouteMiddleware(async () => {
     }
   }
 
-  if (store.profile == null)
-    return abortNavigation('You cannot access this page');
+  if (store.profile == null) return navigateTo('/login');
 });
