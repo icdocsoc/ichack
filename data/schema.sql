@@ -1,5 +1,7 @@
 CREATE TYPE "public"."token_type" AS ENUM('forgot_password', 'registration_link');--> statement-breakpoint
 CREATE TYPE "public"."user_roles" AS ENUM('god', 'admin', 'hacker', 'sponsor', 'volunteer');--> statement-breakpoint
+CREATE TYPE "public"."gender_types" AS ENUM('male', 'female', 'nb', 'other', 'na');--> statement-breakpoint
+CREATE TYPE "public"."t_shirt_sizes" AS ENUM('S', 'M', 'L', 'XL', '2XL');--> statement-breakpoint
 CREATE TABLE "announcements" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"title" text NOT NULL,
@@ -46,6 +48,15 @@ CREATE TABLE "companies" (
 CREATE TABLE "sponsor_company" (
 	"user_id" text PRIMARY KEY NOT NULL,
 	"company_name" text NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "demograph" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"course_of_study" text,
+	"year_of_study" integer,
+	"t_shirt_size" "t_shirt_sizes",
+	"age" integer,
+	"gender" "gender_types"
 );
 --> statement-breakpoint
 CREATE TABLE "events" (
