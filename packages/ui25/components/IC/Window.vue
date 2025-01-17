@@ -1,5 +1,8 @@
 <template>
-  <div v-if="open" :class="`${fullscreenClass}`" @click="fullscreen = false">
+  <div
+    v-if="open"
+    :class="['ic-window', fullscreenClass]"
+    @click="fullscreen = false">
     <div
       class="flex w-full flex-col border-4"
       :class="`${border} ${background} ${fullscreen ? 'max-h-[90vh] max-w-fit' : 'h-full'}`"
@@ -24,7 +27,7 @@
               @click="handleMaximize" />
             <img
               :src="images.close"
-              class="cursor-pointer"
+              class="closeable cursor-pointer"
               @click="handleClose" />
           </div>
         </slot>
@@ -72,7 +75,7 @@ const open = ref(true);
 const fullscreen = ref(false);
 const fullscreenClass = computed(() =>
   fullscreen.value
-    ? 'fixed inset-0 z-10 flex items-center max-w-full justify-center bg-black/50 p-8'
+    ? 'fixed inset-0 z-50 flex items-center max-w-full justify-center bg-black/50 p-8'
     : ''
 );
 
@@ -92,6 +95,27 @@ function handleMinimize() {
 function handleClose() {
   handleMinimize();
   open.value = false;
+
+  setTimeout(() => {
+    const currentlyOpenedWindows = document.querySelectorAll(
+      '.ic-window .closeable'
+    );
+    if (currentlyOpenedWindows.length === 0) {
+      alert(
+        `
+        Oh so you've closed all the windows.
+        Oh what a waste of your time.
+        The prize ain't here buddy,
+        and I don't like the way you rhyme.
+
+        You spend your whole life,
+        chasing after the things you want.
+        But in the end you realise,
+        it was in front of you all along.
+      `
+      );
+    }
+  }, 100);
 }
 
 function handleKeydown(e: KeyboardEvent) {

@@ -28,7 +28,7 @@
         <div
           v-if="showOverlay"
           :class="selectedColorFrom"
-          class="absolute top-0 z-50 h-full w-full rounded-2xl bg-gradient-to-b to-30% opacity-90"></div>
+          class="absolute top-0 z-40 h-full w-full rounded-2xl bg-gradient-to-b to-30% opacity-90"></div>
 
         <!-- Elliptical glare -->
         <div

@@ -43,7 +43,7 @@
           src="@ui25/assets/gticket.jpg"
           title="Ic..Hacc..Ticquets.. I'm sorry I am feeling some bits off."
           alt="IC Hack Tickets"
-          class="w-full max-w-[920px] max-md:hidden" />
+          class="border-gold-ic w-full max-w-[920px] border-2 max-md:hidden" />
       </div>
     </div>
   </section>
