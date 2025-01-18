@@ -22,6 +22,12 @@ const event = factory
     const allEvents = await db.select().from(events);
     return ctx.json(allEvents, 200);
   })
+  .get('/duckduckgoose', grantAccessTo('all'), async ctx => {
+    const message =
+      process.env.DUCKDUCKGOOSE ??
+      'Email ichack@ic.ac.uk asking for a duckduckgoose event.';
+    return ctx.text(message, 200);
+  })
   .post(
     '/',
     grantAccessTo('admin'),

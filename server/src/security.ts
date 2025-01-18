@@ -25,8 +25,13 @@ export const validateOriginAndHost = () =>
   });
 
 export const testOrigin = (origin: string): boolean => {
-  const urlRegex = /https:\/\/((my|www)\.)?ichack\.org/;
-  return process.env.NODE_ENV !== 'production' || urlRegex.test(origin);
+  const prodRegex = /https:\/\/((my|www)\.)?ichack\.org/;
+  const stagingRegex = /https:\/\/ichack-25-staging-\w+-.ondigitalocean.app/;
+  return (
+    process.env.NODE_ENV !== 'production' ||
+    prodRegex.test(origin) ||
+    stagingRegex.test(origin)
+  );
 };
 
 /**

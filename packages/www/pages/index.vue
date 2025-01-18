@@ -19,8 +19,15 @@
 import regular from '/og/regular.png';
 import twitter from '/og/twitter.png';
 
-onMounted(() => {
+const client = useHttpClient();
+onMounted(async () => {
   mounted();
+
+  const response = await client.event.duckduckgoose.$get();
+  if (!response.ok) {
+    console.error('this is not for your eyes to see 👀');
+    return;
+  }
 });
 
 const navBarLinks = [
