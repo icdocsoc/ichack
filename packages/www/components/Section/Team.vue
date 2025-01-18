@@ -33,7 +33,7 @@
                 class="aspect-square object-contain" />
               <div
                 v-else
-                class="bg-blue-ic grid aspect-square place-items-center bg-[#66A5D9]">
+                class="grid aspect-square place-items-center bg-[#66A5D9]">
                 <img
                   src="@ui25/assets/ducks.svg"
                   :alt="committee.name"

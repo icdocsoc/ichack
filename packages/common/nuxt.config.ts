@@ -13,9 +13,18 @@ export default defineNuxtConfig({
 
   modules: ['@pinia/nuxt'],
 
-  runtimeConfig: {
-    public: {
-      apiBaseUrl: process.env.API_BASE_URL
+  $development: {
+    runtimeConfig: {
+      public: {
+        apiBaseUrl: 'http://localhost:3000/api'
+      }
+    }
+  },
+  $production: {
+    runtimeConfig: {
+      public: {
+        apiBaseUrl: 'https://my.ichack.org/api'
+      }
     }
   }
 });
