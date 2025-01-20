@@ -52,7 +52,6 @@
     "@pinia/nuxt": "^0.9.0",
     "argon2": "^0.41.1",
     "build-url-ts": "^6.1.7",
-    "cva": "npm:class-variance-authority",
     "date-fns": "^4.1.0",
     "drizzle-orm": "^0.38.2",
     "drizzle-zod": "^0.6.1",
