@@ -85,6 +85,9 @@
 import type { UserCredentials } from '#shared/types';
 import { postLoginBody } from '#shared/schemas';
 
+const route = useRoute();
+const { redirect } = route.query;
+
 const errors = reactive({
   email: '',
   password: '',
@@ -130,6 +133,10 @@ const handleLogin = async () => {
 
   loginResult.fold(
     res => {
+      if (redirect) {
+        return navigateTo(redirect as string);
+      }
+
       switch (res.role) {
         case 'admin':
         case 'god':

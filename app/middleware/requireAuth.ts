@@ -1,4 +1,4 @@
-export default defineNuxtRouteMiddleware(async () => {
+export default defineNuxtRouteMiddleware(async (to, _from) => {
   const store = useProfileStore();
   const { getSelf } = useProfile();
 
@@ -9,5 +9,11 @@ export default defineNuxtRouteMiddleware(async () => {
     }
   }
 
-  if (store.profile == null) return navigateTo('/login');
+  if (store.profile == null)
+    return navigateTo({
+      path: '/login',
+      query: {
+        redirect: to.fullPath
+      }
+    });
 });
