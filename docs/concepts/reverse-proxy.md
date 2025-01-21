@@ -1,8 +1,5 @@
----
-created: 2024-07-08
-authors:
-  - Nishant
----
+# Reverse Proxy
+
 Reverse Proxies are a server whose job is
 1. Filter out malicious requests.
 2. Return cached results.
