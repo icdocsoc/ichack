@@ -57,7 +57,7 @@ export const teamMembers: Committee[] = [
     image: nishant,
     links: {
       linkedin: 'https://www.linkedin.com/in/nishant-a-jalan/',
-      github: 'https://gihub.com/cybercoder-naj'
+      github: 'https://github.com/cybercoder-naj'
     },
     hiddenText: `
 -----BEGIN PGP MESSAGE-----
