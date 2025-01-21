@@ -113,7 +113,7 @@ describe('Profiles module > GET /:id', () => {
       },
       {
         headers: {
-          Cookie: `auth_session=${sessionIds.sponsor}`
+          Cookie: `auth_session=${sessionIds.hacker}`
         }
       }
     );
@@ -217,7 +217,7 @@ describe('Profiles module > GET /search', () => {
       },
       {
         headers: {
-          Cookie: `auth_session=${sessionIds.sponsor}`
+          Cookie: `auth_session=${sessionIds.hacker}`
         }
       }
     );

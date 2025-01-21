@@ -12,11 +12,7 @@ import { z } from 'zod';
 import { simpleValidator } from '../validators';
 
 const createCategorySchema = insertCategorySchema.omit({ slug: true });
-const sponsorUpdateCategorySchema = insertCategorySchema
-  .pick({ image: true, shortDescription: true, longDescription: true })
-  .partial()
-  .strict();
-const adminUpdateCategorySchema = insertCategorySchema
+const godUpdateCategorySchema = insertCategorySchema
   .pick({
     title: true,
     image: true,
@@ -60,15 +56,15 @@ const category = factory
         return c.text(`Category with slug '${slug}' does not exist`, 404);
 
       // slug is primary key. So, there can be only one category
-      return c.json(category[0], 200);
+      return c.json(category[0]!, 200);
     }
   )
   /**
-   * Admins can create new categories where the slug is auto-generated
+   * Gods can create new categories where the slug is auto-generated
    */
   .post(
     '/',
-    grantAccessTo('admin'),
+    grantAccessTo('god'),
     simpleValidator('json', createCategorySchema),
     async c => {
       const category = c.req.valid('json');
@@ -105,14 +101,13 @@ const category = factory
    */
   .put(
     '/:slug',
-    grantAccessTo('admin', 'sponsor'),
+    grantAccessTo('god'),
     simpleValidator('param', z.object({ slug: z.string().regex(slugPattern) })),
-    simpleValidator('json', adminUpdateCategorySchema),
+    simpleValidator('json', godUpdateCategorySchema),
     async c => {
       // Admins can change everything about the category
       // Slug is auto-generated based on the owner and title
       const { slug } = c.req.valid('param');
-      const user = c.get('user')!; // Not null because of grantAccessTo
 
       const categoriesInDb = await db
         .select()
@@ -125,29 +120,6 @@ const category = factory
 
       const category = categoriesInDb[0]!;
       const newCategory = c.req.valid('json');
-      if (user.role == 'sponsor') {
-        // Sponsor cannot change the title or the owner of the category
-        // This is done because adminUpdateCategorySchema is more permissive
-        // than sponsorUpdateCategorySchema. This is a hacky way to do it.
-        const result =
-          await sponsorUpdateCategorySchema.safeParseAsync(newCategory);
-        if (!result.success) {
-          return c.text('Invalid request', 400); // TODO make this better
-        }
-
-        // Check if the sponsor is allowed to update the category
-        const sponsorCompanies = await db
-          .select()
-          .from(sponsorCompany)
-          .where(eq(sponsorCompany.userId, user.id));
-
-        if (sponsorCompanies.length === 0)
-          return c.text('Your company cannot be resolved', 404);
-        // user id is primary key. So, there can be only one sponsor company
-
-        if (category.owner !== sponsorCompanies[0]!.companyName)
-          return c.text('You are not allowed to update this category', 403);
-      }
 
       const newSlug = generateSlug(
         category.owner,
@@ -167,11 +139,11 @@ const category = factory
     }
   )
   /**
-   * Admins can delete categories
+   * Gods can delete categories
    */
   .delete(
     '/:slug',
-    grantAccessTo('admin'),
+    grantAccessTo('god'),
     simpleValidator('param', z.object({ slug: z.string().regex(slugPattern) })),
     async c => {
       const { slug } = c.req.valid('param');

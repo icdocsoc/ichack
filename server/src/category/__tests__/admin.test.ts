@@ -52,7 +52,7 @@ describe('Category Module > POST /', () => {
       },
       {
         headers: {
-          Cookie: `auth_session=${sessionIds.admin}`
+          Cookie: `auth_session=${sessionIds.god}`
         }
       }
     );
@@ -71,9 +71,8 @@ describe('Category Module > POST /', () => {
     });
   });
 
-  test('Nobody except admin/god can create a category', async () => {
+  test('Nobody except god can create a category', async () => {
     for (const role of roles) {
-      if (role === 'admin') continue;
       if (role === 'god') continue;
 
       const res = await client.category.$post(
@@ -101,7 +100,7 @@ describe('Category Module > POST /', () => {
       },
       {
         headers: {
-          Cookie: `auth_session=${sessionIds.admin}`
+          Cookie: `auth_session=${sessionIds.god}`
         }
       }
     );
@@ -113,7 +112,7 @@ describe('Category Module > POST /', () => {
       },
       {
         headers: {
-          Cookie: `auth_session=${sessionIds.admin}`
+          Cookie: `auth_session=${sessionIds.god}`
         }
       }
     );
@@ -144,7 +143,7 @@ describe('Category Module > PUT /:slug', () => {
       },
       {
         headers: {
-          Cookie: `auth_session=${sessionIds.admin}`
+          Cookie: `auth_session=${sessionIds.god}`
         }
       }
     );
@@ -159,16 +158,14 @@ describe('Category Module > PUT /:slug', () => {
     expect(category).toHaveLength(1);
     expect(category[0]).toEqual({ ...kotlinCategoryWithSlug, ...newCategory });
   });
-  test('Nobody except admin/god/sponsor can edit a category', async () => {
+  test('Nobody except god can edit a category', async () => {
     const newCategory = {
       shortDescription: 'Kotlin is a great language 2',
       longDescription: 'http://example.org/static/kotlin2.md'
     };
 
     for (const role of roles) {
-      if (role === 'admin') continue;
       if (role === 'god') continue;
-      if (role === 'sponsor') continue;
 
       const res = await client.category[':slug'].$put(
         {
@@ -204,7 +201,7 @@ describe('Category Module > PUT /:slug', () => {
       },
       {
         headers: {
-          Cookie: `auth_session=${sessionIds.admin}`
+          Cookie: `auth_session=${sessionIds.god}`
         }
       }
     );
@@ -227,7 +224,7 @@ describe('Category Module > PUT /:slug', () => {
       },
       {
         headers: {
-          Cookie: `auth_session=${sessionIds.admin}`
+          Cookie: `auth_session=${sessionIds.god}`
         }
       }
     );
@@ -263,7 +260,7 @@ describe('Category Module > DELETE /:slug', () => {
       },
       {
         headers: {
-          Cookie: `auth_session=${sessionIds.admin}`
+          Cookie: `auth_session=${sessionIds.god}`
         }
       }
     );
@@ -277,9 +274,8 @@ describe('Category Module > DELETE /:slug', () => {
 
     expect(category).toHaveLength(0);
   });
-  test('Nobody except admin/god can delete a category', async () => {
+  test('Nobody except god can delete a category', async () => {
     for (const role of roles) {
-      if (role === 'admin') continue;
       if (role === 'god') continue;
 
       const res = await client.category[':slug'].$delete(
@@ -311,7 +307,7 @@ describe('Category Module > DELETE /:slug', () => {
       },
       {
         headers: {
-          Cookie: `auth_session=${sessionIds.admin}`
+          Cookie: `auth_session=${sessionIds.god}`
         }
       }
     );

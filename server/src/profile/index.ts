@@ -102,10 +102,10 @@ const profile = factory
       return ctx.json(searchRes, 200);
     }
   )
-  .post('/cv', grantAccessTo('hacker', 'volunteer'), async ctx => {
+  .post('/cv', grantAccessTo('authenticated'), async ctx => {
     // Uploads a CV to storage bucket
   })
-  .get('/cv', grantAccessTo('hacker', 'sponsor'), async ctx => {
+  .get('/cv', grantAccessTo('authenticated'), async ctx => {
     // Hacker: Downloads CV that they uploaded
     // Sponsor: Downloads .zip of all CVs(?)
   })

@@ -180,20 +180,6 @@ describe.skip('Profiles module > GET/POST /cv', () => {
     expect(res.status).toBe(200);
     expect(downloadedPdf).toBe(cvPdf);
   });
-
-  test.skip('sponsors can download cvs', async () => {
-    const res = await baseRoute.cv.$get(undefined, {
-      headers: {
-        Cookie: `auth_session=${sessionIds.sponsor}`
-      }
-    });
-
-    const bolb = await res.blob();
-    expect(bolb.type).toBe('application/zip');
-    expect(bolb.size).toBeGreaterThan(0);
-
-    // How thoroughly do we want to test this - do we want to unzip it and ensure everything inside is a PDF?
-  });
 });
 
 describe('Profiles module > GET /discord', () => {

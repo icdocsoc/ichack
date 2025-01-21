@@ -30,7 +30,7 @@ tags:
   - name: Category
     description: |
       Category is a challenge that a **sponsor company** proposes. Each team will have to submit their solution to 2 categories, one from a **sponsor company**, and one from DoCSoc.
-      For the sake of simplicity of the API, we consider DoCSoc to be a **sponsor company** and the judges (who are DoC professors) are assigned the **sponsor** user role.
+      For the sake of simplicity of the API, we consider DoCSoc to be a **sponsor company**.
   - name: Profile
     description: |
       Each user has a profile, which contains information such as their ID, name, email, dietary info, and more.
@@ -53,7 +53,7 @@ components:
   schemas:
     UserRole:
       type: string
-      enum: [god, admin, sponsor, volunteer, hacker]
+      enum: [god, admin, volunteer, hacker]
     Category:
       type: object
       properties:
@@ -828,7 +828,6 @@ paths:
       summary: Update a category
       description: |
         Update a category by its slug. Admins and gods can update a category **including the title**.
-        Sponsors can only update their own categories, but not their title.
       security:
         - cookieAuth: []
       parameters:
@@ -877,7 +876,7 @@ paths:
                 type: string
                 example: Invalid request
         '403':
-          description: When a user other than an admin, god or sponsor accesses this route.
+          description: When a user other than an admin or god accesses this route.
           content:
             text/plain:
               schema:

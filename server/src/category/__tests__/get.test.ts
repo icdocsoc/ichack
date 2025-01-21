@@ -75,6 +75,7 @@ describe('Category Module > GET /', () => {
     expect(data).toContainEqual(quantCategory);
     expect(data).toContainEqual(educationCategory);
   });
+
   test('Unauthenticated user cannot get any categories', async () => {
     const res = await client.category.$get();
 
@@ -84,6 +85,7 @@ describe('Category Module > GET /', () => {
       'You do not have access to GET /api/category'
     );
   });
+
   test.skip('Hackers & Volunteers cannot see categories until time', async () => {
     expect(true).toBe(false); // dummy test fails
     // TODO to be implemented
@@ -122,6 +124,7 @@ describe('Category Module > GET /:slug', () => {
       `You do not have access to GET /api/category/${kotlinCategory.slug}`
     );
   });
+
   test('Invalid category returns 404', async () => {
     const res = await client.category[':slug'].$get(
       {
@@ -141,6 +144,7 @@ describe('Category Module > GET /:slug', () => {
       "Category with slug 'terra-title' does not exist"
     );
   });
+
   test.skip('Hackers & Volunteers cannot see categories until time', async () => {
     expect(true).toBe(false); // dummy test fails
     // TODO to be implemented

@@ -1,5 +1,5 @@
 CREATE TYPE "public"."token_type" AS ENUM('forgot_password', 'registration_link');--> statement-breakpoint
-CREATE TYPE "public"."user_roles" AS ENUM('god', 'admin', 'hacker', 'sponsor', 'volunteer');--> statement-breakpoint
+CREATE TYPE "public"."user_roles" AS ENUM('god', 'admin', 'hacker', 'volunteer');--> statement-breakpoint
 CREATE TYPE "public"."gender_types" AS ENUM('male', 'female', 'nb', 'other', 'na');--> statement-breakpoint
 CREATE TYPE "public"."t_shirt_sizes" AS ENUM('S', 'M', 'L', 'XL', '2XL');--> statement-breakpoint
 CREATE TABLE "announcements" (
