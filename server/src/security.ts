@@ -27,10 +27,12 @@ export const validateOriginAndHost = () =>
 export const testOrigin = (origin: string): boolean => {
   const prodRegex = /https:\/\/((my|www)\.)?ichack\.org/;
   const stagingRegex = /https:\/\/ichack-25-staging-\w+-.ondigitalocean.app/;
+  const stagingLanding = /https:\/\/isabella.ichack.pages.dev/;
   return (
     process.env.NODE_ENV !== 'production' ||
     prodRegex.test(origin) ||
-    stagingRegex.test(origin)
+    stagingRegex.test(origin) ||
+    stagingLanding.test(origin)
   );
 };
 
