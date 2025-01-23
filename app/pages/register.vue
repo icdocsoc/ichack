@@ -344,9 +344,11 @@ const handleRegister = async () => {
     case 'hacker':
       navigateTo('/');
       break;
+    case 'god':
     case 'admin':
+      navigateTo('/admin');
     case 'volunteer':
-      navigateTo(`/${user.value.role}`);
+      navigateTo(`/volunteer`);
       break;
   }
 };
