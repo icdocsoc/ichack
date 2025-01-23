@@ -21,6 +21,7 @@ import { demograph } from '../demograph/schema';
 import { Result } from 'typescript-result';
 import { sendEmail } from '../email';
 import nunjucks from 'nunjucks';
+import { emailTemplate } from './assets/register';
 
 nunjucks.configure({ autoescape: true });
 
@@ -370,12 +371,9 @@ const profile = factory
         }
       );
 
-      const emailHtml = nunjucks.render(
-        'server/src/profile/assets/register.html.njk',
-        {
-          name: user[0]!.name
-        }
-      );
+      const emailHtml = nunjucks.renderString(emailTemplate, {
+        name: user[0]!.name
+      });
       const emailText = `Hi ${user[0]!.name},\ Thank you for registering for https://my.ichack.org! We'll be in touch closer to the time with access to our Discord and more information about the hackathon itself.\n For any queries, please email ichack@ic.ac.uk.`;
 
       try {
