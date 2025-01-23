@@ -19,6 +19,10 @@ import { simpleValidator } from '../validators';
 import { cvValidator, getCvFileName, s3client, uploadCv } from './cv';
 import { demograph } from '../demograph/schema';
 import { Result } from 'typescript-result';
+import { sendEmail } from '../email';
+import nunjucks from 'nunjucks';
+
+nunjucks.configure({ autoescape: true });
 
 const ONE_HOUR = 60 * 60;
 
@@ -309,6 +313,8 @@ const profile = factory
       }
 
       const userId = tokenInDb[0]!.userId;
+      const user = await db.select().from(users).where(eq(users.id, userId));
+
       const hashedPassword = await hash(body.password, hashOptions);
 
       const result = await db.transaction(async tx => {
@@ -363,6 +369,37 @@ const profile = factory
           append: true
         }
       );
+
+      const emailHtml = nunjucks.render(
+        'server/src/profile/assets/register.html.njk',
+        {
+          name: user[0]!.name
+        }
+      );
+      const emailText = `Hi ${user[0]!.name},\ Thank you for registering for https://my.ichack.org! We'll be in touch closer to the time with access to our Discord and more information about the hackathon itself.\n For any queries, please email ichack@ic.ac.uk.`;
+
+      try {
+        await sendEmail(
+          user[0]!.email,
+          'My ICHack Registration Confirmation',
+          emailText,
+          emailHtml,
+          [
+            {
+              file: 'ichack-ticket.png',
+              cid: 'ichackticket',
+              path: 'server/src/profile/assets/icticket.png'
+            }
+          ]
+        );
+      } catch (e: any) {
+        apiLogger.error(
+          ctx,
+          'POST /profile/register',
+          'Failed to send email',
+          e.message
+        );
+      }
 
       return ctx.text('', 200);
     }

@@ -33,6 +33,12 @@ export default defineNuxtConfig({
         to: 'https://docs.google.com/document/d/1mry0UjbjJE6ODatHnSlY8fei7peSl4ac/edit',
         statusCode: 301
       }
+    },
+    '/onboarding': {
+      redirect: {
+        to: 'https://docs.google.com/document/d/1AQVJObyH_-aUKdx4p9MP1atXwxqjn03aW-P0T4GPe0g/edit',
+        statusCode: 301
+      }
     }
   }
 });

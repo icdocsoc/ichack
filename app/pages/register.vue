@@ -153,7 +153,7 @@
         <ICInputCheckbox
           class="w-full max-w-3xl md:w-[75%]"
           title="I accept the code of conduct."
-          description="By ticking this box, you accept the ICHack <u><a href='https://ichack.org/code-of-conduct' target='_blank'>code of conduct</a></u>, certify you have read the <u><a href='https://ichack.org/privacy-policy' target='_blank'>privacy policy</a></u>, and certify you are over the age of 18. Additionally, you confirm you have read and understand <u><a href='' target='_blank'>the fire safety and onboarding documents</a></u>."
+          description="By ticking this box, you accept the ICHack <u><a href='https://ichack.org/code-of-conduct' target='_blank'>code of conduct</a></u>, certify you have read the <u><a href='https://ichack.org/privacy-policy' target='_blank'>privacy policy</a></u>, and certify you are over the age of 18. Additionally, you confirm you have read and understand <u><a href='https://ichack.org/onboarding' target='_blank'>the fire safety and onboarding documents</a></u>."
           name="code-of-conduct"
           v-model="legalStuff" />
 
