@@ -14,9 +14,9 @@ const baseRoute = testClient(app).profile;
 const expectedSkeleton = {
   photos_opt_out: false,
   dietary_restrictions: [],
-  allergies: [],
   pronouns: null,
-  meals: [false, false, false]
+  meals: [false, false, false],
+  cvUploaded: false
 };
 const expectedSearch: Partial<Record<Role, Profile>> = {};
 const sortById = (

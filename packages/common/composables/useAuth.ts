@@ -28,8 +28,24 @@ export default function () {
       }
     });
 
+  const getRegistrationDetails = (token: string) =>
+    Result.try(async () => {
+      const res = await client.auth.register.$get({
+        query: { token }
+      });
+
+      if (!res.ok) {
+        const errorMessage = await res.text();
+        throw new Error(errorMessage);
+      }
+
+      const userBody = await res.json();
+      return userBody;
+    });
+
   return {
     loginUser,
-    logout
+    logout,
+    getRegistrationDetails
   };
 }

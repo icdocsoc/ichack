@@ -17,6 +17,11 @@ PGCA=
 DISCORD_CLIENT_ID=anything, you'll know if you're testing this
 DISCORD_SERVER_ID=see above
 DISCORD_CLIENT_SECRET=see above
+
+STORAGE_ACCESS_KEY=S3 compatible details
+STORAGE_SECRET_KEY=you'll know what to put here if you're testing this 
+STORAGE_BUCKET=otherwise its ok dont worry
+STORAGE_ENDPOINT=i have a cute cat named silver
 ```
 
 ## Test setup (.env.test)
@@ -32,4 +37,9 @@ PGCA=
 DISCORD_CLIENT_ID=
 DISCORD_SERVER_ID=
 DISCORD_CLIENT_SECRET=
+
+STORAGE_ACCESS_KEY=
+STORAGE_SECRET_KEY=
+STORAGE_BUCKET=
+STORAGE_ENDPOINT=
 ```

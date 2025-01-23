@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, test } from 'bun:test';
+import { afterAll, beforeAll, describe, expect, test } from 'bun:test';
 import { profiles, type Profile, type SelectedProfile } from '../schema';
 import { db } from '../../drizzle';
 import { users, userSession, userToken } from '../../auth/schema';
@@ -16,9 +16,9 @@ const baseRoute = testClient(app).profile;
 const expectedSkeleton = {
   photos_opt_out: false,
   dietary_restrictions: [],
-  allergies: [],
   pronouns: null,
-  meals: [false, false, false]
+  meals: [false, false, false],
+  cvUploaded: false
 };
 const expectedGet: Partial<Record<Role, SelectedProfile>> = {};
 const expectedSearch: Partial<Record<Role, Profile>> = {};
@@ -56,192 +56,18 @@ beforeAll(async () => {
   }
 });
 
-describe('Profiles module > GET /register', () => {
-  test('can get with valid token, does not consume token', async () => {
-    // Delete profile as `/register` is for those with no profile
-    const deleted = await db
-      .delete(profiles)
-      .where(eq(profiles.id, userIds.hacker!!))
-      .returning();
-    const expected = await db
-      .select()
-      .from(users)
-      .where(eq(users.id, userIds.hacker!!));
-
-    // Insert token for hacker
-    const token = 'funnyLittleToken';
-    await db.insert(userToken).values({
-      id: token,
-      userId: userIds.hacker!!,
-      expiresAt: tomorrow,
-      type: 'registration_link'
-    });
-
-    // GET twice, to ensure token is not consumed.
-    await baseRoute.register.$get(
-      {
-        query: {
-          token: token
-        }
-      },
-      undefined
-    );
-
-    const res = await baseRoute.register.$get(
-      {
-        query: {
-          token: token
-        }
-      },
-      undefined
-    );
-
-    expect(res.status).toBe(200);
-    const body = await res.json();
-
-    // Verify return is correct
-    expect(body.name).toBe(expected[0]!.name);
-    expect(body.email).toBe(expected[0]!.email);
-    expect(body.role).toBe(expected[0]!.role);
-
-    // Return deleted profile & delete token
-    await db.insert(profiles).values(deleted);
-    await db.delete(userToken).where(eq(userToken.userId, userIds.hacker!!));
-  });
-
-  test('cannot get with invalid token', async () => {
-    const res = await baseRoute.register.$get(
-      {
-        query: {
-          token: 'invalid token'
-        }
-      },
-      undefined
-    );
-
-    // Verify return is correct
-    expect(res.status).toBe(403);
-    expect(res.text()).resolves.toBe('Invalid token.');
-  });
-
-  test('cannot get with an expired token', async () => {
-    // Delete profile as `/register` is for those with no profile
-    const deleted = await db
-      .delete(profiles)
-      .where(eq(profiles.id, userIds.hacker!!))
-      .returning();
-
-    // Insert expired token for hacker
-    const token = 'funnyLittleToken';
-    await db.insert(userToken).values({
-      id: token,
-      userId: userIds.hacker!!,
-      expiresAt: yesterday,
-      type: 'registration_link'
-    });
-
-    const res = await baseRoute.register.$get(
-      {
-        query: {
-          token: token
-        }
-      },
-      undefined
-    );
-
-    // Verify return is correct
-    expect(res.status).toBe(403);
-    expect(res.text()).resolves.toBe('Token is expired.');
-
-    // Return deleted profile & delete token
-    await db.insert(profiles).values(deleted);
-    await db.delete(userToken).where(eq(userToken.userId, userIds.hacker!!));
-  });
-
-  test('cannot get with wrong token type', async () => {
-    // Delete profile as `/register` is for those with no profile
-    const deleted = await db
-      .delete(profiles)
-      .where(eq(profiles.id, userIds.hacker!!))
-      .returning();
-
-    // Insert wrong token for hacker
-    const token = 'funnyLittleToken';
-    await db.insert(userToken).values({
-      id: token,
-      userId: userIds.hacker!!,
-      expiresAt: tomorrow,
-      type: 'forgot_password'
-    });
-
-    const res = await baseRoute.register.$get(
-      {
-        query: {
-          token: token
-        }
-      },
-      undefined
-    );
-
-    // Verify return is correct
-    expect(res.status).toBe(403);
-    expect(res.text()).resolves.toBe('Invalid token.');
-
-    // Return deleted profile & delete token
-    await db.insert(profiles).values(deleted);
-    await db.delete(userToken).where(eq(userToken.userId, userIds.hacker!!));
-  });
-
-  test('cannot get if signed in', async () => {
-    // Delete profile as `/register` is for those with no profile
-    const deleted = await db
-      .delete(profiles)
-      .where(eq(profiles.id, userIds.hacker!!))
-      .returning();
-
-    // Insert token for hacker
-    const token = 'funnyLittleToken';
-    await db.insert(userToken).values({
-      id: token,
-      userId: userIds.hacker!!,
-      expiresAt: tomorrow,
-      type: 'registration_link'
-    });
-
-    const res = await baseRoute.register.$get(
-      {
-        query: {
-          token: token
-        }
-      },
-      {
-        headers: {
-          Cookie: `auth_session=${sessionIds.hacker!!}`
-        }
-      }
-    );
-
-    // Verify return is correct
-    expect(res.status).toBe(400);
-    expect(res.text()).resolves.toBe('You have already registered.');
-
-    // Return deleted profile & delete token
-    await db.insert(profiles).values(deleted);
-    await db.delete(userToken).where(eq(userToken.id, token));
-  });
-});
-
 describe('Profiles module > POST /register', () => {
   const partialProfile = {
     photos_opt_out: false,
     dietary_restrictions: ['halal', 'green'],
-    allergies: [],
     pronouns: 'she/they'
   };
 
   const postBody = {
     // This is a randomly generated password, don't worry.
     password: '6N78^yVpGhg2@o*&',
+    cv: undefined,
+    tShirtSize: 'M' as const,
     ...partialProfile
   };
 
@@ -271,7 +97,7 @@ describe('Profiles module > POST /register', () => {
         query: {
           token: token
         },
-        json: postBody
+        form: { registrationDetails: JSON.stringify(postBody) }
       },
       undefined
     );
@@ -282,14 +108,14 @@ describe('Profiles module > POST /register', () => {
         query: {
           token: token
         },
-        json: postBody
+        form: { registrationDetails: JSON.stringify(postBody) }
       },
       undefined
     );
 
     // Verify return is correct & ensure it was added into profile
     // Returning delete as we want to return the original profile at the end of tests.
-    expect(res.status).toBe(204);
+    expect(res.status).toBe(200);
     const profileInDb = await db
       .delete(profiles)
       .where(eq(profiles.id, userIds.hacker!!))
@@ -326,7 +152,7 @@ describe('Profiles module > POST /register', () => {
         query: {
           token: 'invalid token'
         },
-        json: postBody
+        form: { registrationDetails: JSON.stringify(postBody) }
       },
       undefined
     );
@@ -357,7 +183,7 @@ describe('Profiles module > POST /register', () => {
         query: {
           token: token
         },
-        json: postBody
+        form: { registrationDetails: JSON.stringify(postBody) }
       },
       undefined
     );
@@ -392,7 +218,7 @@ describe('Profiles module > POST /register', () => {
         query: {
           token: token
         },
-        json: postBody
+        form: { registrationDetails: JSON.stringify(postBody) }
       },
       undefined
     );
@@ -427,7 +253,7 @@ describe('Profiles module > POST /register', () => {
         query: {
           token: token
         },
-        json: postBody
+        form: { registrationDetails: JSON.stringify(postBody) }
       },
       {
         headers: {

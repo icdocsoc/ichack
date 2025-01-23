@@ -1,5 +1,5 @@
 import { AsyncResult, Result } from 'typescript-result';
-import type { Profile } from '#shared/types';
+import type { Profile, RegistrationDetails } from '#shared/types';
 
 export default () => {
   const client = useHttpClient();
@@ -29,8 +29,35 @@ export default () => {
       return profile;
     });
 
+  const register = (
+    token: string,
+    details: RegistrationDetails,
+    cv?: File
+  ): AsyncResult<void, Error> =>
+    Result.try(async () => {
+      const body = {
+        cv: cv,
+        registrationDetails: JSON.stringify(details)
+      };
+
+      // This is weird, but Zod is mad because otherwise cv is send as the string "undefined"
+      if (!cv) delete body.cv;
+
+      const res = await client.profile.register.$post({
+        query: { token },
+        form: body
+      });
+
+      if (!res.ok) {
+        const errorMessage = await res.text();
+        throw new Error(errorMessage);
+      }
+      return;
+    });
+
   return {
     getProfiles,
-    getSelf
+    getSelf,
+    register
   };
 };

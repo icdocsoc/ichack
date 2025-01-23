@@ -15,10 +15,10 @@ const baseRoute = testClient(app).profile;
 const expectedSkeleton = {
   photos_opt_out: false,
   dietary_restrictions: [],
-  allergies: [],
   pronouns: null,
   meals: [false, false, false],
-  password: 'securepass'
+  password: 'securepass',
+  cvUploaded: false
 };
 const expectedUsers: Partial<Record<Role, SelectedProfile>> = {};
 

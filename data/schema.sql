@@ -1,7 +1,8 @@
 CREATE TYPE "public"."token_type" AS ENUM('forgot_password', 'registration_link');--> statement-breakpoint
 CREATE TYPE "public"."user_roles" AS ENUM('god', 'admin', 'hacker', 'volunteer');--> statement-breakpoint
-CREATE TYPE "public"."gender_types" AS ENUM('male', 'female', 'nb', 'other', 'na');--> statement-breakpoint
+CREATE TYPE "public"."gender_types" AS ENUM('Male', 'Female', 'Non-binary', 'Other', 'N/A');--> statement-breakpoint
 CREATE TYPE "public"."t_shirt_sizes" AS ENUM('S', 'M', 'L', 'XL', '2XL');--> statement-breakpoint
+CREATE TYPE "public"."year_of_study" AS ENUM('Undergraduate Year 1', 'Undergraduate Year 2', 'Undergraduate Year 3', 'Undergraduate Year 4', 'Undergraduate Year 5', 'Undergraduate Year 6', 'Graduated', 'Postgraduate');--> statement-breakpoint
 CREATE TABLE "announcements" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"title" text NOT NULL,
@@ -52,11 +53,12 @@ CREATE TABLE "sponsor_company" (
 --> statement-breakpoint
 CREATE TABLE "demograph" (
 	"id" serial PRIMARY KEY NOT NULL,
+	"gender" "gender_types",
+	"university" text,
 	"course_of_study" text,
-	"year_of_study" integer,
-	"t_shirt_size" "t_shirt_sizes",
-	"age" integer,
-	"gender" "gender_types"
+	"year_of_study" "year_of_study",
+	"t_shirt_size" "t_shirt_sizes" NOT NULL,
+	"age" integer
 );
 --> statement-breakpoint
 CREATE TABLE "events" (
@@ -72,9 +74,9 @@ CREATE TABLE "profiles" (
 	"id" text PRIMARY KEY NOT NULL,
 	"photos_opt_out" boolean NOT NULL,
 	"dietary_restrictions" text[] NOT NULL,
-	"allergies" text[] NOT NULL,
 	"pronouns" text,
-	"meals" boolean[] DEFAULT '{false,false,false}' NOT NULL
+	"meals" boolean[] DEFAULT '{false,false,false}' NOT NULL,
+	"cv_uploaded" boolean NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "team_invites" (

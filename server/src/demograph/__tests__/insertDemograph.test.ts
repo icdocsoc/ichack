@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, test } from 'bun:test';
 import { db } from '../../drizzle';
 import { sql } from 'drizzle-orm';
-import { demograph } from '../schema';
+import { demograph, tShirtSizes } from '../schema';
 import { insertDemographicData } from '../external';
 
 beforeEach(async () => {
@@ -13,10 +13,10 @@ describe('insertDemographicData', () => {
     // Arrange
     const data = {
       courseOfStudy: 'Computer Science',
-      yearOfStudy: 3,
+      yearOfStudy: 'Undergraduate Year 3',
       tShirtSize: 'L',
       age: 20,
-      gender: 'male'
+      gender: 'Male'
     } as const;
 
     const result = await insertDemographicData(data);
@@ -32,8 +32,9 @@ describe('insertDemographicData', () => {
     // Arrange
     const data = {
       courseOfStudy: 'Computer Science',
-      yearOfStudy: 3,
-      gender: 'male'
+      yearOfStudy: 'Undergraduate Year 3',
+      gender: 'Male',
+      tShirtSize: 'M'
     } as const;
 
     const result = await insertDemographicData(data);
@@ -49,8 +50,9 @@ describe('insertDemographicData', () => {
     // Arrange
     const data = {
       courseOfStudy: 'Computer Science',
-      yearOfStudy: 3,
-      gender: 'male',
+      yearOfStudy: 'Undergraduate Year 3',
+      gender: 'Male',
+      tShirtSize: 'S',
       age: 5
     } as const;
 
@@ -63,15 +65,15 @@ describe('insertDemographicData', () => {
     expect(insertedDemograph).toHaveLength(0);
   });
 
-  test('reject negative year of study', async () => {
-    // Arrange
+  test('t-shirt size is required', async () => {
     const data = {
       courseOfStudy: 'Computer Science',
-      yearOfStudy: -1,
-      gender: 'nb',
+      yearOfStudy: 'Undergraduate Year 2',
+      gender: 'Non-binary',
       age: 19
     } as const;
 
+    // @ts-expect-error We're testing the error :>
     const result = await insertDemographicData(data);
     expect(result.isError()).toBeTrue();
     expect(result.error).toBe(400);

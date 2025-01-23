@@ -113,7 +113,7 @@ const auth = factory
     c.header('Set-Cookie', lucia.createBlankSessionCookie().serialize(), {
       append: true
     });
-    return c.json({}, 204);
+    return c.body(null, 204);
   })
   .delete(
     '/:id',
@@ -250,6 +250,52 @@ const auth = factory
       });
 
       return c.json({}, 200);
+    }
+  )
+  .get(
+    '/register',
+    grantAccessTo('all'),
+    simpleValidator('query', z.object({ token: z.string() })),
+    async c => {
+      const signedIn = c.get('user');
+      if (signedIn) {
+        return c.text('You have already registered.', 400);
+      }
+
+      const { token } = c.req.valid('query');
+
+      const tokenQuery = await db
+        .select({
+          id: users.id,
+          name: users.name,
+          email: users.email,
+          role: users.role,
+          expiresAt: userToken.expiresAt
+        })
+        .from(users)
+        .innerJoin(userToken, eq(userToken.userId, users.id))
+        .where(
+          and(eq(userToken.id, token), eq(userToken.type, 'registration_link'))
+        );
+
+      if (!tokenQuery || !tokenQuery.length)
+        return c.text('Token not found', 404);
+
+      const tokenResult = tokenQuery[0]!;
+      const now = new Date();
+      if (tokenResult.expiresAt < now) {
+        await db.delete(userToken).where(lt(userToken.expiresAt, now));
+        return c.text('Token not found', 404);
+      }
+
+      return c.json(
+        {
+          name: tokenResult.name,
+          email: tokenResult.email,
+          role: tokenResult.role
+        },
+        200
+      );
     }
   );
 

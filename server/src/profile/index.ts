@@ -5,17 +5,22 @@ import {
   updateMealSchema,
   updateProfileSchema,
   profiles,
-  insertProfileSchema,
-  searchUserSchema
+  searchUserSchema,
+  registerProfilePostSchema
 } from './schema';
-import { and, eq, ilike, lt, sql } from 'drizzle-orm';
+import { eq, ilike, lt, sql } from 'drizzle-orm';
 import { apiLogger } from '../logger';
 import { users, userToken } from '../auth/schema';
 import { z } from 'zod';
 import { hash } from 'argon2';
-import { hashOptions } from '../auth/lucia';
+import { hashOptions, lucia } from '../auth/lucia';
 import { DiscordRepository } from './discord';
 import { simpleValidator } from '../validators';
+import { cvValidator, s3client, uploadCv } from './cv';
+import { demograph } from '../demograph/schema';
+import { Result } from 'typescript-result';
+
+const ONE_HOUR = 60 * 60;
 
 const profile = factory
   .createApp()
@@ -32,9 +37,9 @@ const profile = factory
         role: users.role,
         photos_opt_out: profiles.photos_opt_out,
         dietary_restrictions: profiles.dietary_restrictions,
-        allergies: profiles.allergies,
         pronouns: profiles.pronouns,
-        meals: profiles.meals
+        meals: profiles.meals,
+        cvUploaded: profiles.cvUploaded
       })
       .from(profiles)
       .innerJoin(users, eq(users.id, profiles.id))
@@ -58,7 +63,6 @@ const profile = factory
         role: users.role,
         photos_opt_out: profiles.photos_opt_out,
         dietary_restrictions: profiles.dietary_restrictions,
-        allergies: profiles.allergies,
         pronouns: profiles.pronouns,
         meals: profiles.meals
       })
@@ -83,9 +87,9 @@ const profile = factory
           role: users.role,
           photos_opt_out: profiles.photos_opt_out,
           dietary_restrictions: profiles.dietary_restrictions,
-          allergies: profiles.allergies,
           pronouns: profiles.pronouns,
-          meals: profiles.meals
+          meals: profiles.meals,
+          cvUploaded: profiles.cvUploaded
         })
         .from(profiles)
         .innerJoin(users, eq(users.id, profiles.id))
@@ -102,12 +106,49 @@ const profile = factory
       return ctx.json(searchRes, 200);
     }
   )
-  .post('/cv', grantAccessTo('authenticated'), async ctx => {
-    // Uploads a CV to storage bucket
+  .post(
+    '/cv',
+    simpleValidator('form', cvValidator),
+    grantAccessTo('authenticated'),
+    async ctx => {
+      const user = ctx.get('user')!;
+      const { cv } = ctx.req.valid('form');
+
+      const result = await uploadCv(ctx, cv, user.id);
+
+      if (result.isError()) {
+        return ctx.text(result.error.message, result.error.status);
+      }
+
+      return ctx.text('', 201);
+    }
+  )
+  .delete('/cv', grantAccessTo('authenticated'), async ctx => {
+    // Delete CV
+    const user = ctx.get('user')!;
+    const file = s3client.file(user.id);
+
+    try {
+      await file.delete();
+      return ctx.text('', 200);
+    } catch (e: any) {
+      apiLogger.error(
+        ctx,
+        'DELETE /profile/cv',
+        'Failed to delete CV',
+        e.message
+      );
+      return ctx.text('Failed to delete CV. Are you sure the CV exists?', 500);
+    }
   })
-  .get('/cv', grantAccessTo('authenticated'), async ctx => {
+  .get('/cv', grantAccessTo('hacker'), async ctx => {
     // Hacker: Downloads CV that they uploaded
-    // Sponsor: Downloads .zip of all CVs(?)
+    const user = ctx.get('user')!;
+    const file = s3client.file(user.id);
+
+    const url = file.presign({ expiresIn: ONE_HOUR });
+
+    return ctx.redirect(url);
   })
   .get('/subscribe', grantAccessTo('authenticated'), async ctx => {
     // WS for profile details
@@ -121,19 +162,24 @@ const profile = factory
       try {
         const data = ctx.req.valid('json');
         const ctxUser = ctx.get('user')!;
-        const updatedUser = await db
+
+        if (data.cv) {
+          const result = await uploadCv(ctx, data.cv, ctxUser.id);
+          if (result.isError()) {
+            return ctx.text(result.error.message, result.error.status);
+          }
+          delete data.cv;
+        }
+
+        await db
           .update(profiles)
           .set(data)
           .where(eq(profiles.id, ctxUser.id))
           .returning();
 
-        if (updatedUser.length < 1) {
-          throw new Error('Failed to update user.');
-        }
-
         // No need to return anything, as the browser is subscribed to the websocket.
         return ctx.text('', 200);
-      } catch (e) {
+      } catch (e: any) {
         apiLogger.error(
           ctx,
           'PUT /profile',
@@ -230,60 +276,15 @@ const profile = factory
       if (result.value == 'added') {
         return ctx.text('Successfully added user to the server.', 201);
       } else if (result.value == 'already_present') {
-        return ctx.text('User already in server.', 204);
+        return ctx.text('User already in server.', 200);
       }
-    }
-  )
-  .get(
-    '/register',
-    grantAccessTo('all'),
-    simpleValidator('query', z.object({ token: z.string() })),
-    async ctx => {
-      const signedIn = ctx.get('user');
-      if (signedIn != null) {
-        return ctx.text('You have already registered.', 400);
-      }
-
-      const { token } = ctx.req.valid('query');
-
-      const userAndToken = await db
-        .select({
-          name: users.name,
-          email: users.email,
-          role: users.role,
-          expiresAt: userToken.expiresAt
-        })
-        .from(userToken)
-        .leftJoin(users, eq(users.id, userToken.userId))
-        .where(
-          and(eq(userToken.id, token), eq(userToken.type, 'registration_link'))
-        );
-      if (userAndToken.length < 1) {
-        return ctx.text('Invalid token.', 403);
-      }
-      const now = new Date();
-      if (userAndToken[0]!.expiresAt < now) {
-        await db.delete(userToken).where(lt(userToken.expiresAt, now));
-        return ctx.text('Token is expired.', 403);
-      }
-
-      const user = userAndToken[0]!;
-
-      return ctx.json(
-        {
-          name: user.name,
-          email: user.email,
-          role: user.role
-        },
-        200
-      );
     }
   )
   .post(
     '/register',
     grantAccessTo('all'),
     simpleValidator('query', z.object({ token: z.string() })),
-    simpleValidator('json', insertProfileSchema),
+    simpleValidator('form', registerProfilePostSchema),
     async ctx => {
       const signedIn = ctx.get('user');
       if (signedIn != null) {
@@ -291,7 +292,7 @@ const profile = factory
       }
 
       const { token } = ctx.req.valid('query');
-      const body = ctx.req.valid('json');
+      const { cv, registrationDetails: body } = ctx.req.valid('form');
 
       const tokenInDb = await db
         .select()
@@ -309,16 +310,31 @@ const profile = factory
       const userId = tokenInDb[0]!.userId;
       const hashedPassword = await hash(body.password, hashOptions);
 
-      await db.transaction(async tx => {
-        await tx.delete(userToken).where(eq(userToken.id, token));
+      const result = await db.transaction(async tx => {
+        // Attempt to upload CV
+        if (cv) {
+          const result = await uploadCv(ctx, cv, userId);
+          if (result.isError()) {
+            return result;
+          }
+        }
 
         // meals is default false[3], so we don't explicitly state it here
         await tx.insert(profiles).values({
           id: userId,
           photos_opt_out: body.photos_opt_out,
           dietary_restrictions: body.dietary_restrictions,
-          allergies: body.allergies,
-          pronouns: body.pronouns
+          pronouns: body.pronouns,
+          cvUploaded: cv != undefined
+        });
+
+        await tx.insert(demograph).values({
+          gender: body.gender,
+          university: body.university,
+          courseOfStudy: body.courseOfStudy,
+          yearOfStudy: body.yearOfStudy,
+          tShirtSize: body.tShirtSize,
+          age: body.age
         });
 
         // The simpleValidator schema takes care of the regex.
@@ -328,12 +344,26 @@ const profile = factory
             password: hashedPassword
           })
           .where(eq(users.id, userId));
+
+        await tx.delete(userToken).where(eq(userToken.id, token));
+
+        return Result.ok();
       });
 
-      // Do we want to generate a session now and sign them in,
-      // or redirect them to the login after this? i.e. return session cookie or just OK
-      // and let front end handle the rest.
-      return ctx.text('', 204);
+      if (result.isError()) {
+        return ctx.text(result.error.message, result.error.status);
+      }
+
+      const session = await lucia.createSession(userId, {});
+      ctx.header(
+        'Set-Cookie',
+        lucia.createSessionCookie(session.id).serialize(),
+        {
+          append: true
+        }
+      );
+
+      return ctx.text('', 200);
     }
   )
   .get('/:id', grantAccessTo('volunteer'), async ctx => {
@@ -347,9 +377,9 @@ const profile = factory
         role: users.role,
         photos_opt_out: profiles.photos_opt_out,
         dietary_restrictions: profiles.dietary_restrictions,
-        allergies: profiles.allergies,
         pronouns: profiles.pronouns,
-        meals: profiles.meals
+        meals: profiles.meals,
+        cvUploaded: profiles.cvUploaded
       })
       .from(profiles)
       .innerJoin(users, eq(users.id, profiles.id))

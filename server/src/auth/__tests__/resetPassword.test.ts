@@ -63,7 +63,7 @@ describe('Auth Module > POST /resetPassword', () => {
     expect(updatedUser).toHaveLength(1);
 
     // Verify if passsword is updated
-    const updatedPassword = updatedUser[0].password;
+    const updatedPassword = updatedUser[0]!.password;
     expect(updatedPassword).not.toBeNull();
     expect(
       verify(updatedPassword!, newPassword, hashOptions)

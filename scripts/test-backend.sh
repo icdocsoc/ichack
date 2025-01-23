@@ -5,7 +5,7 @@ export PGUSER=test
 export PGHOST=0.0.0.0
 export PGDB=postgres
 export PGPASSWORD=test
-export PGPORT=5433
+export PGPORT=5432
 
 DOCKER_CONTAINER_NAME=postgres_test
 
