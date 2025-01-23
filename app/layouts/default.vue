@@ -1,11 +1,11 @@
 <template>
   <NuxtLayout name="public">
-    <img
+    <!-- <img
       class="fixed bottom-0 mb-4 h-fit cursor-pointer"
       src="~/assets/logout.svg"
-      @click="handleLogout" />
+      @click="handleLogout" /> -->
 
-    <div class="ml-10 mt-4 flex">
+    <div class="mt-4 flex lg:ml-10">
       <main class="flex-1">
         <slot />
       </main>

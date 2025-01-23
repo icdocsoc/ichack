@@ -52,7 +52,7 @@
     </div>
 
     <form
-      class="flex flex-col gap-4 rounded-lg border border-white px-2 py-4 lg:self-center"
+      class="flex flex-col gap-4 rounded-lg border border-white px-4 py-6 lg:self-center"
       :state="credentials"
       @submit.prevent="handleLogin">
       <h1 class="font-ichack text-center text-4xl lg:mx-32 lg:my-4">Login</h1>
