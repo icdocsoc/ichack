@@ -4,6 +4,9 @@ import { Result } from 'typescript-result';
 import { z } from 'zod';
 import { apiLogger } from '../logger';
 import type { Context } from 'hono';
+import { users } from '../auth/schema';
+import { db } from '../drizzle';
+import { eq } from 'drizzle-orm';
 
 const MAX_PDF_SIZE = 5 * 1024 * 1024; // 5MB
 
@@ -23,6 +26,18 @@ export const cvValidator = z
 type UploadError = {
   message: string;
   status: ContentfulStatusCode;
+};
+
+export const getCvFileName = async (userId: string): Promise<string> => {
+  const res = await db
+    .select({ name: users.name })
+    .from(users)
+    .where(eq(users.id, userId));
+
+  if (res.length === 0) throw new Error("User doesn't exist");
+
+  const { name } = res[0]!;
+  return `${name}-cv-${userId}.pdf`;
 };
 
 export const uploadCv = async (
@@ -49,7 +64,8 @@ export const uploadCv = async (
     return Result.ok(0);
   }
 
-  const s3file = s3client.file(userId);
+  const filename = await getCvFileName(userId);
+  const s3file = s3client.file(filename);
 
   let bytes: number;
   try {

@@ -16,7 +16,7 @@ import { hash } from 'argon2';
 import { hashOptions, lucia } from '../auth/lucia';
 import { DiscordRepository } from './discord';
 import { simpleValidator } from '../validators';
-import { cvValidator, s3client, uploadCv } from './cv';
+import { cvValidator, getCvFileName, s3client, uploadCv } from './cv';
 import { demograph } from '../demograph/schema';
 import { Result } from 'typescript-result';
 
@@ -126,7 +126,8 @@ const profile = factory
   .delete('/cv', grantAccessTo('authenticated'), async ctx => {
     // Delete CV
     const user = ctx.get('user')!;
-    const file = s3client.file(user.id);
+    const filename = await getCvFileName(user.id);
+    const file = s3client.file(filename);
 
     try {
       await file.delete();

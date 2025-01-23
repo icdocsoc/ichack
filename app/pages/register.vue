@@ -33,11 +33,13 @@
                 class="absolute left-0 top-0 h-full w-full bg-gray-400 opacity-40"></div>
             </div>
 
-            <ICInput
+            <ICInputSelect
               type="text"
               name="pronouns"
               placeholder="Pronouns"
-              v-model="formState.pronouns" />
+              v-model="formState.pronouns"
+              :other="true"
+              :options="pronounOptions" />
           </RegisterGroup>
 
           <RegisterGroup :icon="gradhatSvg">
@@ -46,7 +48,8 @@
               placeholder="Place Of Study"
               class="w-full"
               v-model="demographicsState.university"
-              :options="sameName(universities)" />
+              :options="sameName(universities)"
+              :other="true" />
           </RegisterGroup>
 
           <RegisterGroup :icon="lockSvg">
@@ -215,6 +218,8 @@ const sameName = (values: readonly string[]) =>
       value: v
     };
   });
+
+const pronounOptions = sameName(['he/him', 'she/her', 'they/them']);
 
 const showPassword = ref(false);
 const cv = ref<File | undefined>(undefined);
