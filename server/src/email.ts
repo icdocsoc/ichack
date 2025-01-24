@@ -1,4 +1,5 @@
 import { createTransport } from 'nodemailer';
+import type Mail from 'nodemailer/lib/mailer';
 
 const transporter = createTransport({
   service: 'SMTP',
@@ -15,9 +16,9 @@ export const sendEmail = async (
   subject: string,
   text: string,
   html: string,
-  attachments: { file: string; cid: string; path: string }[] = []
+  attachments: Mail.Attachment[] = []
 ) => {
-  if (process.env.NODE_ENV !== 'production') return true;
+  if (process.env.NODE_ENV !== 'production') return;
 
   await transporter.sendMail({
     from: '"ICHack" <ichack@ic.ac.uk>',

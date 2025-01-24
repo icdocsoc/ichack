@@ -1,8 +1,8 @@
 <template>
-  <div class="mt-20 flex flex-col space-y-4">
+  <div class="mt-8 flex flex-col space-y-4">
     <h1 class="font-ichack my-4 text-center text-4xl">Complete Sign Up</h1>
 
-    <form @submit.prevent="handleRegister">
+    <form class="flex flex-col space-y-4" @submit.prevent="handleRegister">
       <div class="grid max-w-6xl gap-8 place-self-center md:grid-cols-2">
         <div class="flex flex-col gap-4">
           <RegisterGroup :icon="mailSvg">

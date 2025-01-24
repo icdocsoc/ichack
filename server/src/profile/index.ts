@@ -21,7 +21,7 @@ import { demograph } from '../demograph/schema';
 import { Result } from 'typescript-result';
 import { sendEmail } from '../email';
 import nunjucks from 'nunjucks';
-import { emailTemplate } from './assets/register';
+import { emailTemplate, icticket } from './assets/register';
 
 nunjucks.configure({ autoescape: true });
 
@@ -384,9 +384,10 @@ const profile = factory
           emailHtml,
           [
             {
-              file: 'ichack-ticket.png',
+              filename: 'ticket.png',
               cid: 'ichackticket',
-              path: 'server/src/profile/assets/icticket.png'
+              content: icticket,
+              encoding: 'base64'
             }
           ]
         );
