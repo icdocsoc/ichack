@@ -36,7 +36,8 @@
             <ICInputSelect
               type="text"
               name="pronouns"
-              placeholder="Pronouns"
+              required
+              placeholder="Pronouns *"
               v-model="formState.pronouns"
               :other="true"
               :options="pronounOptions" />
