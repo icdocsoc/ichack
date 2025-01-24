@@ -30,11 +30,12 @@ const auth = factory
       // Postgres asserts that email is unique.
       // Additionally, gods are the one making users, so they should know what they're doing.
       try {
+        const uid = generateIdFromEntropySize(16);
         const userInDb = await db
           .insert(users)
           .values({
             ...userBody,
-            id: generateIdFromEntropySize(16)
+            id: uid
           })
           .returning();
 
@@ -43,7 +44,21 @@ const auth = factory
         }
 
         // Now asserted userInDb.length === 1
-        return c.json({}, 201);
+        const registration_token = generateIdFromEntropySize(16);
+        const expiry = new Date();
+        expiry.setDate(expiry.getDate() + 3); // 3 days from now
+
+        await db.insert(userToken).values({
+          id: registration_token,
+          userId: uid,
+          expiresAt: expiry,
+          type: 'registration_link'
+        });
+
+        return c.json(
+          { registration_token: registration_token, user_id: uid },
+          201
+        );
       } catch (e) {
         // User with email already exists
         throw new HTTPException(409, { message: (e as Error).message });

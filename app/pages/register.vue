@@ -352,6 +352,7 @@ const handleRegister = async () => {
     case 'god':
     case 'admin':
       navigateTo('/admin');
+      break;
     case 'volunteer':
       navigateTo(`/volunteer`);
       break;

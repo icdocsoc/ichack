@@ -249,7 +249,18 @@ paths:
                   required: true
       responses:
         '201':
-          description: A new user has been created.
+          description: A new user has been created. The user id and registration token is returned.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    type: string
+                    example: njfq13r14bjf15
+                  registration_token:
+                    type: string
+                    example: kjaibute8q0732
         '400':
           description: The request was malformed.
           content:
