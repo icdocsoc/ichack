@@ -30,7 +30,7 @@
           </p>
           <p>
             <!-- prettier-ignore -->
-            <a href="/privacy-policy" class="text-blue-ic underline" target="_blank">Privacy Policy</a>
+            <a href="/privacy-policy" class="underline" target="_blank">Privacy Policy</a>
           </p>
           <p>© 2025 Imperial College DoCSoc</p>
           <img class="mt-1" src="@ui25/assets/icon_cube.svg" />
