@@ -1,0 +1,2 @@
+CREATE TYPE "public"."location_enum" AS ENUM('HXLY', 'JCR', 'SCR', 'QTR', 'QLWN', 'HBAR', 'ICME', 'GRHL', 'SF', 'HF', 'H308', 'H311', 'H340', 'CLR');--> statement-breakpoint
+ALTER TABLE "events" ADD COLUMN "locations" "location_enum"[] NOT NULL;

@@ -1,6 +1,31 @@
-import { boolean, pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core';
+import {
+  boolean,
+  pgEnum,
+  pgTable,
+  serial,
+  text,
+  timestamp
+} from 'drizzle-orm/pg-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
+
+export const locations = [
+  'HXLY', // huxley
+  'JCR', // junior common room
+  'SCR', // senior common room
+  'QTR', // queen's tower rooms
+  'QLWN', // queen's lawn
+  'HBAR', // h-bar
+  'ICME', // main entrance
+  'GRHL', // great hall
+  'SF', // sherfield foyer
+  'HF', // huxley foyer
+  'H308', // huxley room 308
+  'H311', // huxley room 311
+  'H340', // huxley room 340
+  'CLR' // clore lecture theatre
+] as const;
+export const locationEnum = pgEnum('location_enum', locations);
 
 export const events = pgTable('events', {
   id: serial('id').notNull().primaryKey(),
@@ -8,7 +33,8 @@ export const events = pgTable('events', {
   description: text('description').notNull(),
   startsAt: timestamp('starts_at').notNull(),
   endsAt: timestamp('ends_at'),
-  public: boolean('public').notNull()
+  public: boolean('public').notNull(),
+  locations: locationEnum('locations').array().notNull()
 });
 
 export const createEventSchema = createInsertSchema(events, {
@@ -35,5 +61,5 @@ export const updateEventBody = createSelectSchema(events, {
 
 export const eventSchema = createSelectSchema(events, {
   startsAt: z.date(),
-  endsAt: z.date()
+  endsAt: z.date().optional()
 });

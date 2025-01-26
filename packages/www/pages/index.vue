@@ -7,6 +7,7 @@
     <DividerOne />
     <SectionAbout class="py-16" />
     <SectionTicket class="py-16" />
+    <SectionSchedule class="py-8" />
     <SectionSponsors class="py-16" />
     <SectionTeam class="py-16" />
     <SectionFAQ class="py-16" />

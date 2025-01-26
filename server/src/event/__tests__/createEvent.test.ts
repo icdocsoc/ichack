@@ -6,13 +6,15 @@ import { testClient } from 'hono/testing';
 import { eq, sql } from 'drizzle-orm';
 import { users, userSession } from '../../auth/schema';
 import { createUserWithSession } from '../../testHelpers';
+
 import app from '../../app';
 
 const phineasEvent = {
   title: "Phineas' birthday",
   description: 'Yippie!',
   startsAt: new Date(2005, 4, 9, 12, 32, 1, 3),
-  public: true
+  public: true,
+  locations: ['HXLY', 'ICME']
 };
 
 const perryFight = {
@@ -20,7 +22,8 @@ const perryFight = {
   description: 'For the millionth time.',
   startsAt: new Date(2021, 5, 3, 12, 32, 1, 3),
   endsAt: new Date(2022, 5, 3, 12, 32, 1, 3),
-  public: false
+  public: false,
+  locations: ['HXLY', 'ICME']
 };
 
 const sessionIds: Partial<Record<Role, string>> = {};
@@ -29,7 +32,8 @@ const invalidEvent = {
   description: 'The end date is before the start date.',
   startsAt: new Date(2022, 5, 3, 12, 32, 1, 3),
   endsAt: new Date(2021, 5, 3, 12, 32, 1, 3),
-  public: true
+  public: true,
+  locations: ['HXLY', 'ICME']
 };
 
 const baseRoute = testClient(app).event;
@@ -143,14 +147,15 @@ describe('Events Module > POST /', () => {
     expect(res.text()).resolves.toBe('Event must start before it ends.');
   });
 
-  test('`title`, `desc`, `startsAt`, and `public` are required', async () => {
+  test('`title`, `desc`, `startsAt`,`public`, `locations` are required', async () => {
     const res = await baseRoute.$post(
       {
         // @ts-expect-error Should be invalid, for testing.
         json: {
           title: "Phineas' birthday",
           description: 'Yippie!',
-          startsAt: new Date(2005, 4, 9, 12, 32, 1, 3)
+          startsAt: new Date(2005, 4, 9, 12, 32, 1, 3),
+          locations: ['HXLY', 'ICME']
         }
       },
       {
@@ -172,7 +177,8 @@ describe('Events Module > POST /', () => {
         json: {
           title: "Phineas' birthday",
           description: 'Yippie!',
-          public: true
+          public: true,
+          locations: ['HXLY', 'ICME']
         }
       },
       {
@@ -194,7 +200,8 @@ describe('Events Module > POST /', () => {
         json: {
           title: "Phineas' birthday",
           startsAt: new Date(2005, 4, 9, 12, 32, 1, 3),
-          public: true
+          public: true,
+          locations: ['HXLY', 'ICME']
         }
       },
       {
@@ -216,7 +223,8 @@ describe('Events Module > POST /', () => {
         json: {
           description: 'Yippie!',
           startsAt: new Date(2005, 4, 9, 12, 32, 1, 3),
-          public: true
+          public: true,
+          locations: ['HXLY', 'ICME']
         }
       },
       {
@@ -248,7 +256,7 @@ describe('Events Module > POST /', () => {
     // @ts-expect-error as it's from the zod middleware
     expect(res5.status).toBe(400);
     expect(res5.text()).resolves.toBe(
-      "'title' is either missing or not a string; 'description' is either missing or not a string; 'startsAt' is either missing or not a date"
+      "'title' is either missing or not a string; 'description' is either missing or not a string; 'startsAt' is either missing or not a date; 'locations' is either missing or not a array"
     );
   });
 });

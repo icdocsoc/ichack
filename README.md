@@ -82,6 +82,7 @@ You should create a PR **as soon as** you create a branch.
 #### Code contributors
 
 - [@Harini-Sritharar](https://github.com/Harini-Sritharar)
+- [@JoshXL23 | Joshua Gonsalves](https://github.com/JoshXL23)
 
 ## License
 

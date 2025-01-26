@@ -12,7 +12,8 @@ const phineasEvent = {
   title: "Phineas' birthday",
   description: 'Yippie!',
   startsAt: new Date(2005, 4, 9, 12, 32, 1, 3),
-  public: true
+  public: true,
+  locations: ['HXLY', 'ICME']
 };
 
 const sessionIds: Partial<Record<Role, string>> = {};

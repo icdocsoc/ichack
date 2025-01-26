@@ -17,4 +17,5 @@ export type PerryApi = typeof app;
 export type User = z.infer<typeof selectUserSchema>;
 export type { Profile } from '~~/server/src/profile/schema';
 export type Event = z.infer<typeof eventSchema>;
+export type EventLocation = Event['locations'][number];
 export type RegistrationDetails = z.infer<typeof registerProfileSchema>;

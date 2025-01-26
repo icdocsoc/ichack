@@ -3,6 +3,7 @@ CREATE TYPE "public"."user_roles" AS ENUM('god', 'admin', 'hacker', 'volunteer')
 CREATE TYPE "public"."gender_types" AS ENUM('Male', 'Female', 'Non-binary', 'Other', 'N/A');--> statement-breakpoint
 CREATE TYPE "public"."t_shirt_sizes" AS ENUM('S', 'M', 'L', 'XL', '2XL');--> statement-breakpoint
 CREATE TYPE "public"."year_of_study" AS ENUM('Undergraduate Year 1', 'Undergraduate Year 2', 'Undergraduate Year 3', 'Undergraduate Year 4', 'Undergraduate Year 5', 'Undergraduate Year 6', 'Graduated', 'Postgraduate');--> statement-breakpoint
+CREATE TYPE "public"."location_enum" AS ENUM('HXLY', 'JCR', 'SCR', 'QTR', 'QLWN', 'HBAR', 'ICME', 'GRHL', 'SF', 'HF', 'H308', 'H311', 'H340', 'CLR');--> statement-breakpoint
 CREATE TABLE "announcements" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"title" text NOT NULL,
@@ -67,7 +68,8 @@ CREATE TABLE "events" (
 	"description" text NOT NULL,
 	"starts_at" timestamp NOT NULL,
 	"ends_at" timestamp,
-	"public" boolean NOT NULL
+	"public" boolean NOT NULL,
+	"locations" "location_enum"[] NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "profiles" (

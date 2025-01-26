@@ -12,7 +12,8 @@ const phineasEvent = {
   title: "Phineas' birthday",
   description: 'Yippie!',
   startsAt: new Date(2005, 4, 9, 12, 32, 1, 3),
-  public: true
+  public: true,
+  locations: ['HXLY', 'ICME']
 };
 
 const perryFight = {
@@ -20,7 +21,8 @@ const perryFight = {
   description: 'For the millionth time.',
   startsAt: new Date(2021, 5, 3, 12, 32, 1, 3),
   endsAt: new Date(2022, 5, 3, 12, 32, 1, 3),
-  public: false
+  public: false,
+  locations: ['HXLY', 'ICME']
 };
 
 const baseRoute = testClient(app).event;
@@ -80,13 +82,15 @@ describe('Events Module > GET /', () => {
             ...phineasEvent,
             startsAt: phineasEvent.startsAt.toISOString(),
             id: expect.any(Number),
-            endsAt: null
+            endsAt: null,
+            locations: expect.arrayContaining(phineasEvent.locations)
           }),
           expect.objectContaining({
             ...perryFight,
             startsAt: perryFight.startsAt.toISOString(),
             endsAt: perryFight.endsAt.toISOString(),
-            id: expect.any(Number)
+            id: expect.any(Number),
+            locations: expect.arrayContaining(perryFight.locations)
           })
         ])
       );

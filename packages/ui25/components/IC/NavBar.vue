@@ -1,5 +1,6 @@
 <template>
-  <nav class="relative flex justify-between px-5 lg:overflow-hidden">
+  <nav
+    class="sticky top-0 z-50 flex justify-between bg-black px-5 lg:overflow-hidden">
     <img src="@ui25/assets/logo-white.svg" class="my-2" />
 
     <ICHamburger

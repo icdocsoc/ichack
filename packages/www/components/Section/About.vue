@@ -6,10 +6,10 @@
 
     <div class="max-w-[512px]">
       <ICWindow name="about.txt" background="bg-cream-ic">
-        <div class="flex gap-4 text-black">
+        <div class="relative flex gap-4 text-black">
           <div
             class="[&_span]:text-blue-ic flex self-start text-lg [&_span]:font-bold">
-            <img src="@ui25/assets/alien.svg" class="absolute" />
+            <img src="@ui25/assets/alien.svg" class="absolute left-0 top-0" />
             <div
               v-for="col in ['bg-blue-ic', 'bg-yellow-ic', 'bg-red-ic']"
               class="ml-1 w-8"
