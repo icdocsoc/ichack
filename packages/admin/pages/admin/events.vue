@@ -12,7 +12,7 @@
         :items="[
           {
             label: 'Add a new Event',
-            defaultOpen: false, // TODO make this false
+            defaultOpen: false,
             slot: 'new-event'
           }
         ]">

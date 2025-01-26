@@ -47,9 +47,6 @@ GET /discord?code={string}&state={string} --> redirects to discord oauth, or add
 GET /register?token={string} --> get the name, email, and role from a registeration token
 POST /register?token={string} --> register user using token `token`
 
-<!-- Insert /discord route: TODO @Jay-->
-<!-- Look into encryption for QR codes -->
-
 ## Team (/team)
 
 POST / --> create a team in the db, named `firstName`s team. "hacker"

@@ -26,14 +26,7 @@ This application also contains the utility modules:
 
 ## Documentation
 
-This is the first time IC Hack tech systems will have extensive documentation. Open [the docs folder](./documentation/) as an [Obsidian Vault](https://obsidian.md).
-
-1. Install [Obsidian](https://obsidian.md/).
-2. Open the path `./documentation` as an Obsidian Vault.
-
-### API Reference
-
-You can also view the API Reference for the server. Run `bunx serve scalar` and visit the URL to view the documentation.
+This is the first time IC Hack tech systems will have extensive documentation. Execute `bun docs:dev` to view the documentation. You can also view the API Reference for the server by running `bunx serve scalar`.
 
 > [!important]
 > The documentation started authoring from 4th July 2024. The contributors will try to document this code as much as possible and encourage the future volunteers to do so as well. However, it may not be the case that everything is documented perfectly.
@@ -77,12 +70,16 @@ You should create a PR **as soon as** you create a branch.
    1. Use `#<taskId>[blocked]` to move your card into "Blocked".
 1. When merging, your commit description should include `#<taskId>[completed]` to move your card into "Completed".
 
-## Repository Administrators
+## Our Team
+
+### IC Hack '25
+
+#### Repository Administrators
 
 - [@cybercoder-naj | Nishant Aanjaney Jalan](https://github.com/cybercoder-naj)
 - [@dropheart | Jay Abussaud](https://github.com/dropheart)
 
-## Code contributors
+#### Code contributors
 
 - [@Harini-Sritharar](https://github.com/Harini-Sritharar)
 
