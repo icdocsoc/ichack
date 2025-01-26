@@ -1,5 +1,5 @@
 {
-  "id": "ff07366a-9ceb-4f3e-b18a-8b2940c3775a",
+  "id": "9349b74d-b2f4-40c7-b5b8-72ac22704995",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -76,8 +76,12 @@
           "name": "session_user_id_users_id_fk",
           "tableFrom": "session",
           "tableTo": "users",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -124,8 +128,12 @@
           "name": "token_user_id_users_id_fk",
           "tableFrom": "token",
           "tableTo": "users",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -179,7 +187,9 @@
         "users_email_unique": {
           "name": "users_email_unique",
           "nullsNotDistinct": false,
-          "columns": ["email"]
+          "columns": [
+            "email"
+          ]
         }
       },
       "policies": {},
@@ -233,8 +243,12 @@
           "name": "categories_owner_companies_name_fk",
           "tableFrom": "categories",
           "tableTo": "companies",
-          "columnsFrom": ["owner"],
-          "columnsTo": ["name"],
+          "columnsFrom": [
+            "owner"
+          ],
+          "columnsTo": [
+            "name"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -287,8 +301,12 @@
           "name": "sponsor_company_user_id_users_id_fk",
           "tableFrom": "sponsor_company",
           "tableTo": "users",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -296,8 +314,12 @@
           "name": "sponsor_company_company_name_companies_name_fk",
           "tableFrom": "sponsor_company",
           "tableTo": "companies",
-          "columnsFrom": ["company_name"],
-          "columnsTo": ["name"],
+          "columnsFrom": [
+            "company_name"
+          ],
+          "columnsTo": [
+            "name"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -463,8 +485,12 @@
           "name": "profiles_id_users_id_fk",
           "tableFrom": "profiles",
           "tableTo": "users",
-          "columnsFrom": ["id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -498,8 +524,12 @@
           "name": "team_invites_team_id_teams_id_fk",
           "tableFrom": "team_invites",
           "tableTo": "teams",
-          "columnsFrom": ["team_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "team_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -507,8 +537,12 @@
           "name": "team_invites_user_id_users_id_fk",
           "tableFrom": "team_invites",
           "tableTo": "users",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -548,8 +582,12 @@
           "name": "team_members_user_id_users_id_fk",
           "tableFrom": "team_members",
           "tableTo": "users",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -557,8 +595,12 @@
           "name": "team_members_team_id_teams_id_fk",
           "tableFrom": "team_members",
           "tableTo": "teams",
-          "columnsFrom": ["team_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "team_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -622,8 +664,12 @@
           "name": "teams_sponsor_category_categories_slug_fk",
           "tableFrom": "teams",
           "tableTo": "categories",
-          "columnsFrom": ["sponsor_category"],
-          "columnsTo": ["slug"],
+          "columnsFrom": [
+            "sponsor_category"
+          ],
+          "columnsTo": [
+            "slug"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -631,8 +677,12 @@
           "name": "teams_docsoc_category_categories_slug_fk",
           "tableFrom": "teams",
           "tableTo": "categories",
-          "columnsFrom": ["docsoc_category"],
-          "columnsTo": ["slug"],
+          "columnsFrom": [
+            "docsoc_category"
+          ],
+          "columnsTo": [
+            "slug"
+          ],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -648,22 +698,42 @@
     "public.token_type": {
       "name": "token_type",
       "schema": "public",
-      "values": ["forgot_password", "registration_link"]
+      "values": [
+        "forgot_password",
+        "registration_link"
+      ]
     },
     "public.user_roles": {
       "name": "user_roles",
       "schema": "public",
-      "values": ["god", "admin", "hacker", "volunteer"]
+      "values": [
+        "god",
+        "admin",
+        "hacker",
+        "volunteer"
+      ]
     },
     "public.gender_types": {
       "name": "gender_types",
       "schema": "public",
-      "values": ["Male", "Female", "Non-binary", "Other", "N/A"]
+      "values": [
+        "Male",
+        "Female",
+        "Non-binary",
+        "Other",
+        "N/A"
+      ]
     },
     "public.t_shirt_sizes": {
       "name": "t_shirt_sizes",
       "schema": "public",
-      "values": ["S", "M", "L", "XL", "2XL"]
+      "values": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "2XL"
+      ]
     },
     "public.year_of_study": {
       "name": "year_of_study",
