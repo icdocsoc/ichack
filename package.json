@@ -2,7 +2,7 @@
   "name": "@ichack/monorepo",
   "type": "module",
   "scripts": {
-    "backend:check-schema": "drizzle-kit generate | grep 'No schema changes, nothing to migrate'",
+    "backend:check-schema": "drizzle-kit generate 2>&1 | grep 'No schema changes, nothing to migrate'",
     "backend:generate": "drizzle-kit generate",
     "backend:push-schema": "drizzle-kit push",
     "build": "concurrently -n \"website,landing\" -c \"blue,green\" \"bun run build:website\" \"bun run build:landing\"",

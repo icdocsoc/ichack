@@ -62,7 +62,7 @@ while ! docker exec $DOCKER_CONTAINER_NAME pg_isready -U test > /dev/null; do
 done
 
 echo "--- Setting up database ---"
-if bun run backend:push-schema; then
+if bun run backend:push-schema 2>&1 | grep "Error"; then
   echo "--- Database setup failed ---"
   exit 1
 else
