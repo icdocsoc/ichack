@@ -74,8 +74,14 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Upload schema
-        run: |
-          PGPASSWORD=postgres psql -U postgres -h localhost -p 5432 -d postgres -f ./data/schema.sql
+        run: bun run backend:push-schema
+        env:
+          PGUSER: postgres
+          PGPASSWORD: postgres
+          PGDB: postgres
+          PGHOST: localhost
+          PGPORT: 5432
+          PGCA: ''
 
       - name: Run tests
         run: bun test server

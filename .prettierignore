@@ -2,4 +2,4 @@ docs/
 documentation/
 .vscode/
 **/.playground/
-server/migrations/
+schemas
