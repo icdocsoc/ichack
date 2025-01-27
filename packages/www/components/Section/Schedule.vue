@@ -89,11 +89,12 @@ const images = Object.fromEntries(
   ])
 ) as Record<EventLocation, string>;
 
-const { getEvents } = useEvents();
-const { data: schedules } = useAsyncData<Schedule>('get_schedule', async () => {
+const schedules = ref<Schedule | null>(null);
+onMounted(async () => {
+  const { getEvents } = useEvents();
   const eventRes = await getEvents();
   const events: ICEvent[] = eventRes.getOrThrow();
-  return [
+  schedules.value = [
     events.filter(e => e.startsAt.getUTCDate() === 1),
     events.filter(e => e.startsAt.getUTCDate() === 2)
   ];
