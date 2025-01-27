@@ -2,7 +2,6 @@ import type { Context } from 'hono';
 import pc from 'picocolors';
 import factory from './factory';
 import type { Env } from './types';
-import { getConnInfo } from 'hono/bun';
 import type { User } from 'lucia';
 import { format } from 'date-fns';
 
@@ -26,20 +25,25 @@ class Level {
 
 export const apiLogger = {
   debug(c: Context, tag: string, ...messages: string[]): void {
-    customLogger(c, Level.DEBUG, [`[${tag}]`, ...messages]);
+    customLogger(c, Level.DEBUG, tag, messages);
   },
   info(c: Context, tag: string, ...messages: string[]): void {
-    customLogger(c, Level.INFO, [`[${tag}]`, ...messages]);
+    customLogger(c, Level.INFO, tag, messages);
   },
   warn(c: Context, tag: string, ...messages: string[]): void {
-    customLogger(c, Level.WARN, [`[${tag}]`, ...messages]);
+    customLogger(c, Level.WARN, tag, messages);
   },
   error(c: Context, tag: string, ...messages: string[]): void {
-    customLogger(c, Level.ERROR, [`[${tag}]`, ...messages]);
+    customLogger(c, Level.ERROR, tag, messages);
   }
 };
 
-const customLogger = (c: Context<Env>, level: Level, messages: string[]) => {
+const customLogger = (
+  c: Context<Env>,
+  level: Level,
+  tag: string,
+  messages: string[]
+) => {
   if (Bun.env.NODE_ENV == 'test') return;
 
   const formatUser = (user: User | null): string => {
@@ -57,7 +61,7 @@ const customLogger = (c: Context<Env>, level: Level, messages: string[]) => {
   const status = c.res.status;
 
   console.log(
-    `${level.background(` ${level.word} `)} [${formatUser(user)}] [${formatDate(date)}] "${method} ${path}" -> ${status}: ${messages.join(' ')}`
+    `${level.background(` ${level.word} `)} [${formatUser(user)}] [${formatDate(date)}] [${tag}] "${method} ${path}" -> ${status}: ${messages.join(' ')}`
   );
 };
 
@@ -65,7 +69,11 @@ export default () =>
   factory.createMiddleware(async (c, next) => {
     await next();
 
-    if (c.res.status >= 500) apiLogger.error(c, 'Response');
-    else if (c.res.status >= 400) apiLogger.warn(c, 'Response');
-    else apiLogger.info(c, 'Response');
+    const res = c.res.clone();
+    const message = await res.text();
+    if (c.res.status >= 500) {
+      apiLogger.error(c, 'Response', message);
+    } else if (c.res.status >= 400) {
+      apiLogger.warn(c, 'Response', message);
+    } else apiLogger.info(c, 'Response');
   });
