@@ -27,7 +27,9 @@
               @click="handleMaximize" />
             <img
               :src="images.close"
-              class="closeable cursor-pointer"
+              :class="
+                closeable ? 'closeable cursor-pointer' : 'cursor-not-allowed'
+              "
               @click="handleClose" />
           </div>
         </slot>
@@ -48,13 +50,15 @@ type Props = {
   border?: string;
   background?: string;
   titleTheme?: 'light' | 'dark';
+  closeable?: boolean;
 };
 
 const {
   color = 'bg-blue-ic',
   border = 'border-blue-ic',
   background = 'bg-white',
-  titleTheme = 'light'
+  titleTheme = 'light',
+  closeable = true
 } = defineProps<Props>();
 
 const lightSvgs = import.meta.glob('@ui25/assets/windowActions/light/*.svg', {
@@ -93,6 +97,7 @@ function handleMinimize() {
 }
 
 function handleClose() {
+  if (!closable) return;
   handleMinimize();
   open.value = false;
 
@@ -100,6 +105,7 @@ function handleClose() {
     const currentlyOpenedWindows = document.querySelectorAll(
       '.ic-window .closeable'
     );
+    console.log(currentlyOpenedWindows);
     if (currentlyOpenedWindows.length === 0) {
       alert(
         `

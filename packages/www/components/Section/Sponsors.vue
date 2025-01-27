@@ -43,6 +43,26 @@
 import { filename } from 'pathe/utils';
 import mwam from '@ui25/assets/sponsors/mwam-light.svg';
 
+const sponsorLinks: Record<string, string> = {
+  anthropic: 'https://www.anthropic.com/',
+  helsing: 'https://helsing.ai/',
+  jetbrains: 'https://www.jetbrains.com/',
+  optiver: 'https://www.optiver.com/',
+  cgcu: 'https://www.instagram.com/ic_cgcu/',
+  chkn: 'https://www.chkn.media/',
+  doc: 'https://www.imperial.ac.uk/computing/',
+  docsoc: 'https://docsoc.co.uk/',
+  icrs: 'https://icrs.io',
+  icu: 'https://www.imperialcollegeunion.org/',
+  imperial: 'https://www.imperial.ac.uk/',
+  gresearch: 'https://www.gresearch.com/',
+  imc: 'https://www.imc.com/',
+  intersystems: 'https://www.intersystems.com/',
+  qrt: 'https://www.qube-rt.com/',
+  ttd: 'https://www.thetradedesk.com/',
+  wintermute: 'https://wintermute.com/'
+};
+
 const goldSponsors = import.meta.glob('@ui25/assets/sponsors/gold/*.svg', {
   eager: true
 });
@@ -60,14 +80,15 @@ function transformGlob(
 ): { img: string; desc: string }[] {
   return Object.entries(glob).map(([key, value]) => ({
     img: value.default,
-    desc: filename(key)
+    desc: filename(key),
+    link: sponsorLinks[filename(key)]
   }));
 }
 
 const sponsors = {
-  title: [{ img: mwam, desc: 'Marshall Wace' }],
-  gold: [], // transformGlob(goldSponsors),
-  silver: [], // transformGlob(silverSponsors),
+  title: [{ img: mwam, desc: 'Marshall Wace', link: 'https://www.mwam.com/' }],
+  gold: transformGlob(goldSponsors),
+  silver: transformGlob(silverSponsors),
   bronze: [], // transformGlob(bronzeSponsors),
   partners: transformGlob(partner)
 };

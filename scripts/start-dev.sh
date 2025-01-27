@@ -28,11 +28,11 @@ fi
 
 # Start the dev server based on the target
 if [[ "$target" == "website" ]]; then
-  bun --bun nuxt dev
+  bun --bun nuxt dev --host
 elif [[ "$target" == "landing" ]]; then
-  bun --bun nuxt dev --cwd packages/www --port 3001
+  bun --bun nuxt dev --cwd packages/www --port 3001 --host
 elif [[ "$target" == "both" ]]; then
-  bunx concurrently -n "website,landing" -c "blue,green" "bun --bun nuxt dev" "bun --bun nuxt dev --cwd packages/www --port 3001"
+  bunx concurrently -n "website,landing" -c "blue,green" "bun --bun nuxt dev --host" "bun --bun nuxt dev --cwd packages/www --port 3001 --host"
 fi
 
 function cleanup() {
