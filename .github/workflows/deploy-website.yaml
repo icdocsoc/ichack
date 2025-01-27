@@ -6,31 +6,11 @@ on:
       - 'v[0-9]+.[0-9]+.[0-9]+-[0-9]+-website*'
 
 jobs:
-  build:
+  set-tags:
     runs-on: ubuntu-latest
     outputs:
       base-tag: ${{ steps.tags.outputs.base-tag }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: 1.1.44
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
-
-      - name: Build project
-        run: bun run build:website
-
-      - name: Upload landing static files artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: landing-static
-          path: packages/www/dist
-
       - name: Fetch and set tags
         id: tags
         run: |
@@ -41,7 +21,6 @@ jobs:
           echo "Latest Production Tag: $latest"
 
   testServer:
-    needs: build
     runs-on: ubuntu-latest
     services:
       # Label used to access the service container
@@ -68,6 +47,16 @@ jobs:
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.1.44
+
+      - name: Cache Bun dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ./node_modules
+            ./bun.lock
+          key: ${{ runner.os }}-bun-${{ hashFiles('./bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
@@ -111,18 +100,34 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set tag
+      - name: Build and push docker image to staging
+        if: endsWith(github.ref, '-staging')
         run: |
-          if [[ $GITHUB_REF == refs/tags/*-staging ]]; then
-            echo "TAG=nightly" >> "$GITHUB_ENV"
-          else
-            echo "TAG=latest" >> "$GITHUB_ENV"
-          fi
+          IMAGE_NAME=ghcr.io/icdocsoc/ichack-website
+          TAG=nightly-${GITHUB_SHA}
 
-      - name: Build and push
+          docker build -t $IMAGE_NAME:TAG --target website .
+          docker push $IMAGE_NAME:$TAG
+
+      - name: Build and push to production
+        if: endsWith(github.ref, '-website')
         run: |
-          docker build -t ghcr.io/icdocsoc/ichack-website:${{ env.TAG }} --target website .
-          docker push ghcr.io/icdocsoc/ichack-website:${{ env.TAG }}
+          IMAGE_NAME=ghcr.io/icdocsoc/ichack-website
+          NIGHTLY_TAG=nightly-${GITHUB_SHA}
+          PROD_TAG=latest
+
+          if docker manifest inspect $IMAGE_NAME:$NIGHTLY_TAG > /dev/null 2>&1; then
+            echo "Nightly image found, $NIGHTLY_TAG. Re-tagging for production."
+
+            docker pull $IMAGE_NAME:$NIGHTLY_TAG
+            docker tag $IMAGE_NAME:$NIGHTLY_TAG $IMAGE_NAME:$PROD_TAG
+            docker push $IMAGE_NAME:$PROD_TAG
+          else
+            echo -e "No nightly image found: $NIGHTLY_TAG\n Building from scratch"
+
+            docker build -t $IMAGE_NAME:$PROD_TAG --target website .
+            docker push $IMAGE_NAME:$PROD_TAG
+          fi
 
   deploy-website:
     needs: build-website-image
@@ -178,7 +183,7 @@ jobs:
           PGCA: ${{ secrets.PGCA }}
 
   generateChangelog:
-    needs: [deploy-website, build, pushSchema]
+    needs: [deploy-website, set-tags, pushSchema]
     runs-on: ubuntu-latest
     if: endsWith(github.ref, '-website')
     steps:
@@ -190,7 +195,7 @@ jobs:
 
       - name: Generate changelog
         run: |
-          base_tag=$(echo ${{ needs.build.outputs.base-tag }})
+          base_tag=$(echo ${{ needs.set-tags.outputs.base-tag }})
 
           echo "Generating changelog since $base_tag"
           git log --pretty=format:"- %s (%an)" $base_tag..HEAD | tee CHANGELOG.md
@@ -199,7 +204,7 @@ jobs:
         env:
           WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
-          base_tag=$(echo ${{ needs.build.outputs.base-tag }})
+          base_tag=$(echo ${{ needs.set-tags.outputs.base-tag }})
           CHANGELOG=$(cat CHANGELOG.md)
 
           payload=$(jq -n \
