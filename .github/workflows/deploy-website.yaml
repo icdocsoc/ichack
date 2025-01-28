@@ -153,40 +153,8 @@ jobs:
       - name: Deploy to DigitalOcean
         run: doctl apps create-deployment ${{ env.ID }}
 
-  pushSchema:
-    needs: build-website-image
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: 1.1.44
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
-
-      - name: Set Postgres Env
-        run: |
-          if [[ $GITHUB_REF == refs/tags/*-staging ]]; then
-            echo "PGDB=${{ secrets.STAGING_PGDB }}" >> "$GITHUB_ENV"
-          else
-            echo "PGDB=${{ secrets.PROD_PGDB }}" >> "$GITHUB_ENV"
-          fi
-
-      - name: Upload schema
-        run: bun run backend:push-schema
-        env:
-          PGUSER: ${{ secrets.PGUSER }}
-          PGPASSWORD: ${{ secrets.PGPASSWORD }}
-          PGHOST: ${{ secrets.PGHOST }}
-          PGPORT: ${{ secrets.PGPORT }}
-          PGCA: ${{ secrets.PGCA }}
-
   generateChangelog:
-    needs: [deploy-website, set-tags, pushSchema]
+    needs: [deploy-website, set-tags]
     runs-on: ubuntu-latest
     if: endsWith(github.ref, '-website')
     steps:
