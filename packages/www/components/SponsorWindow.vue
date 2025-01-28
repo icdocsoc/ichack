@@ -115,7 +115,7 @@ const imageStyles = (type: Props['type'], name?: string): string => {
     title: '',
     gold: 'max-h-20 md:max-h-14 max-w-40 md:max-w-60 lg:max-w-80',
     silver: 'max-h-20 md:max-h-14 lg:max-h-12 md:max-w-60',
-    bronze: 'max-h-20 md:max-h-28 lg:max-h-32',
+    bronze: 'max-h-20 md:max-h-20 lg:max-h-24',
     partners: 'max-h-20 md:max-h-16 lg:max-h-14 md:max-w-60'
   } as const;
 

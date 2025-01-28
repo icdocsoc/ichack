@@ -89,7 +89,7 @@ const sponsors = {
   title: [{ img: mwam, desc: 'Marshall Wace', link: 'https://www.mwam.com/' }],
   gold: transformGlob(goldSponsors),
   silver: transformGlob(silverSponsors),
-  bronze: [], // transformGlob(bronzeSponsors),
+  bronze: transformGlob(bronzeSponsors),
   partners: transformGlob(partner)
 };
 </script>
