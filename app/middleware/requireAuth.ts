@@ -12,8 +12,11 @@ export default defineNuxtRouteMiddleware(async (to, _from) => {
   if (store.profile == null)
     return navigateTo({
       path: '/login',
-      query: {
-        redirect: to.fullPath
-      }
+      query:
+        to.fullPath !== '/'
+          ? {
+              redirect: to.fullPath
+            }
+          : undefined
     });
 });

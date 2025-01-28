@@ -11,6 +11,9 @@ jobs:
     outputs:
       base-tag: ${{ steps.tags.outputs.base-tag }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Fetch and set tags
         id: tags
         run: |

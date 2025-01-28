@@ -1,4 +1,4 @@
-import { fileURLToPath } from 'bun';
+import { fileURLToPath } from 'url';
 
 export default defineNuxtConfig({
   alias: {
