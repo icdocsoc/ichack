@@ -1,10 +1,8 @@
 export default defineNuxtConfig({
+  css: ['@/assets/css/global.css'],
   app: {
     rootAttrs: {
-      id: 'app',
-      style: `overflow-x: hidden; height: 100svh; background: black; color: white;
-        position: relative; width: 100vw; scroll-padding-top: 1.5rem; overflow-x: hidden;
-        overflow-y: visible; scroll-behavior: smooth;`
+      id: 'app'
     },
     head: {
       titleTemplate: '%s'

@@ -1,33 +1,33 @@
 <template>
   <section
     id="schedule"
-    class="relative mx-auto flex max-w-[80%] flex-col justify-center px-5 sm:flex-row">
+    class="relative mx-auto flex max-w-[80%] flex-col justify-center px-5 md:flex-row">
     <div class="absolute top-0">
       <div id="schedule-1"></div>
       <div id="schedule-2"></div>
     </div>
     <div
-      class="font-ichack sticky top-[60px] z-10 ml-6 w-full self-start bg-black/50 backdrop-blur-sm sm:top-[80px] sm:ml-0 sm:w-auto">
+      class="font-ichack sticky top-[60px] z-10 ml-6 w-full self-start bg-black/50 backdrop-blur-sm md:top-[80px] md:ml-0 md:w-auto">
       <h1 class="text-4xl uppercase">Schedule</h1>
-      <div class="mt-2 flex gap-4 sm:justify-end">
+      <div class="mt-2 flex gap-4 md:justify-end">
         <a
           href="#schedule-1"
-          :class="`font-ichack z-20 px-1 py-2 text-xl uppercase leading-9 sm:text-2xl ${day == 1 ? 'bg-blue-ic' : ''}`"
+          :class="`font-ichack z-20 px-1 py-2 text-xl uppercase leading-9 md:text-2xl ${day == 1 ? 'bg-blue-ic' : ''}`"
           @click="() => (day = 1)">
           1st
         </a>
         <a
           href="#schedule-2"
-          :class="`font-ichack px-1 py-2 text-xl uppercase leading-9 sm:text-2xl ${day == 2 ? 'bg-red-ic' : ''}`"
+          :class="`font-ichack px-1 py-2 text-xl uppercase leading-9 md:text-2xl ${day == 2 ? 'bg-red-ic' : ''}`"
           @click="() => (day = 2)">
           2nd
         </a>
       </div>
     </div>
     <div
-      class="relative hidden w-8 bg-[url(~/assets/svgs/line-divider.svg)] bg-center bg-repeat-y p-8 sm:block"></div>
+      class="relative hidden w-8 bg-[url(~/assets/svgs/line-divider.svg)] bg-center bg-repeat-y p-8 md:block"></div>
     <div
-      class="absolute left-0 h-full w-6 bg-[url(~/assets/svgs/line-divider.svg)] bg-center bg-repeat-y sm:hidden"></div>
+      class="absolute left-0 h-full w-6 bg-[url(~/assets/svgs/line-divider.svg)] bg-center bg-repeat-y md:hidden"></div>
     <!-- RHS details -->
 
     <div
@@ -35,14 +35,14 @@
       <div
         v-for="(event, index) in schedule"
         :key="event.title"
-        class="mb-16 flex flex-col items-start gap-4 sm:mb-32"
+        class="mb-16 flex flex-col items-start gap-4 md:mb-32"
         ref="refs">
-        <h2 :class="`font-ichack ${nextTxtColor(index)} text-4xl sm:text-6xl`">
+        <h2 :class="`font-ichack ${nextTxtColor(index)} text-4xl md:text-6xl`">
           {{ format(event.startsAt, 'HH:mm') }}
           <!-- prettier-ignore -->
           <span v-if="event.endsAt"> - {{ format(event.endsAt, 'HH:mm') }}</span>
         </h2>
-        <h2 class="text-xl font-extrabold capitalize text-white sm:text-4xl">
+        <h2 class="text-xl font-extrabold capitalize text-white md:text-4xl">
           {{ event.title }}
         </h2>
         <p class="text-2xl font-normal lowercase leading-snug text-white">
@@ -51,20 +51,20 @@
         <div
           v-for="(loc, loc_index) in event?.locations ?? []"
           :key="loc"
-          :class="`flex ${nextColor(index + loc_index)} w-full items-center justify-start sm:w-[80%]`">
+          :class="`flex ${nextColor(index + loc_index)} w-full items-center justify-start md:w-[80%]`">
           <img
             src="@ui25/assets/location-sign.svg"
             alt="location"
             class="m-4" />
           <p
-            class="pr-4 text-lg font-extrabold leading-[15px] text-white sm:text-2xl">
+            class="pr-4 text-lg font-extrabold leading-[15px] text-white md:text-2xl">
             {{ locationToFullName[loc] }}
           </p>
         </div>
         <img
           :src="getImage(event)"
           :alt="event.locations[0]"
-          class="sm:w-[80%]" />
+          class="md:w-[80%]" />
       </div>
     </div>
   </section>

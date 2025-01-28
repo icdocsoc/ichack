@@ -41,6 +41,10 @@ const navBarLinks = [
     to: '#tickets'
   },
   {
+    label: 'Schedule',
+    to: '#schedule-1'
+  },
+  {
     label: 'Sponsors',
     to: '#sponsors'
   },

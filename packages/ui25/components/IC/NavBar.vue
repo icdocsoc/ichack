@@ -1,7 +1,9 @@
 <template>
   <nav
     class="sticky top-0 z-50 flex justify-between bg-black px-5 lg:overflow-hidden">
-    <img src="@ui25/assets/logo-white.svg" class="my-2" />
+    <a href="/">
+      <img src="@ui25/assets/logo-white.svg" class="my-2" />
+    </a>
 
     <ICHamburger
       v-if="links.length"
@@ -9,7 +11,7 @@
       v-model="hamburgerActive" />
     <ul :class="menuStyles" class="flex items-end max-lg:flex-col">
       <li v-for="(item, i) in links">
-        <a :href="item.to">
+        <a :href="item.to" @click="hamburgerActive = false">
           <p :class="linkStyles(i)">
             {{ item.label }}
           </p>
@@ -37,13 +39,13 @@ const afterBoxBg = [
   'after:bg-red-ic',
   'after:bg-yellow-ic',
   'after:bg-blue-ic'
-];
+] as const;
 
 const hoverTextColors = [
   'lg:hover:text-red-ic',
   'lg:hover:text-yellow-ic',
   'lg:hover:text-blue-ic'
-];
+] as const;
 
 const hamburgerActive = ref(false);
 const menuStyles = computed(() => {
@@ -95,13 +97,13 @@ const linkStyles = (i: number): string[] => {
     'after:aspect-square',
     'after:w-6',
     'after:content-normal',
-    afterBoxBg[i % 3]
+    afterBoxBg[i % 3]!
   ];
 
   const desktopStyles = [
     'lg:after:content-none',
     'lg:hover:scale-110',
-    hoverTextColors[i % 3]
+    hoverTextColors[i % 3]!
   ];
 
   return [...mobileStyles, ...desktopStyles];

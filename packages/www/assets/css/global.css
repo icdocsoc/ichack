@@ -1,0 +1,11 @@
+#app {
+  overflow-x: hidden;
+  height: 100lvh;
+  background: black;
+  color: white;
+  position: relative;
+  width: 100vw;
+  scroll-padding-top: 1.5rem;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
