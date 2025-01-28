@@ -8,7 +8,7 @@ import {
   searchUserSchema,
   registerProfilePostSchema
 } from './schema';
-import { eq, ilike, lt, sql } from 'drizzle-orm';
+import { count, eq, ilike, isNotNull, and, lt, sql } from 'drizzle-orm';
 import { apiLogger } from '../logger';
 import { users, userToken } from '../auth/schema';
 import { z } from 'zod';
@@ -26,6 +26,18 @@ import { emailTemplate, icticket } from './assets/register';
 nunjucks.configure({ autoescape: true });
 
 const ONE_HOUR = 60 * 60;
+
+const statsQuery = db
+  .select({
+    all_users: count(users.id),
+    registered_users: db.$count(
+      users,
+      and(eq(users.role, sql.placeholder('role')), isNotNull(users.password))
+    )
+  })
+  .from(users)
+  .where(eq(users.role, sql.placeholder('role')))
+  .prepare('role');
 
 const profile = factory
   .createApp()
@@ -72,7 +84,7 @@ const profile = factory
         meals: profiles.meals
       })
       .from(profiles)
-      .innerJoin(users, eq(users.id, profiles.id));
+      .rightJoin(users, eq(users.id, profiles.id));
 
     return ctx.json(allusers, 200);
   })
@@ -403,6 +415,20 @@ const profile = factory
       return ctx.text('', 200);
     }
   )
+  .get('/register/stats', grantAccessTo('admin'), async ctx => {
+    const hackerStats = await statsQuery.execute({ role: 'hacker' });
+    const volunteerStats = await statsQuery.execute({ role: 'volunteer' });
+    const adminStats = await statsQuery.execute({ role: 'admin' });
+
+    return ctx.json(
+      {
+        hacker: hackerStats[0]!,
+        volunteer: volunteerStats[0]!,
+        admin: adminStats[0]!
+      },
+      200
+    );
+  })
   .get('/:id', grantAccessTo('volunteer'), async ctx => {
     const userId = ctx.req.param('id');
 

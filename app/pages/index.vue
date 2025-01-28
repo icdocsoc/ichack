@@ -4,7 +4,7 @@
       <h1 class="font-ichack text-center text-4xl">Coming Soon...</h1>
       <p class="mt-5 text-center text-2xl">
         Come back nearer to the hackathon for your dashboard, profiles, teams,
-        and more!
+        our Discord server, and more!
       </p>
     </div>
   </div>

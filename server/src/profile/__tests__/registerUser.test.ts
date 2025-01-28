@@ -1,4 +1,11 @@
-import { afterAll, beforeAll, describe, expect, test } from 'bun:test';
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  test
+} from 'bun:test';
 import { profiles, type Profile, type SelectedProfile } from '../schema';
 import { db } from '../../drizzle';
 import { users, userSession, userToken } from '../../auth/schema';
@@ -23,7 +30,7 @@ const expectedSkeleton = {
 const expectedGet: Partial<Record<Role, SelectedProfile>> = {};
 const expectedSearch: Partial<Record<Role, Profile>> = {};
 
-beforeAll(async () => {
+beforeEach(async () => {
   // Insert sample users into the database & sign in as one
   await db.execute(sql`TRUNCATE ${userSession} CASCADE`);
   await db.execute(sql`TRUNCATE ${users} CASCADE`);
@@ -269,5 +276,105 @@ describe('Profiles module > POST /register', () => {
     // Return deleted profile & delete token
     await db.insert(profiles).values(deleted);
     await db.delete(userToken).where(eq(userToken.id, token));
+  });
+});
+
+describe('Profile Modules > GET /register/stats', () => {
+  test('can get registration stats', async () => {
+    const res = await baseRoute.register.stats.$get(undefined, {
+      headers: {
+        Cookie: `auth_session=${sessionIds.god!!}`
+      }
+    });
+    expect(res.status).toBe(200);
+    const json = await res.json();
+
+    expect(json.hacker).toMatchObject({
+      all_users: 1,
+      registered_users: 1
+    });
+
+    expect(json.volunteer).toMatchObject({
+      all_users: 1,
+      registered_users: 1
+    });
+
+    expect(json.admin).toMatchObject({
+      all_users: 1,
+      registered_users: 1
+    });
+  });
+
+  test('registration stats is accurate', async () => {
+    // Create new user
+    const { userId, sessionId } = await createUserWithSession('hacker', {
+      name: 'Jay Silver',
+      email: 'jay@ic.ac.uk',
+      password: null
+    });
+
+    // Expect all_users to increase by 1
+    let res = await baseRoute.register.stats.$get(undefined, {
+      headers: {
+        Cookie: `auth_session=${sessionIds.god!!}`
+      }
+    });
+    expect(res.status).toBe(200);
+    let json = await res.json();
+    expect(json.hacker).toMatchObject({
+      all_users: 2,
+      registered_users: 1
+    });
+
+    // Register user
+    const token = 'funnyLittleToken';
+    await db.insert(userToken).values({
+      id: token,
+      userId: userId,
+      expiresAt: tomorrow,
+      type: 'registration_link'
+    });
+
+    const registrationRes = await baseRoute.register.$post(
+      {
+        query: {
+          token: token
+        },
+        form: {
+          registrationDetails: JSON.stringify({
+            password: 'This12Secure@',
+            tShirtSize: 'M',
+            dietary_restrictions: ['halal', 'green'],
+            photos_opt_out: false,
+            pronouns: ''
+          })
+        }
+      },
+      undefined
+    );
+    expect(registrationRes.status).toBe(200);
+
+    // Expect registered_users to increase by 1
+    res = await baseRoute.register.stats.$get(undefined, {
+      headers: {
+        Cookie: `auth_session=${sessionIds.god!!}`
+      }
+    });
+    expect(res.status).toBe(200);
+    json = await res.json();
+    expect(json.hacker).toMatchObject({
+      all_users: 2,
+      registered_users: 2
+    });
+  });
+
+  test('only admins can get registration stats', async () => {
+    const res = await baseRoute.register.stats.$get(undefined, {
+      headers: {
+        Cookie: `auth_session=${sessionIds.hacker!!}`
+      }
+    });
+    // @ts-expect-error - auth error :3
+    expect(res.status).toBe(403);
   });
 });

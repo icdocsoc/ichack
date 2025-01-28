@@ -27,7 +27,7 @@ const tableColumns = [
 ];
 
 // List of users related properties
-const { getProfiles, getSelf } = useProfile();
+const { getProfiles, getSelf, getRegistrationStats } = useProfile();
 const { deleteUser, createUser } = useAdmin();
 const { profile } = useProfileStore();
 const { data, refresh, status, error } = await useAsyncData(
@@ -99,11 +99,8 @@ definePageMeta({
 
 <template>
   <UContainer class="relative max-h-full overflow-y-scroll">
-    <h2 class="text-center text-5xl font-semibold">Manage Users</h2>
-    <UButton
-      label="Add User"
-      @click="isAddUserPopupOpen = true"
-      v-if="profile!.role == 'god'" />
+    <h2 class="pt-12 text-center text-5xl font-semibold">Manage Users</h2>
+
     <UAlert v-if="error" :title="error.message" />
     <UTable
       v-else

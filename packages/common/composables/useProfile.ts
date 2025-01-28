@@ -55,9 +55,22 @@ export default () => {
       return;
     });
 
+  const getRegistrationStats = async () =>
+    Result.try(async () => {
+      const res = await client.profile.register.stats.$get();
+
+      if (!res.ok) {
+        const errorMessage = await res.text();
+        throw new Error(errorMessage);
+      }
+
+      return res.json();
+    });
+
   return {
     getProfiles,
     getSelf,
-    register
+    register,
+    getRegistrationStats
   };
 };
