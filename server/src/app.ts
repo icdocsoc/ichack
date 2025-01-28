@@ -6,6 +6,7 @@ import category from './category';
 import event from './event';
 import profile from './profile';
 import team from './team';
+import qr from './qr';
 import factory from './factory';
 import { HTTPException } from 'hono/http-exception';
 import sudo from './sudo';
@@ -19,7 +20,8 @@ const api = factory
   .route('/category', category)
   .route('/event', event)
   .route('/profile', profile)
-  .route('/team', team);
+  .route('/team', team)
+  .route('/qr', qr);
 
 const app = factory
   .createApp()

@@ -39,6 +39,23 @@ const statsQuery = db
   .where(eq(users.role, sql.placeholder('role')))
   .prepare('role');
 
+export const getProfileFromId = db
+  .select({
+    id: users.id,
+    name: users.name,
+    email: users.email,
+    role: users.role,
+    photos_opt_out: profiles.photos_opt_out,
+    dietary_restrictions: profiles.dietary_restrictions,
+    pronouns: profiles.pronouns,
+    meals: profiles.meals,
+    cvUploaded: profiles.cvUploaded
+  })
+  .from(profiles)
+  .innerJoin(users, eq(users.id, profiles.id))
+  .where(eq(users.id, sql.placeholder('id')))
+  .prepare('get_profile_from_id');
+
 const profile = factory
   .createApp()
   .get('/', grantAccessTo('authenticated'), async ctx => {
@@ -46,21 +63,7 @@ const profile = factory
 
     // User is not null as this route required authentication
     const ctxUser = ctx.get('user')!;
-    const user = await db
-      .select({
-        id: users.id,
-        name: users.name,
-        email: users.email,
-        role: users.role,
-        photos_opt_out: profiles.photos_opt_out,
-        dietary_restrictions: profiles.dietary_restrictions,
-        pronouns: profiles.pronouns,
-        meals: profiles.meals,
-        cvUploaded: profiles.cvUploaded
-      })
-      .from(profiles)
-      .innerJoin(users, eq(users.id, profiles.id))
-      .where(eq(users.id, ctxUser.id));
+    const user = await getProfileFromId.execute({ id: ctxUser.id });
 
     if (user.length < 1) {
       return ctx.text(

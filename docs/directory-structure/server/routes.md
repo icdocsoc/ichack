@@ -62,3 +62,9 @@ POST /acceptInvite --> {teamId: string} removes all invites of the hacker and ad
 POST /removeInvite --> {teamId: string} removes that entry from team_invites table. "hacker"
 POST /removeUser/:userId --> Leader can remove a user from a team. "hacker"
 POST /removeUser --> authenticated hacker can remove themselves from the team. "hacker"
+
+## QR (/qr)
+
+POST / --> creates a entry in the db linking a user id to a qr code uuid "hacker"
+GET /:uuid --> gets the profile of a user from a given uuid "volunteer, admin"
+DELETE / --> deletes an entry from the db by uuid "god"
