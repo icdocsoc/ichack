@@ -15,11 +15,12 @@ const event = factory
       const publicEvents = await db
         .select()
         .from(events)
-        .where(eq(events.public, true));
+        .where(eq(events.public, true))
+        .orderBy(events.startsAt);
       return ctx.json(publicEvents, 200);
     }
 
-    const allEvents = await db.select().from(events);
+    const allEvents = await db.select().from(events).orderBy(events.startsAt);
     return ctx.json(allEvents, 200);
   })
   .get('/duckduckgoose', grantAccessTo('all'), async ctx => {
@@ -89,7 +90,7 @@ const event = factory
 
       if (deleted.length == 0) return ctx.text('Event not found.', 404);
 
-      return ctx.json({}, 204);
+      return ctx.json({}, 200);
     }
   );
 

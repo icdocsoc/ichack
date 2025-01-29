@@ -39,9 +39,10 @@ describe('Events Module > DELETE /:id', () => {
   test('an admin can delete an event', async () => {
     const eventInDbPre = await db
       .insert(events)
+      // @ts-ignore this satisfies the schema
       .values(phineasEvent)
       .returning();
-    const eventId = eventInDbPre[0].id;
+    const eventId = eventInDbPre[0]!.id;
 
     const delRes = await baseRoute[':id'].$delete(
       { param: { id: eventId.toString() } },
@@ -57,7 +58,7 @@ describe('Events Module > DELETE /:id', () => {
       .from(events)
       .where(eq(events.id, eventId));
 
-    expect(delRes.status).toBe(204);
+    expect(delRes.status).toBe(200);
     expect(eventInDbPost.length).toBe(0);
   });
 

@@ -53,7 +53,7 @@ describe('Events Module > GET /', () => {
 
     // This should only be the Phineas event.
     expect(eventFromRes.length === 1);
-    expect(eventFromRes[0]).toEqual({
+    expect(eventFromRes[0]!).toEqual({
       ...phineasEvent,
       startsAt: phineasEvent.startsAt.toISOString(),
       id: expect.any(Number),
