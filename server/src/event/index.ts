@@ -2,7 +2,7 @@ import factory from '../factory';
 import { grantAccessTo } from '../security';
 import { db } from '../drizzle';
 import { events, createEventSchema, updateEventBody } from './schema';
-import { eq } from 'drizzle-orm';
+import { asc, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { simpleValidator } from '../validators';
 
@@ -16,11 +16,14 @@ const event = factory
         .select()
         .from(events)
         .where(eq(events.public, true))
-        .orderBy(events.startsAt);
+        .orderBy(asc(events.startsAt));
       return ctx.json(publicEvents, 200);
     }
 
-    const allEvents = await db.select().from(events).orderBy(events.startsAt);
+    const allEvents = await db
+      .select()
+      .from(events)
+      .orderBy(asc(events.startsAt));
     return ctx.json(allEvents, 200);
   })
   .get('/duckduckgoose', grantAccessTo('all'), async ctx => {
