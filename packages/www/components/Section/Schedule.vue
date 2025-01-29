@@ -45,7 +45,7 @@
         <h2 class="text-xl font-extrabold capitalize text-white md:text-4xl">
           {{ event.title }}
         </h2>
-        <p class="text-2xl font-normal lowercase leading-snug text-white">
+        <p class="text-2xl font-normal leading-snug text-white">
           {{ event.description }}
         </p>
         <div
