@@ -13,13 +13,15 @@ export default function () {
       }
 
       const eventsJson = await res.json();
-      return eventsJson.map(event => {
-        return {
-          ...event,
-          startsAt: new Date(event.startsAt),
-          endsAt: event.endsAt ? new Date(event.endsAt) : undefined
-        };
-      });
+      return eventsJson
+        .map(event => {
+          return {
+            ...event,
+            startsAt: new Date(event.startsAt),
+            endsAt: event.endsAt ? new Date(event.endsAt) : undefined
+          };
+        })
+        .sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime());
     });
   };
 
