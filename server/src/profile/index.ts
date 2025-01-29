@@ -26,6 +26,7 @@ import { emailTemplate, icticket } from './assets/register';
 nunjucks.configure({ autoescape: true });
 
 const ONE_HOUR = 60 * 60;
+const ONE_WEEK = 7 * 24 * 60 * 60;
 
 const statsQuery = db
   .select({
@@ -173,6 +174,32 @@ const profile = factory
   })
   .get('/subscribe', grantAccessTo('authenticated'), async ctx => {
     // WS for profile details
+  })
+  .get('/cv/all', grantAccessTo('god'), async ctx => {
+    const allUsers = await db
+      .select({
+        id: users.id,
+        name: users.name,
+        cvUploaded: profiles.cvUploaded
+      })
+      .from(users)
+      .rightJoin(profiles, eq(users.id, profiles.id));
+
+    let res = 'First Name, Last Name, Link to CV\n';
+    for (const user of allUsers) {
+      if (!user.cvUploaded) continue;
+      const firstName = user.name!.split(' ')[0];
+      const restOfName = user.name!.split(' ').slice(1).join(' ');
+      const cvName = await getCvFileName(user.id!);
+      const cvLink = s3client.file(cvName).presign({ expiresIn: ONE_WEEK });
+
+      res += `${firstName},${restOfName},${cvLink}\n`;
+    }
+
+    return ctx.body(res, 200, {
+      'Content-Type': 'text/csv',
+      'Content-Disposition': 'attachment; filename="cvs.csv"'
+    });
   })
   .put(
     '/',
