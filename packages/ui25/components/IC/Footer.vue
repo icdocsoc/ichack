@@ -31,6 +31,12 @@
           <p>
             <!-- prettier-ignore -->
             <a href="/privacy-policy" class="underline" target="_blank">Privacy Policy</a>
+            &bull;
+            <!-- prettier-ignore -->
+            <a href="/code-of-conduct" class="underline" target="_blank">Code of Conduct</a>
+            &bull;
+            <!-- prettier-ignore -->
+            <a href="/map.jpg" class="underline" target="_blank">Campus Map</a>
           </p>
           <p>© 2025 Imperial College DoCSoc</p>
           <img class="mt-1" src="@ui25/assets/icon_cube.svg" />
