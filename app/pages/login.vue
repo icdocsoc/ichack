@@ -66,11 +66,11 @@
           :error="errors.email" />
       </ICInputGroup>
       <ICInputGroup label="Password">
-        <ICInput
-          type="password"
+        <ICInputPassword
           name="password"
           required
           placeholder="Password"
+          enableShowPassword
           v-model="credentials.password"
           :error="errors.password" />
       </ICInputGroup>

@@ -54,25 +54,15 @@
           </RegisterGroup>
 
           <RegisterGroup :icon="lockSvg">
-            <div class="relative w-full">
-              <ICInput
-                class="w-full"
-                :type="showPassword ? 'text' : 'password'"
-                name="password"
-                :error="errors.password"
-                required
-                placeholder="Password *"
-                v-model="formState.password" />
+            <ICInputPassword
+              name="password"
+              placeholder="Password *"
+              :error="errors.password"
+              v-model="formState.password"
+              required
+              enableShowPassword />
 
-              <img
-                :src="showPassword ? eyeOpen : eyeClose"
-                alt="Show Password"
-                @click="showPassword = !showPassword"
-                class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer" />
-            </div>
-
-            <ICInput
-              type="password"
+            <ICInputPassword
               name="cfmpassword"
               required
               :error="errors.cfmPassword"
@@ -178,8 +168,6 @@ import mailSvg from '@ui25/assets/mail.svg';
 import mugshotSvg from '@ui25/assets/mugshot.svg';
 import gradhatSvg from '@ui25/assets/gradhat.svg';
 import lockSvg from '@ui25/assets/lock.svg';
-import eyeOpen from '@ui25/assets/eye-open.svg';
-import eyeClose from '@ui25/assets/eye-close.svg';
 import cvSvg from '@ui25/assets/cv.svg';
 import info from '@ui25/assets/info.svg';
 import course from '@ui25/assets/course.svg';
