@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, test } from 'bun:test';
 import { db } from '../../drizzle';
-import { eq, sql } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 import { users, userToken } from '../schema';
 import { createUser } from '../../testHelpers';
 import { testClient } from 'hono/testing';
@@ -50,7 +50,7 @@ describe('Auth Module > POST /forgotPassword', () => {
     // invoke the route to send a reset password email
     const res = await client.forgotPassword.$post({
       json: {
-        email: 'jay@notregistered.com'
+        email: 'jay@notvalid.com'
       }
     });
 
@@ -96,5 +96,30 @@ describe('Auth Module > POST /forgotPassword', () => {
       .where(eq(userToken.type, 'forgot_password'));
 
     expect(tokensPost).toEqual(tokensPre);
+  });
+
+  test('Email is case insensitive', async () => {
+    const userId = await createUser('hacker', {
+      name: 'Silver the Cat',
+      email: 'SILVER@cat.meow',
+      password: 'ValidPass#123'
+    });
+
+    const res = await client.forgotPassword.$post({
+      json: {
+        email: 'silvEr@cat.meow'
+      }
+    });
+
+    expect(res.status).toBe(200);
+
+    const tokens = await db
+      .select()
+      .from(userToken)
+      .where(
+        and(eq(userToken.type, 'forgot_password'), eq(userToken.userId, userId))
+      );
+
+    expect(tokens.length).toBe(1);
   });
 });

@@ -7,7 +7,7 @@ import {
   userSession,
   userToken
 } from './schema';
-import { db } from '../drizzle';
+import { db, lower } from '../drizzle';
 import { generateIdFromEntropySize } from 'lucia';
 import { and, eq, isNotNull, lt } from 'drizzle-orm';
 import { getDummyPassword, hashOptions, lucia } from './lucia';
@@ -87,7 +87,12 @@ const auth = factory
       const userQuery = await db
         .select()
         .from(users)
-        .where(and(eq(users.email, email), isNotNull(users.password)));
+        .where(
+          and(
+            eq(lower(users.email), email.toLowerCase()),
+            isNotNull(users.password)
+          )
+        );
       // email is unique, so only 1 user can be found.
       if (!userQuery || !userQuery.length) {
         // the user was not found.
@@ -188,7 +193,7 @@ const auth = factory
       const userQuery = await db
         .select()
         .from(users)
-        .where(eq(users.email, email));
+        .where(eq(lower(users.email), email.toLowerCase()));
       if (!userQuery || !userQuery.length) {
         // Don't let them find out which emails are registered.
         apiLogger.warn(c, 'POST /forgotPassword', `Email not found: ${email}`);

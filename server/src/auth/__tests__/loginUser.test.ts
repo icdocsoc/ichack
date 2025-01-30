@@ -165,4 +165,33 @@ describe('Auth Module > POST /login', () => {
     expect(res2.status).toBe(409);
     expect(res2.text()).resolves.toBe('You are already logged in');
   });
+
+  test('Email is case insensitive', async () => {
+    const hashed = await hash('Plea#eDontH3ckMe', hashOptions);
+
+    const userId = await createUser('hacker', {
+      name: 'Jay',
+      email: 'JaY@ic.ac.Uk',
+      password: hashed
+    });
+
+    const res = await client.auth.login.$post({
+      json: {
+        email: 'jAy@IC.AC.uK',
+        password: 'Plea#eDontH3ckMe'
+      }
+    });
+
+    expect(res.status).toBe(200);
+
+    const cookies = res.headers.getSetCookie();
+    expect(cookies.length).toBe(1);
+
+    const cookieToken = cookies[0]!.split(';')[0]!.split('=')[1]!;
+    const session = await db
+      .select()
+      .from(userSession)
+      .where(eq(userSession.id, cookieToken));
+    expect(session).toHaveLength(1);
+  });
 });
