@@ -107,11 +107,12 @@ jobs:
         if: endsWith(github.ref, '-staging')
         run: |
           IMAGE_NAME=ghcr.io/icdocsoc/ichack-website
-          TAG=nightly-${GITHUB_SHA}
+          SHA_TAG=nightly-${GITHUB_SHA}
+          NIGHTLY_TAG=nightly
 
           docker build -t $IMAGE_NAME:$TAG --target website .
-          docker push $IMAGE_NAME:$TAG
-          docker tag $IMAGE_NAME:$TAG $IMAGE_NAME:nightly
+          docker push $IMAGE_NAME:$SHA_TAG
+          docker tag $IMAGE_NAME:$SHA_TAG $IMAGE_NAME:$NIGHTLY_TAG
           docker push $IMAGE_NAME:$NIGHTLY_TAG
 
       - name: Build and push to production
