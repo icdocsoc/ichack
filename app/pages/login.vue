@@ -75,15 +75,25 @@
           :error="errors.password" />
       </ICInputGroup>
       <ICInputSubmit value="Login" />
+
+      <div
+        class="flex w-fit cursor-pointer items-center gap-x-2"
+        @click="handlePasswordReset">
+        <img src="@ui25/assets/spiralface.svg" />
+        <p class="text-[#ADADAD]">Forgot your password?</p>
+      </div>
     </form>
 
     <ICError v-model="errors.global" />
+
+    <ICSuccess v-model="success" />
   </div>
 </template>
 
 <script lang="ts" setup>
 import type { UserCredentials } from '#shared/types';
 import { postLoginBody } from '#shared/schemas';
+import { z } from 'zod';
 
 const route = useRoute();
 const { redirect } = route.query;
@@ -118,7 +128,7 @@ watch(credentials, () => {
 
 const loading = ref(false);
 
-const { loginUser } = useAuth();
+const { loginUser, forgotPassword } = useAuth();
 const handleLogin = async () => {
   const validation = await postLoginBody.safeParseAsync(credentials);
   if (!validation.success) {
@@ -155,8 +165,25 @@ const handleLogin = async () => {
   );
 };
 
+const success = ref('');
+
 const handlePasswordReset = async () => {
-  alert('you should implement me at some point.');
+  const parse = z.string().email().safeParse(credentials.email);
+
+  if (!parse.success) {
+    errors.email = 'Please type your email address.';
+    errors.global = errors.email;
+    return;
+  }
+
+  const res = await forgotPassword(credentials.email);
+  if (!res.isOk()) {
+    errors.global = res.error!.message;
+    return;
+  }
+
+  success.value =
+    'If this email exists and has completed registration, a password reset link will be sent.';
 };
 
 useHead({

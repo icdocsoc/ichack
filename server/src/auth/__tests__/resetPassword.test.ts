@@ -77,7 +77,7 @@ describe('Auth Module > POST /resetPassword', () => {
     expect(tokens).toHaveLength(0);
   });
 
-  test('User with a session cannot reset password', async () => {
+  test.skip('User with a session cannot reset password', async () => {
     // Create a user with a session
     const { userId: hackerId, sessionId } = await createUserWithSession(
       'hacker',

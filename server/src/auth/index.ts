@@ -17,6 +17,12 @@ import { grantAccessTo } from '../security';
 import { z } from 'zod';
 import { simpleValidator } from '../validators';
 import { HTTPException } from 'hono/http-exception';
+import { sendEmail } from '../email';
+import { forgotPassTemplate, ichackLogo } from './forgotPass';
+import nunjucks from 'nunjucks';
+import { apiLogger } from '../logger';
+
+nunjucks.configure({ autoescape: true });
 
 const auth = factory
   .createApp()
@@ -167,16 +173,107 @@ const auth = factory
       return c.json({}, 200);
     }
   )
+  /**
+   * This is the first step of the "forgot password" process.
+   */
+  .post(
+    '/forgotPassword',
+    grantAccessTo('all'),
+    simpleValidator('json', z.object({ email: z.string().email() })),
+    async c => {
+      const { email } = c.req.valid('json');
+
+      const userQuery = await db
+        .select()
+        .from(users)
+        .where(eq(users.email, email));
+      if (!userQuery || !userQuery.length) {
+        // Don't let them find out which emails are registered.
+        apiLogger.warn(c, 'POST /forgotPassword', `Email not found: ${email}`);
+        return c.json({}, 200);
+      }
+
+      if (userQuery[0]!.password == null) {
+        // The user has not completed the registration process.
+        // Log this so we know if they complain.
+        apiLogger.warn(
+          c,
+          'POST /forgotPassword',
+          `User with ID ${userQuery[0]!.id} has not completed registration`
+        );
+        return c.json({}, 200);
+      }
+
+      const user = userQuery[0]!;
+      const token = generateIdFromEntropySize(16);
+      const expiry = new Date();
+      expiry.setDate(expiry.getDate() + 1); // 1 day from now
+
+      await db.insert(userToken).values({
+        id: token,
+        userId: user.id,
+        expiresAt: expiry,
+        type: 'forgot_password'
+      });
+
+      const emailHtml = nunjucks.renderString(forgotPassTemplate, {
+        name: user.name,
+        resetURL: `https://my.ichack.org/resetPassword?token=${token}`,
+        email: user.email,
+        userID: user.id
+      });
+
+      const emailText = `Hi ${user.name},\nYou may reset your password by visiting the following link: https://my.ichack.org/resetPassword?token=${token}\nThis link will expire in one day.\nIf you didn't request this email, you may safely ignore it.\n\nBest,\nIC Hack Organisers\n\nThis email was sent to ${user.email} with ID ${user.id}.`;
+
+      try {
+        await sendEmail(
+          email,
+          'My IC Hack: Reset your password',
+          emailText,
+          emailHtml,
+          [
+            {
+              filename: 'logo.png',
+              cid: 'logo',
+              content: ichackLogo,
+              encoding: 'base64'
+            }
+          ]
+        );
+      } catch (e: any) {
+        apiLogger.error(
+          c,
+          'POST /forgotPassword',
+          'Failed to send email',
+          e.message
+        );
+
+        return c.text(
+          'Failed to send email. Please contact us at ichack@ic.ac.uk using the same email you registered with.',
+          500
+        );
+      }
+
+      return c.json({}, 200);
+    }
+  )
+  /**
+   * This is the final step of the "forgot password" process.
+   */
   .post(
     '/resetPassword',
     grantAccessTo('all'),
     simpleValidator('json', postResetPasswordBody),
     async c => {
-      const session = c.get('session')!;
-      if (session) {
-        // Dude, you're already logged in.
-        return c.text('You cannot reset your password', 403);
-      }
+      // Commented out as we don't have a log out right now, lol
+      // const session = c.get('session')!;
+      // if (session) {
+      //   // Dude, you're already logged in.
+      //   return c.text(
+      //     'You cannot reset your password as you are already logged in.',
+      //     403
+      //   );
+      // }
 
       const { token, password } = c.req.valid('json');
 

@@ -43,9 +43,35 @@ export default function () {
       return userBody;
     });
 
+  const forgotPassword = (email: string) =>
+    Result.try(async () => {
+      const res = await client.auth.forgotPassword.$post({
+        json: { email }
+      });
+
+      if (!res.ok) {
+        const errorMessage = await res.text();
+        throw new Error(errorMessage);
+      }
+    });
+
+  const resetPassword = (token: string, password: string) =>
+    Result.try(async () => {
+      const res = await client.auth.resetPassword.$post({
+        json: { token, password }
+      });
+
+      if (!res.ok) {
+        const errorMessage = await res.text();
+        throw new Error(errorMessage);
+      }
+    });
+
   return {
     loginUser,
     logout,
-    getRegistrationDetails
+    getRegistrationDetails,
+    forgotPassword,
+    resetPassword
   };
 }
