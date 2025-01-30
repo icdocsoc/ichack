@@ -28,6 +28,7 @@ nunjucks.configure({ autoescape: true });
 
 const ONE_HOUR = 60 * 60;
 const ONE_WEEK = 7 * 24 * 60 * 60;
+const CON4_API_KEY = process.env.CON4_API_KEY!;
 
 const statsQuery = db
   .select({
@@ -361,6 +362,40 @@ const profile = factory
 
       // TODO: Add /profile
       return ctx.redirect(`${baseUrl}`);
+    }
+  )
+  .get(
+    '/discord/:id',
+    grantAccessTo(['all']),
+    simpleValidator(
+      'param',
+      z.object({
+        id: z.string()
+      })
+    ),
+    async ctx => {
+      const auth = ctx.req.header('Authorization');
+      if (auth == null || auth !== `${CON4_API_KEY}`) {
+        return ctx.text('You do not have access to this route.', 403);
+      }
+
+      const discordId = ctx.req.param('id');
+
+      const dbRes = await db
+        .select({
+          id: profiles.id,
+          name: users.name,
+          hackspace: sql<string>`'QTR'`
+        })
+        .from(profiles)
+        .innerJoin(users, eq(users.id, profiles.id))
+        .where(eq(profiles.discord_id, discordId));
+
+      if (dbRes.length < 1) {
+        return ctx.text('User not found.', 404);
+      }
+
+      return ctx.json(dbRes[0]!, 200);
     }
   )
   .delete(
