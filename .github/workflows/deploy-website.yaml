@@ -111,6 +111,8 @@ jobs:
 
           docker build -t $IMAGE_NAME:$TAG --target website .
           docker push $IMAGE_NAME:$TAG
+          docker tag $IMAGE_NAME:$TAG $IMAGE_NAME:nightly
+          docker push $IMAGE_NAME:$NIGHTLY_TAG
 
       - name: Build and push to production
         if: endsWith(github.ref, '-website')
