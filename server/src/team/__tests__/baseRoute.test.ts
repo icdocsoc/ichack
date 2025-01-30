@@ -6,6 +6,7 @@ import { tomorrow } from '../../testHelpers';
 import app from '../../app';
 import { testClient } from 'hono/testing';
 import { eq, sql } from 'drizzle-orm';
+import { qrs } from '../../qr/schema';
 
 const baseRoute = testClient(app).team;
 const leader = {
@@ -21,6 +22,7 @@ let teamId: number;
 beforeAll(async () => {
   await db.execute(sql`TRUNCATE ${users} CASCADE`);
   await db.execute(sql`TRUNCATE ${teams} CASCADE`);
+  await db.execute(sql`TRUNCATE ${qrs} CASCADE`);
 
   // Add the two users we need.
   await db.insert(users).values([
@@ -36,6 +38,11 @@ beforeAll(async () => {
       email: 'notjay@ic.ac.uk',
       role: 'hacker'
     }
+  ]);
+
+  await db.insert(qrs).values([
+    { userId: leader.userId, uuid: '1234' },
+    { userId: member.userId, uuid: '5678' }
   ]);
 
   await db.insert(userSession).values([
@@ -292,6 +299,27 @@ describe('Team module > GET /', () => {
       invited,
       ...teamInDb[0]!
     });
+  });
+
+  test('QR code must be linked', async () => {
+    const qr = await db
+      .delete(qrs)
+      .where(eq(qrs.userId, leader.userId))
+      .returning();
+
+    const res = await baseRoute.$get(undefined, {
+      headers: {
+        Cookie: `auth_session=${leader.sessionId}`
+      }
+    });
+
+    // @ts-expect-error As it's the middleware we're hitting.
+    expect(res.status).toBe(403);
+    expect(res.text()).resolves.toBe(
+      'You must be registered to access this route. Have you linked your QR Code?'
+    );
+
+    await db.insert(qrs).values(qr);
   });
 });
 

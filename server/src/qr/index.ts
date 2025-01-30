@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { db } from '../drizzle';
 import factory from '../factory';
 import { getProfileFromId } from '../profile';
+import { profiles } from '../profile/schema';
 import { grantAccessTo } from '../security';
 import { simpleValidator } from '../validators';
 import { qrSchema, qrs } from './schema';
@@ -11,11 +12,21 @@ const qr = factory
   .createApp()
   .post(
     '/',
-    grantAccessTo('hacker'),
+    grantAccessTo(['hacker'], { allowUnlinkedHackers: true }),
     simpleValidator('json', qrSchema),
     async ctx => {
       const { uuid } = ctx.req.valid('json');
       const userId = ctx.get('user')!.id; // we should be authneticated to use this
+
+      const query = await db
+        .select()
+        .from(profiles)
+        .where(eq(profiles.id, userId));
+      if (query.length === 0)
+        return ctx.text(
+          'You have not registered yet. Please register first.',
+          409
+        );
 
       try {
         // all clear to insert qr code entry
@@ -33,7 +44,7 @@ const qr = factory
   .get(
     // volunteer+ can scan any qr code to get the profile + modify stuff
     '/:uuid',
-    grantAccessTo('volunteer', 'admin'),
+    grantAccessTo(['volunteer', 'admin']),
     simpleValidator('param', qrSchema),
     async ctx => {
       const { uuid } = ctx.req.valid('param');
@@ -49,7 +60,7 @@ const qr = factory
   )
   .delete(
     '/:id',
-    grantAccessTo('god'),
+    grantAccessTo(['god']),
     simpleValidator('param', z.object({ id: z.string() })),
     async ctx => {
       const { id } = ctx.req.valid('param');

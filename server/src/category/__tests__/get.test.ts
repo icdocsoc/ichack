@@ -8,6 +8,7 @@ import { users } from '../../auth/schema';
 import { sql } from 'drizzle-orm';
 import { adminMeta } from '../../admin/schema';
 import { roles } from '../../types';
+import { qrs } from '../../qr/schema';
 
 const sessionIds: Partial<Record<string, string>> = {};
 const client = testClient(app);
@@ -46,19 +47,25 @@ beforeAll(async () => {
   await db.execute(sql`TRUNCATE ${companies} CASCADE`);
   await db.execute(sql`TRUNCATE ${categories} CASCADE`);
   await db.execute(sql`TRUNCATE ${adminMeta} CASCADE`);
+  await db.execute(sql`TRUNCATE ${qrs} CASCADE`);
 
   await db
     .insert(companies)
     .values(testCategories.map(c => ({ name: c.owner })));
   await db.insert(categories).values(testCategories);
 
+  let i = 0;
   for (const role of roles) {
-    const { sessionId } = await createUserWithSession(role, {
+    const { userId, sessionId } = await createUserWithSession(role, {
       name: 'Nishant',
       email: `${role}@ic.ac.uk`,
       password: 'dontheckme'
     });
     sessionIds[role] = sessionId;
+    await db
+      .insert(qrs)
+      .values({ userId, uuid: `00000000-0000-0000-0000-00000000004${i}` });
+    i += 1;
   }
 
   // The default state is that categories are not shown

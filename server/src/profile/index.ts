@@ -63,23 +63,27 @@ export const getProfileFromId = db
 
 const profile = factory
   .createApp()
-  .get('/', grantAccessTo('authenticated'), async ctx => {
-    // Return logged in user
+  .get(
+    '/',
+    grantAccessTo(['authenticated'], { allowUnlinkedHackers: true }),
+    async ctx => {
+      // Return logged in user
 
-    // User is not null as this route required authentication
-    const ctxUser = ctx.get('user')!;
-    const user = await getProfileFromId.execute({ id: ctxUser.id });
+      // User is not null as this route required authentication
+      const ctxUser = ctx.get('user')!;
+      const user = await getProfileFromId.execute({ id: ctxUser.id });
 
-    if (user.length < 1) {
-      return ctx.text(
-        'Your data does not exist. Have you completed registration yet?',
-        404
-      );
+      if (user.length < 1) {
+        return ctx.text(
+          'Your data does not exist. Have you completed registration yet?',
+          404
+        );
+      }
+
+      return ctx.json(user[0]!, 200);
     }
-
-    return ctx.json(user[0]!, 200);
-  })
-  .get('/all', grantAccessTo('admin'), async ctx => {
+  )
+  .get('/all', grantAccessTo(['admin']), async ctx => {
     const allUsers = await db
       .select()
       .from(users)
@@ -91,7 +95,7 @@ const profile = factory
   })
   .get(
     '/search',
-    grantAccessTo('volunteer'),
+    grantAccessTo(['volunteer']),
     simpleValidator('query', searchUserSchema),
     async ctx => {
       const { name, email } = ctx.req.valid('query');
@@ -128,7 +132,7 @@ const profile = factory
   .post(
     '/cv',
     simpleValidator('form', cvValidator),
-    grantAccessTo('authenticated'),
+    grantAccessTo(['authenticated'], { allowUnlinkedHackers: true }),
     async ctx => {
       const user = ctx.get('user')!;
       const { cv } = ctx.req.valid('form');
@@ -142,38 +146,53 @@ const profile = factory
       return ctx.text('', 201);
     }
   )
-  .delete('/cv', grantAccessTo('authenticated'), async ctx => {
-    // Delete CV
-    const user = ctx.get('user')!;
-    const filename = await getCvFileName(user.id);
-    const file = s3client.file(filename);
+  .delete(
+    '/cv',
+    grantAccessTo(['authenticated'], { allowUnlinkedHackers: true }),
+    async ctx => {
+      // Delete CV
+      const user = ctx.get('user')!;
+      const filename = await getCvFileName(user.id);
+      const file = s3client.file(filename);
 
-    try {
-      await file.delete();
-      return ctx.text('', 200);
-    } catch (e: any) {
-      apiLogger.error(
-        ctx,
-        'DELETE /profile/cv',
-        'Failed to delete CV',
-        e.message
-      );
-      return ctx.text('Failed to delete CV. Are you sure the CV exists?', 500);
+      try {
+        await file.delete();
+        return ctx.text('', 200);
+      } catch (e: any) {
+        apiLogger.error(
+          ctx,
+          'DELETE /profile/cv',
+          'Failed to delete CV',
+          e.message
+        );
+        return ctx.text(
+          'Failed to delete CV. Are you sure the CV exists?',
+          500
+        );
+      }
     }
-  })
-  .get('/cv', grantAccessTo('hacker'), async ctx => {
-    // Hacker: Downloads CV that they uploaded
-    const user = ctx.get('user')!;
-    const file = s3client.file(user.id);
+  )
+  .get(
+    '/cv',
+    grantAccessTo(['hacker'], { allowUnlinkedHackers: true }),
+    async ctx => {
+      // Hacker: Downloads CV that they uploaded
+      const user = ctx.get('user')!;
+      const file = s3client.file(user.id);
 
-    const url = file.presign({ expiresIn: ONE_HOUR });
+      const url = file.presign({ expiresIn: ONE_HOUR });
 
-    return ctx.redirect(url);
-  })
-  .get('/subscribe', grantAccessTo('authenticated'), async ctx => {
-    // WS for profile details
-  })
-  .get('/cv/all', grantAccessTo('god'), async ctx => {
+      return ctx.redirect(url);
+    }
+  )
+  .get(
+    '/subscribe',
+    grantAccessTo(['authenticated'], { allowUnlinkedHackers: true }),
+    async ctx => {
+      // WS for profile details
+    }
+  )
+  .get('/cv/all', grantAccessTo(['god']), async ctx => {
     const allUsers = await db
       .select({
         id: users.id,
@@ -201,7 +220,7 @@ const profile = factory
   })
   .put(
     '/',
-    grantAccessTo('authenticated'),
+    grantAccessTo(['authenticated'], { allowUnlinkedHackers: true }),
     simpleValidator('json', updateProfileSchema),
     async ctx => {
       // Update profile info w a partial user object
@@ -238,7 +257,7 @@ const profile = factory
   )
   .put(
     '/meal',
-    grantAccessTo('volunteer'),
+    grantAccessTo(['volunteer']),
     simpleValidator('json', updateMealSchema),
     async ctx => {
       // { userId: string, num: number }
@@ -271,7 +290,7 @@ const profile = factory
   )
   .get(
     '/discord',
-    grantAccessTo('authenticated'),
+    grantAccessTo(['authenticated']),
     simpleValidator(
       'query',
       z.object({ code: z.string().optional(), state: z.string().optional() })
@@ -344,7 +363,7 @@ const profile = factory
       return ctx.redirect(`${baseUrl}`);
     }
   )
-  .delete('/discord', grantAccessTo('authenticated'), async ctx => {
+  .delete('/discord', grantAccessTo(['authenticated']), async ctx => {
     const user = ctx.get('user')!;
 
     const dbRes = await db
@@ -365,7 +384,7 @@ const profile = factory
   })
   .post(
     '/register',
-    grantAccessTo('all'),
+    grantAccessTo(['all']),
     simpleValidator('query', z.object({ token: z.string() })),
     simpleValidator('form', registerProfilePostSchema),
     async ctx => {
@@ -480,7 +499,7 @@ const profile = factory
       return ctx.text('', 200);
     }
   )
-  .get('/register/stats', grantAccessTo('admin'), async ctx => {
+  .get('/register/stats', grantAccessTo(['admin']), async ctx => {
     const hackerStats = await statsQuery.execute({ role: 'hacker' });
     const volunteerStats = await statsQuery.execute({ role: 'volunteer' });
     const adminStats = await statsQuery.execute({ role: 'admin' });
@@ -494,7 +513,7 @@ const profile = factory
       200
     );
   })
-  .get('/:id', grantAccessTo('volunteer'), async ctx => {
+  .get('/:id', grantAccessTo(['volunteer']), async ctx => {
     const userId = ctx.req.param('id');
 
     const user = await db

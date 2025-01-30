@@ -54,7 +54,7 @@ const team = factory
   .post(
     '/',
     simpleValidator('json', z.object({ teamName: z.string() })),
-    grantAccessTo('hacker'),
+    grantAccessTo(['hacker']),
     async ctx => {
       // Creates a team in the DB using supplied team, and user who requested as leader.
       const user = ctx.get('user')!;
@@ -97,7 +97,7 @@ const team = factory
   )
   .put(
     '/',
-    grantAccessTo('hacker'),
+    grantAccessTo(['hacker']),
     simpleValidator('json', updateTeamSchema),
     async ctx => {
       // A leader can update anything but ID
@@ -124,10 +124,10 @@ const team = factory
         return ctx.text('Failed to update team. Internal error.', 500);
       }
 
-      return ctx.text('', 204);
+      return ctx.body(null, 204);
     }
   )
-  .get('/', grantAccessTo('hacker'), async ctx => {
+  .get('/', grantAccessTo(['hacker']), async ctx => {
     // Returns team information
     const user = ctx.get('user')!;
     const teamLink = await selectTeamLinkFromMember.execute({
@@ -182,7 +182,7 @@ const team = factory
   .put(
     '/transfer',
     simpleValidator('json', userIdSchema),
-    grantAccessTo('hacker'),
+    grantAccessTo(['hacker']),
     async ctx => {
       const oldLeader = ctx.get('user')!;
       const { userId: newLeaderId } = ctx.req.valid('json');
@@ -214,10 +214,10 @@ const team = factory
           )
         );
 
-      return ctx.json({}, 204);
+      return ctx.body(null, 204);
     }
   )
-  .delete('/', grantAccessTo('hacker'), async ctx => {
+  .delete('/', grantAccessTo(['hacker']), async ctx => {
     const user = ctx.get('user')!;
 
     const team = await selectTeamFromLeader.execute({ userId: user.id });
@@ -263,7 +263,7 @@ const team = factory
       return ctx.text('Internal error, failed to delete team.', 500);
     }
 
-    return ctx.json({}, 204);
+    return ctx.body(null, 204);
   })
   .get(
     '/search',
@@ -274,7 +274,7 @@ const team = factory
         email: z.string().optional()
       })
     ),
-    grantAccessTo('hacker'),
+    grantAccessTo(['hacker']),
     async ctx => {
       // Returns full name as well as whether they're in a team or not
       const { name, email } = ctx.req.valid('query');
@@ -316,7 +316,7 @@ const team = factory
   )
   .post(
     '/invite',
-    grantAccessTo('hacker'),
+    grantAccessTo(['hacker']),
     simpleValidator('json', userIdSchema),
     async ctx => {
       // Leader can invite a user
@@ -386,10 +386,10 @@ const team = factory
         return ctx.text('Failed to invite user to team.', 500);
       }
 
-      return ctx.text('', 204);
+      return ctx.body(null, 204);
     }
   )
-  .get('/invite', grantAccessTo('hacker'), async ctx => {
+  .get('/invite', grantAccessTo(['hacker']), async ctx => {
     // Returns all invites
     const user = ctx.get('user')!;
 
@@ -404,12 +404,12 @@ const team = factory
 
     return ctx.json(invites, 200);
   })
-  .get('/invite/ws', grantAccessTo('hacker'), async ctx => {
+  .get('/invite/ws', grantAccessTo(['hacker']), async ctx => {
     // Realtime invites
   })
   .post(
     '/acceptInvite',
-    grantAccessTo('hacker'),
+    grantAccessTo(['hacker']),
     simpleValidator('json', teamIdSchema),
     async ctx => {
       // Remove all invites, and accept invite
@@ -503,12 +503,12 @@ const team = factory
         await db.delete(teamInvites).where(eq(teamInvites.teamId, teamId));
       }
 
-      return ctx.json({}, 204);
+      return ctx.body(null, 204);
     }
   )
   .post(
     '/removeInvite',
-    grantAccessTo('hacker'),
+    grantAccessTo(['hacker']),
     simpleValidator('json', teamIdSchema),
     async ctx => {
       // Declines an invite
@@ -527,12 +527,12 @@ const team = factory
         return ctx.text('Invite does not exist', 404);
       }
 
-      return ctx.json({}, 204);
+      return ctx.body(null, 204);
     }
   )
   .post(
     '/removeUser/:userId',
-    grantAccessTo('hacker'),
+    grantAccessTo(['hacker']),
     simpleValidator('param', userIdSchema),
     async ctx => {
       // Removes user from team
@@ -568,10 +568,10 @@ const team = factory
         return ctx.text('You cannot remove this user', 404);
       }
 
-      return ctx.text('', 204);
+      return ctx.body(null, 204);
     }
   )
-  .post('/removeUser', grantAccessTo('hacker'), async ctx => {
+  .post('/removeUser', grantAccessTo(['hacker']), async ctx => {
     // Aka '/leave'; remove yourself.
     const user = ctx.get('user')!;
 
@@ -590,7 +590,7 @@ const team = factory
       return ctx.text('You are not in a team', 400);
     }
 
-    return ctx.json({}, 204);
+    return ctx.body(null, 204);
   });
 
 export default team;

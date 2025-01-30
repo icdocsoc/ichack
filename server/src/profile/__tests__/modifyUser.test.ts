@@ -8,6 +8,7 @@ import { users, userSession } from '../../auth/schema';
 import { createUserWithSession } from '../../testHelpers';
 import { eq, sql } from 'drizzle-orm';
 import { sha256 } from 'hono/utils/crypto';
+import { qrs } from '../../qr/schema';
 
 const sessionIds: Partial<Record<Role, string>> = {};
 const userIds: Partial<Record<Role, string>> = {};
@@ -27,6 +28,7 @@ beforeAll(async () => {
   await db.execute(sql`TRUNCATE ${userSession} CASCADE`);
   await db.execute(sql`TRUNCATE ${users} CASCADE`);
   await db.execute(sql`TRUNCATE ${profiles} CASCADE`);
+  await db.execute(sql`TRUNCATE ${qrs} CASCADE`);
 
   for (const role of roles) {
     const toCreate = {
@@ -46,6 +48,13 @@ beforeAll(async () => {
       id: userId,
       ...expectedSkeleton
     };
+
+    if (role === 'hacker') {
+      await db.insert(qrs).values({
+        userId: userId,
+        uuid: '00000000-0000-0000-0000-000000000042'
+      });
+    }
   }
 });
 

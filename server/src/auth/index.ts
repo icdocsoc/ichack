@@ -29,7 +29,7 @@ const auth = factory
   .createApp()
   .post(
     '/create',
-    grantAccessTo('god'),
+    grantAccessTo(['god']),
     simpleValidator('json', postCreateBody),
     async c => {
       const userBody = c.req.valid('json');
@@ -74,7 +74,7 @@ const auth = factory
   )
   .post(
     '/login',
-    grantAccessTo('all'), // Effectively a no-op - just being explicit
+    grantAccessTo(['all']), // Effectively a no-op - just being explicit
     simpleValidator('json', postLoginBody),
     async c => {
       if (c.get('session')) return c.text('You are already logged in', 409);
@@ -133,22 +133,26 @@ const auth = factory
       );
     }
   )
-  .post('/logout', grantAccessTo('authenticated'), async c => {
-    const session = c.get('session')!; // Session is non-null because of grantAccessTo('authenticated')
+  .post(
+    '/logout',
+    grantAccessTo(['authenticated'], { allowUnlinkedHackers: true }),
+    async c => {
+      const session = c.get('session')!; // Session is non-null because of grantAccessTo(['authenticated'])
 
-    await lucia.invalidateSession(session.id);
-    c.header('Set-Cookie', lucia.createBlankSessionCookie().serialize(), {
-      append: true
-    });
-    return c.body(null, 204);
-  })
+      await lucia.invalidateSession(session.id);
+      c.header('Set-Cookie', lucia.createBlankSessionCookie().serialize(), {
+        append: true
+      });
+      return c.body(null, 204);
+    }
+  )
   .delete(
     '/:id',
-    grantAccessTo('god'),
+    grantAccessTo(['god']),
     simpleValidator('param', z.object({ id: z.string() })),
     async c => {
       const { id } = c.req.valid('param');
-      const session = c.get('session')!; // Non-null because of grantAccessTo('god')
+      const session = c.get('session')!; // Non-null because of grantAccessTo(['god'])
 
       if (session.userId === id)
         return c.text("You can't delete yourself", 400);
@@ -269,7 +273,7 @@ const auth = factory
    */
   .post(
     '/resetPassword',
-    grantAccessTo('all'),
+    grantAccessTo(['all']),
     simpleValidator('json', postResetPasswordBody),
     async c => {
       // Commented out as we don't have a log out right now, lol
@@ -324,10 +328,10 @@ const auth = factory
    */
   .put(
     '/changePassword',
-    grantAccessTo('authenticated'),
+    grantAccessTo(['authenticated'], { allowUnlinkedHackers: true }),
     simpleValidator('json', postChangePasswordBody),
     async c => {
-      const user = c.get('user')!; // Non-null because of grantAccessTo('authenticated')
+      const user = c.get('user')!; // Non-null because of grantAccessTo(['authenticated'])
 
       const { oldPassword, newPassword } = c.req.valid('json');
       if (oldPassword === newPassword) {
@@ -381,7 +385,7 @@ const auth = factory
    */
   .get(
     '/register',
-    grantAccessTo('all'),
+    grantAccessTo(['all']),
     simpleValidator('query', z.object({ token: z.string() })),
     async c => {
       const signedIn = c.get('user');

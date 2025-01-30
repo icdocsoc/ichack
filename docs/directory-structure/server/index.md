@@ -28,8 +28,8 @@ However, we need to make sure that users still can't forge any request somehow a
 
 ![](/access_permissions.png)
 
-- `grantAccessTo('all')` sits on the top, anyone could access that route.
-- `grantAccessTo('authenticated')` - if this is present, then any authenticated user can access that route.
+- `grantAccessTo(['all'])` sits on the top, anyone could access that route.
+- `grantAccessTo(['authenticated'])` - if this is present, then any authenticated user can access that route.
 - the roles under 'authenticated' are of the same level. Some routes may need only hacker and volunteer but admins cannot access that, eg.
 
 ::: info

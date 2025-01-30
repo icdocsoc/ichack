@@ -1,6 +1,11 @@
 import { verifyRequestOrigin } from 'lucia';
 import factory from './factory';
-import type { AccessPermission } from './types';
+import type { AccessPermission, GrantAccessOptions } from './types';
+import { db } from './drizzle';
+import { users } from './auth/schema';
+import { eq } from 'drizzle-orm';
+import { profiles } from './profile/schema';
+import { qrs } from './qr/schema';
 
 /*
  * The following code is un-used.
@@ -53,16 +58,19 @@ export const testOrigin = (origin: string): boolean => {
  * @returns a middleware for granting access to the route
  */
 export const grantAccessTo = (
-  ...roles: [AccessPermission, ...AccessPermission[]]
-) =>
-  factory.createMiddleware(async (c, next) => {
+  roles: [AccessPermission, ...AccessPermission[]],
+  options?: GrantAccessOptions
+) => {
+  const allowUnlinkedHackers = options?.allowUnlinkedHackers ?? false;
+
+  return factory.createMiddleware(async (c, next) => {
     if (!roles.length) {
       return c.text('Typescript failed to enforce required parameter', 500);
     }
 
     if (roles.includes('all')) {
       // Allow all users to access the route
-      return next();
+      return await next();
     }
 
     const user = c.get('user');
@@ -74,9 +82,38 @@ export const grantAccessTo = (
       );
     }
 
-    if (roles.includes('authenticated') || user.role === 'god') {
+    if (user.role === 'god')
+      // Allow a god to access the route
+      return await next();
+
+    if (roles.includes('authenticated')) {
       // Allow an authenticated user or a god to access the route
-      return next();
+
+      // But hackers must be registered if the option is unset
+      if (user.role === 'hacker' && !allowUnlinkedHackers) {
+        const query = await db
+          .select()
+          .from(users)
+          .where(eq(users.id, user.id))
+          .leftJoin(qrs, eq(users.id, qrs.userId));
+
+        if (query.length !== 1) {
+          return c.text(
+            'Something has gone wrong. Please contact support with code ERR-1024',
+            500
+          );
+        }
+
+        const isRegistered = query[0]!.qr !== null;
+        if (!isRegistered) {
+          return c.text(
+            'You must be registered to access this route. Have you linked your QR Code?',
+            403
+          );
+        }
+      }
+
+      return await next();
     }
 
     // Restrict access to the route based on the user's role
@@ -87,5 +124,29 @@ export const grantAccessTo = (
       );
     }
 
-    return next();
+    if (user.role === 'hacker' && !allowUnlinkedHackers) {
+      const query = await db
+        .select()
+        .from(users)
+        .where(eq(users.id, user.id))
+        .leftJoin(qrs, eq(users.id, qrs.userId));
+
+      if (query.length !== 1) {
+        return c.text(
+          'Something has gone wrong. Please contact support with code ERR-1024',
+          500
+        );
+      }
+
+      const isRegistered = query[0]!.qr !== null;
+      if (!isRegistered) {
+        return c.text(
+          'You must be registered to access this route. Have you linked your QR Code?',
+          403
+        );
+      }
+    }
+
+    return await next();
   });
+};

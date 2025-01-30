@@ -27,7 +27,7 @@ const category = factory
   /**
    * Any authenticated user can get all categories
    */
-  .get('/', grantAccessTo('authenticated'), async c => {
+  .get('/', grantAccessTo(['authenticated']), async c => {
     const user = c.get('user')!;
 
     const meta = await db
@@ -45,7 +45,7 @@ const category = factory
    */
   .get(
     '/:slug',
-    grantAccessTo('authenticated'),
+    grantAccessTo(['authenticated']),
     simpleValidator('param', z.object({ slug: z.string().regex(slugPattern) })),
     async c => {
       const user = c.get('user')!;
@@ -77,7 +77,7 @@ const category = factory
    */
   .post(
     '/',
-    grantAccessTo('god'),
+    grantAccessTo(['god']),
     simpleValidator('json', createCategorySchema),
     async c => {
       const category = c.req.valid('json');
@@ -112,7 +112,7 @@ const category = factory
    */
   .put(
     '/:slug',
-    grantAccessTo('god'),
+    grantAccessTo(['god']),
     simpleValidator('param', z.object({ slug: z.string().regex(slugPattern) })),
     simpleValidator('json', godUpdateCategorySchema),
     async c => {
@@ -152,7 +152,7 @@ const category = factory
    */
   .delete(
     '/:slug',
-    grantAccessTo('god'),
+    grantAccessTo(['god']),
     simpleValidator('param', z.object({ slug: z.string().regex(slugPattern) })),
     async c => {
       const { slug } = c.req.valid('param');

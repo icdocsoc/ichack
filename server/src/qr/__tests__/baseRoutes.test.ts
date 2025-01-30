@@ -118,10 +118,21 @@ describe('QR Module > POST /', () => {
       uuid
     });
 
-    const { sessionId } = await createUserWithSession('hacker', {
-      name: 'Hacker2',
-      email: 'hacker2@ic.ac.uk',
-      password: 'dontheckme'
+    const { userId: hacker2Id, sessionId } = await createUserWithSession(
+      'hacker',
+      {
+        name: 'Hacker2',
+        email: 'hacker2@ic.ac.uk',
+        password: 'dontheckme'
+      }
+    );
+    await db.insert(profiles).values({
+      id: hacker2Id,
+      photos_opt_out: false,
+      pronouns: 'they/them',
+      dietary_restrictions: [],
+      cvUploaded: false,
+      meals: [false, false, false]
     });
 
     const res = await client.qr.$post(
@@ -138,6 +149,34 @@ describe('QR Module > POST /', () => {
     expect(res.text()).resolves.toBe(
       'QR code already linked to an account or user already linked to a QR code'
     );
+  });
+
+  test('unregistered user cannot link to a qr code', async () => {
+    await db.delete(profiles).where(eq(profiles.id, userIds.hacker!)); // delete hacker profile
+
+    const uuid = '00000000-0000-0000-0000-000000000071';
+    const res = await client.qr.$post(
+      {
+        json: { uuid }
+      },
+      {
+        headers: {
+          Cookie: `auth_session=${sessionIds.hacker!}`
+        }
+      }
+    ); // attempt to link to qr code
+
+    expect(res.status).toBe(409);
+    expect(res.text()).resolves.toBe(
+      'You have not registered yet. Please register first.'
+    );
+
+    // Check that QR was not created
+    const qrInDb = await db.select().from(qrs).where(eq(qrs.uuid, uuid));
+    expect(qrInDb.length).toBe(0);
+
+    // Restore hacker profile
+    await db.insert(profiles).values(hackerProfile);
   });
 });
 

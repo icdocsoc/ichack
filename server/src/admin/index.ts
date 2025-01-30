@@ -37,7 +37,7 @@ const admin = factory
   /**
    * Gets the meta data for the admin
    */
-  .get('/', grantAccessTo('authenticated'), async c => {
+  .get('/', grantAccessTo(['authenticated']), async c => {
     const query = await db.select().from(adminMeta);
     const meta = query[0]!;
 
@@ -47,7 +47,7 @@ const admin = factory
    * This middleware guards the rest of the routes in this module.
    * Only admins and gods can access these routes.
    */
-  .use(grantAccessTo('admin'))
+  .use(grantAccessTo(['admin']))
   /**
    * A single endpoint to show the categories on the website
    */

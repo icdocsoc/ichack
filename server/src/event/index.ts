@@ -8,7 +8,7 @@ import { simpleValidator } from '../validators';
 
 const event = factory
   .createApp()
-  .get('/', grantAccessTo('all'), async ctx => {
+  .get('/', grantAccessTo(['all']), async ctx => {
     const publicOnly = ctx.get('user') == null;
 
     if (publicOnly) {
@@ -26,7 +26,7 @@ const event = factory
       .orderBy(asc(events.startsAt));
     return ctx.json(allEvents, 200);
   })
-  .get('/duckduckgoose', grantAccessTo('all'), async ctx => {
+  .get('/duckduckgoose', grantAccessTo(['all']), async ctx => {
     const message =
       process.env.DUCKDUCKGOOSE ??
       'Email ichack@ic.ac.uk asking for a duckduckgoose event.';
@@ -34,7 +34,7 @@ const event = factory
   })
   .post(
     '/',
-    grantAccessTo('admin'),
+    grantAccessTo(['admin']),
     simpleValidator('json', createEventSchema),
     async ctx => {
       const body = ctx.req.valid('json');
@@ -45,7 +45,7 @@ const event = factory
   )
   .put(
     '/:id',
-    grantAccessTo('admin'),
+    grantAccessTo(['admin']),
     simpleValidator('json', updateEventBody),
     simpleValidator(
       'param',
@@ -83,7 +83,7 @@ const event = factory
         id: z.coerce.number()
       })
     ),
-    grantAccessTo('admin'),
+    grantAccessTo(['admin']),
     async ctx => {
       const { id } = ctx.req.valid('param');
       const deleted = await db

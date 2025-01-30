@@ -6,6 +6,7 @@ import { tomorrow } from '../../testHelpers';
 import app from '../../app';
 import { testClient } from 'hono/testing';
 import { and, eq, not, sql } from 'drizzle-orm';
+import { qrs } from '../../qr/schema';
 
 const baseRoute = testClient(app).team;
 const testUsers: { userId: string; sessionId: string }[] = [];
@@ -22,6 +23,7 @@ let secondTeamId: number;
 beforeAll(async () => {
   await db.execute(sql`TRUNCATE ${users} CASCADE`);
   await db.execute(sql`TRUNCATE ${teams} CASCADE`);
+  await db.execute(sql`TRUNCATE ${qrs} CASCADE`);
 
   // Create users to be used during the test.
   // See constants for the purpose of each user.
@@ -42,6 +44,11 @@ beforeAll(async () => {
       id: `${i}sessionId`,
       userId: `${i}userId`,
       expiresAt: tomorrow
+    });
+
+    await db.insert(qrs).values({
+      userId: `${i}userId`,
+      uuid: `0000${i}`
     });
   }
 
@@ -91,6 +98,11 @@ beforeAll(async () => {
       id: `stressed${i}sessionId`,
       userId: `stressed${i}userId`,
       expiresAt: tomorrow
+    });
+
+    await db.insert(qrs).values({
+      userId: `stressed${i}userId`,
+      uuid: `0006${i}`
     });
   }
 });

@@ -70,7 +70,7 @@ else
 fi
 
 echo "--- Running REST tests ---"
-bun test server $@
+bun test server/$@
 REST_CODE=$?
 
 exit $REST_CODE

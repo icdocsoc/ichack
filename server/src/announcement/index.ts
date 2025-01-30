@@ -13,7 +13,7 @@ const announcement = factory
   /**
    * GET /all
    */
-  .get('/', grantAccessTo('authenticated'), c => c.text('', 418))
+  .get('/', grantAccessTo(['authenticated']), c => c.text('', 418))
   /**
    * POST /
    * This endpoint creates a new announcement. Only admins can access this endpoint.
@@ -21,7 +21,7 @@ const announcement = factory
    */
   .post(
     '/',
-    grantAccessTo('admin'),
+    grantAccessTo(['admin']),
     simpleValidator('json', insertAnnouncementSchema),
     async c => {
       const announcement = c.req.valid('json');
@@ -54,7 +54,7 @@ const announcement = factory
     '/:id',
     simpleValidator('param', z.object({ id: z.coerce.number().positive() })),
     simpleValidator('json', updateAnnouncementBody),
-    grantAccessTo('admin'),
+    grantAccessTo(['admin']),
     async c => {
       const { id } = c.req.valid('param');
 
@@ -99,7 +99,7 @@ const announcement = factory
   .delete(
     '/:id',
     simpleValidator('param', z.object({ id: z.coerce.number().positive() })),
-    grantAccessTo('admin'),
+    grantAccessTo(['admin']),
     async c => {
       const { id } = c.req.valid('param');
 

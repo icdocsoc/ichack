@@ -7,6 +7,7 @@ import { roles, type Role } from '../../types';
 import { testClient } from 'hono/testing';
 import app from '../../app';
 import { sql } from 'drizzle-orm';
+import { qrs } from '../../qr/schema';
 
 const sessionIds: Partial<Record<Role, string>> = {};
 const userIds: Partial<Record<Role, string>> = {};
@@ -30,6 +31,7 @@ beforeAll(async () => {
   await db.execute(sql`TRUNCATE ${userSession} CASCADE`);
   await db.execute(sql`TRUNCATE ${users} CASCADE`);
   await db.execute(sql`TRUNCATE ${profiles} CASCADE`);
+  await db.execute(sql`TRUNCATE ${qrs} CASCADE`);
 
   for (const role of roles) {
     const toCreate = {
@@ -52,6 +54,13 @@ beforeAll(async () => {
       role: role,
       ...expectedSkeleton
     };
+
+    if (role === 'hacker') {
+      await db.insert(qrs).values({
+        userId: userId,
+        uuid: '00000000-0000-0000-0000-000000000042'
+      });
+    }
   }
 });
 
@@ -63,9 +72,9 @@ describe('Profiles module > GET /', () => {
       }
     });
 
-    const resUser = await res.json();
-
     expect(res.status).toBe(200);
+
+    const resUser = await res.json();
     expect(resUser).toEqual(expectedSearch['hacker']!);
     expect(resUser).not.toHaveProperty('password');
   });
