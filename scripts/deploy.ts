@@ -18,7 +18,7 @@ async function getLatestTag(date: string): Promise<string | null> {
   try {
     // Use Git to find all tags, filter by current date, and sort numerically
     await $`git fetch --tags`;
-    const tags = await $`git tag --list "v*" --sort=-refname`.quiet().text();
+    const tags = await $`git tag --list "v*" --sort=-v:refname`.quiet().text();
 
     const tag = tags.split('\n').find(t => t.startsWith(`v${date}`));
     return tag ?? null; // Return the latest tag or null
