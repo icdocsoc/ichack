@@ -77,6 +77,13 @@ export const updateMealSchema = z
   })
   .strict();
 
+export const deleteMealSchema = z
+  .object({
+    userId: z.string(),
+    mealNum: z.coerce.number().int().lte(2).gte(0)
+  })
+  .strict();
+
 // searchUser requires an email or a name
 // there is a minimum length so the volunteer cannot essentially GET /all
 export const searchUserSchema = z

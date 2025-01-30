@@ -9,6 +9,7 @@ import { createUserWithSession } from '../../testHelpers';
 import { eq, sql } from 'drizzle-orm';
 import { sha256 } from 'hono/utils/crypto';
 import { qrs } from '../../qr/schema';
+import { adminMeta } from '../../admin/schema';
 
 const sessionIds: Partial<Record<Role, string>> = {};
 const userIds: Partial<Record<Role, string>> = {};
@@ -29,6 +30,7 @@ beforeAll(async () => {
   await db.execute(sql`TRUNCATE ${users} CASCADE`);
   await db.execute(sql`TRUNCATE ${profiles} CASCADE`);
   await db.execute(sql`TRUNCATE ${qrs} CASCADE`);
+  await db.execute(sql`TRUNCATE ${adminMeta} CASCADE`);
 
   for (const role of roles) {
     const toCreate = {
@@ -56,6 +58,8 @@ beforeAll(async () => {
       });
     }
   }
+
+  await db.insert(adminMeta).values({ mealNumber: 0, showCategories: false });
 });
 
 describe('Profiles module > PUT /', () => {
@@ -107,7 +111,7 @@ describe('Profiles module > PUT /', () => {
   });
 });
 
-describe('Profile smodule > PUT /meals', () => {
+describe('Profile module > PUT /meals', () => {
   test('volunteer can update meals', async () => {
     // { userId: string }
     let res = await baseRoute.meal.$put(
@@ -151,6 +155,61 @@ describe('Profile smodule > PUT /meals', () => {
     expect(res.text()).resolves.toBe(
       // @ts-ignore error message is from middleware
       'You do not have access to PUT /api/profile/meal'
+    );
+  });
+});
+
+describe('Profile module > DELETE /meals', () => {
+  test('admin can update meals', async () => {
+    await db
+      .update(profiles)
+      .set({ meals: [true, false, false] })
+      .where(eq(profiles.id, userIds.hacker!));
+
+    // { userId: string }
+    let res = await baseRoute.meal.$delete(
+      {
+        json: {
+          userId: expectedUsers.hacker!.id,
+          mealNum: 0
+        }
+      },
+      {
+        headers: {
+          Cookie: `auth_session=${sessionIds.admin}`
+        }
+      }
+    );
+
+    let userInDb = await db
+      .select()
+      .from(profiles)
+      .where(eq(profiles.id, userIds.hacker!));
+
+    expect(res.status).toBe(200);
+    expect(userInDb[0]!.meals[0]).toBeFalse();
+  });
+
+  test('only volunteer can update meals', async () => {
+    let res = await baseRoute.meal.$delete(
+      {
+        json: {
+          userId: expectedUsers.hacker!.id,
+          mealNum: 0
+        }
+      },
+      {
+        headers: {
+          Cookie: `auth_session=${sessionIds.volunteer}`
+        }
+      }
+    );
+
+    // @ts-expect-error code is from middleware
+    expect(res.status).toBe(403);
+    expect(res.text()).resolves.toBe(
+      // @ts-ignore error message is from middleware
+      'You do not have access to DELETE /api/profile/meal'
     );
   });
 });

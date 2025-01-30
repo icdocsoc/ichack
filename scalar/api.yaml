@@ -1125,6 +1125,34 @@ paths:
               schema:
                 type: string
                 example: You do not have access to PUT /api/profile/meal
+    delete:
+      tags:
+        - Profile
+      summary: Unset the meals for a user
+      description: |
+        Allows a admin or god to unset the meals for a user.
+        Only admins or gods can access this route.
+      security:
+        - cookieAuth: []
+      parameters:
+        - $ref: '#/components/parameters/cookie'
+      responses:
+        '200':
+          description: The meals have been updated.
+        '403':
+          description: When a user other than a volunteer accesses this route.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: You do not have access to DELETE /api/profile/meal
+        '404':
+          description: When the given user does not exist.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Failed to unset user meals - user does not exist
 
   /profile/register:
     get:

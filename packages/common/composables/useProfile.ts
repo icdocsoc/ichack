@@ -107,10 +107,49 @@ export default () => {
       return res.json();
     });
 
+  const unsetMeal = async (
+    userId: string,
+    mealNum: number
+  ): Promise<Result<void, Error>> =>
+    Result.try(async () => {
+      const res = await client.profile.meal.$delete({
+        json: {
+          userId: userId,
+          mealNum: mealNum
+        }
+      });
+
+      if (!res.ok) {
+        const errorMessage = await res.text();
+        throw new Error(errorMessage);
+      }
+    });
+
+  // Only gods will be able to do this because the route requires the use of the
+  // sudo middleware
+  const deleteCV = async (userId: string): Promise<Result<void, Error>> =>
+    Result.try(async () => {
+      const res = await client.profile.cv.$delete(
+        {},
+        {
+          headers: {
+            'X-sudo-user': userId
+          }
+        }
+      );
+
+      if (!res.ok) {
+        const errorMessage = await res.text();
+        throw new Error(errorMessage);
+      }
+    });
+
   return {
     getProfiles,
     getSelf,
     register,
-    getRegistrationStats
+    getRegistrationStats,
+    unsetMeal,
+    deleteCV
   };
 };

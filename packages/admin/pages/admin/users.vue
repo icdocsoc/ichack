@@ -31,6 +31,17 @@ const badgeColors = {
   hacker: 'gray'
 } as const;
 
+const mealItems = [
+  { label: 'meal 0', value: 0 },
+  { label: 'meal 1', value: 1 },
+  { label: 'meal 2', value: 2 }
+];
+
+// there's a nuxt ui bug which returns a thing whose actual type is a string
+// even though the USelect API is says it's gonna be a number, since the
+// value in mealItems above says it's going to be a number. But it's not. this language sucks ass.
+const selectedMealNum = ref<number>(0);
+
 // Admin/God self profile
 const { data: selfProfile } = useAsyncData<Profile>('selfProfile', async () => {
   const { getSelf } = useProfile();
@@ -81,8 +92,34 @@ const unlinkQRCode = async (user: FlatUserProfile) => {
   }
 };
 
-const notFunctional = () => {
-  alert('This feature is not functional yet.');
+const unsetMeal = async (user: FlatUserProfile) => {
+  const { unsetMeal } = useProfile();
+  const result = await unsetMeal(user.id, selectedMealNum.value);
+  if (result.isError()) {
+    return alert(result.error.message);
+  } else {
+    return alert(`Meal ${selectedMealNum.value} unset succesfully`);
+  }
+};
+
+const deleteCV = async (user: FlatUserProfile) => {
+  const { deleteCV } = useProfile();
+  const result = await deleteCV(user.id);
+  if (result.isError()) {
+    return alert(result.error.message);
+  } else {
+    return alert('CV deleted');
+  }
+};
+
+const sendResetPassword = async (user: FlatUserProfile) => {
+  const { forgotPassword } = useAuth();
+  const result = await forgotPassword(user.email);
+  if (result.isError()) {
+    return alert(result.error.message);
+  } else {
+    return alert('Reset password link sent successfully');
+  }
 };
 
 // Other misc things
@@ -222,9 +259,12 @@ useHead({
         <div>
           <h3 class="text-lg font-semibold">Other Actions</h3>
           <div class="mt-2 flex flex-wrap gap-4">
-            <UButton @click="notFunctional">Send Reset Password</UButton>
-            <UButton @click="notFunctional">Unset a Meal</UButton>
-            <UButton @click="notFunctional">Delete CV</UButton>
+            <UButton @click="sendResetPassword(selectedUser!)">
+              Send Reset Password
+            </UButton>
+            <UButton @click="unsetMeal(selectedUser!)"> Unset meal: </UButton>
+            <USelect v-model="selectedMealNum" :options="mealItems"></USelect>
+            <UButton @click="deleteCV(selectedUser!)">Delete CV</UButton>
           </div>
         </div>
       </div>

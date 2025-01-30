@@ -6,7 +6,8 @@ import {
   updateProfileSchema,
   profiles,
   searchUserSchema,
-  registerProfilePostSchema
+  registerProfilePostSchema,
+  deleteMealSchema
 } from './schema';
 import { count, eq, ilike, isNotNull, and, lt, sql } from 'drizzle-orm';
 import { apiLogger } from '../logger';
@@ -23,6 +24,7 @@ import { sendEmail } from '../email';
 import nunjucks from 'nunjucks';
 import { emailTemplate, icticket } from './assets/register';
 import { qrs } from '../qr/schema';
+import { adminMeta } from '../admin/schema';
 
 nunjucks.configure({ autoescape: true });
 
@@ -265,8 +267,10 @@ const profile = factory
       // Toggle meal number `num`
       const { userId } = ctx.req.valid('json');
 
-      // TODO: replace with current meal number from db
-      const mealNum = 0;
+      const mealNumQuery = await db
+        .select({ mealNum: adminMeta.mealNumber })
+        .from(adminMeta);
+      const mealNum = mealNumQuery[0]!.mealNum;
 
       // Postgres is 1 indexed :|
       const updatedMeals = await db.execute(sql`
@@ -282,6 +286,35 @@ const profile = factory
         );
         return ctx.text(
           'Failed to update user meals - user does not exist.',
+          404
+        );
+      }
+
+      return ctx.text('', 200);
+    }
+  )
+  .delete(
+    '/meal',
+    grantAccessTo(['admin', 'god']),
+    simpleValidator('json', deleteMealSchema),
+    async ctx => {
+      // This mealNum is 0-indexed, to be consistent with the PUT /profiles/meal
+      const { userId, mealNum } = ctx.req.valid('json');
+
+      // Postgres is 1 indexed!
+      const updatedMeals = await db.execute(sql`
+        UPDATE profiles
+        SET meals[${mealNum + 1}] = false
+        WHERE id = ${userId}`);
+
+      if (updatedMeals.rowCount == null) {
+        apiLogger.error(
+          ctx,
+          'DELETE /profile/meal',
+          `User ${userId} does not exist in the database.`
+        );
+        return ctx.text(
+          'Failed to unset user meals - user does not exist.',
           404
         );
       }
