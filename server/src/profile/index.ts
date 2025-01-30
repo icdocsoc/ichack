@@ -290,7 +290,7 @@ const profile = factory
   )
   .get(
     '/discord',
-    grantAccessTo(['authenticated']),
+    grantAccessTo(['authenticated'], { allowUnlinkedHackers: true }),
     simpleValidator(
       'query',
       z.object({ code: z.string().optional(), state: z.string().optional() })
@@ -363,25 +363,29 @@ const profile = factory
       return ctx.redirect(`${baseUrl}`);
     }
   )
-  .delete('/discord', grantAccessTo(['authenticated']), async ctx => {
-    const user = ctx.get('user')!;
+  .delete(
+    '/discord',
+    grantAccessTo(['authenticated'], { allowUnlinkedHackers: true }),
+    async ctx => {
+      const user = ctx.get('user')!;
 
-    const dbRes = await db
-      .select({ discord_id: profiles.discord_id })
-      .from(profiles)
-      .where(eq(profiles.id, user.id));
+      const dbRes = await db
+        .select({ discord_id: profiles.discord_id })
+        .from(profiles)
+        .where(eq(profiles.id, user.id));
 
-    if (dbRes[0]!.discord_id != null) {
-      await DiscordRepository.removeUser(dbRes[0]!.discord_id);
+      if (dbRes[0]!.discord_id != null) {
+        await DiscordRepository.removeUser(dbRes[0]!.discord_id);
+      }
+
+      await db
+        .update(profiles)
+        .set({ discord_id: null })
+        .where(eq(profiles.id, user.id));
+
+      return ctx.text('', 200);
     }
-
-    await db
-      .update(profiles)
-      .set({ discord_id: null })
-      .where(eq(profiles.id, user.id));
-
-    return ctx.text('', 200);
-  })
+  )
   .post(
     '/register',
     grantAccessTo(['all']),
