@@ -110,7 +110,7 @@ jobs:
           SHA_TAG=nightly-${GITHUB_SHA}
           NIGHTLY_TAG=nightly
 
-          docker build -t $IMAGE_NAME:$TAG --target website .
+          docker build -t $IMAGE_NAME:$SHA_TAG --target website .
           docker push $IMAGE_NAME:$SHA_TAG
           docker tag $IMAGE_NAME:$SHA_TAG $IMAGE_NAME:$NIGHTLY_TAG
           docker push $IMAGE_NAME:$NIGHTLY_TAG
