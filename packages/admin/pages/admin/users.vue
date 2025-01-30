@@ -1,150 +1,233 @@
 <script setup lang="ts">
-import { roles } from '#shared/types';
-import { z } from 'zod';
+import type { Profile } from '#shared/types';
 
 // UI related properties
-const isAddUserPopupOpen = ref(false);
 const tableColumns = [
-  {
-    key: 'id',
-    label: 'Id'
-  },
   {
     key: 'name',
     label: 'Name'
+  },
+  {
+    key: 'id',
+    label: 'Id'
   },
   {
     key: 'email',
     label: 'Email'
   },
   {
-    key: 'role',
-    label: 'Role'
+    key: 'registered',
+    label: 'Registered'
   },
   {
-    key: 'actions'
+    key: 'linked',
+    label: 'Linked QR'
   }
 ];
+const badgeColors = {
+  god: 'amber',
+  admin: 'blue',
+  volunteer: 'emerald',
+  hacker: 'gray'
+} as const;
 
-// List of users related properties
-const { getProfiles, getSelf, getRegistrationStats } = useProfile();
-const { deleteUser, createUser } = useAdmin();
-const { profile } = useProfileStore();
-const { data, refresh, status, error } = await useAsyncData(
+// Admin/God self profile
+const { data: selfProfile } = useAsyncData<Profile>('selfProfile', async () => {
+  const { getSelf } = useProfile();
+  const res = await getSelf();
+  return res.getOrThrow();
+});
+
+// List of all users related properties
+const { data, status, error } = await useAsyncData<FlatUserProfile[]>(
   'users',
   async () => {
+    const { getProfiles } = useProfile();
     const res = await getProfiles();
-    if (res.isError()) {
-    } else {
-      return res.getOrNull();
-    }
+    return res.getOrThrow();
   }
 );
-const roleItems = computed(() => {
-  return [
-    roles.map(role => ({
-      label: role,
-      click: () => (userDetails.role = role)
-    }))
-  ];
+
+// Search related properties
+const searchFilter = ref<string>('');
+const filteredUsers = computed(() => {
+  if (!data.value) return [];
+
+  if (!searchFilter.value) return data.value!;
+
+  return data.value!.filter(
+    user =>
+      user.name.toLowerCase().includes(searchFilter.value.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchFilter.value.toLowerCase()) ||
+      user.id === searchFilter.value
+  );
 });
 
-// Actions on users
-// const deleteUser = async (id: string) => {
-//   const result = await deleteUser(id);
-//   result.fold(
-//     _ => refresh(),
-//     error => console.error(error)
-//   );
-// };
-const goToUserPage = (id: string) => {
-  navigateTo(`/users/${id}`);
+// Manage & Select User related properties
+const selectedUser = ref<FlatUserProfile | null>(null);
+const showUserDetails = ref<boolean>(false);
+const handleSelect = (profile: FlatUserProfile) => {
+  console.log(profile); // for admin, it is fine to have this.
+  selectedUser.value = profile;
+  showUserDetails.value = true;
 };
 
-// Create User form related properties
-const schema = z.object({
-  name: z.string().min(1),
-  email: z.string().email('Invalid email address'),
-  role: z.enum(['volunteer', 'organizer', 'admin'])
-});
-const userDetails: CreateUserDetails = reactive({
-  name: '',
-  email: '',
-  role: 'volunteer'
-});
-async function handleSubmit() {
-  // Do something with data
-  const response = await createUser(userDetails);
-  if (response.isError()) {
-    console.error(error);
-    return;
+// Individual User Actions
+const unlinkQRCode = async (user: FlatUserProfile) => {
+  const { deleteQR } = useQR();
+  const result = await deleteQR(user.id);
+  if (result.isError()) {
+    return alert(result.error.message);
   }
+};
 
-  refresh();
-
-  // resetting the userDetails object
-  userDetails.name = '';
-  userDetails.email = '';
-
-  // closing the popup modal
-  isAddUserPopupOpen.value = false;
-}
+const notFunctional = () => {
+  alert('This feature is not functional yet.');
+};
 
 // Other misc things
 definePageMeta({
   middleware: ['require-auth'],
   layout: 'admin'
 });
+useHead({
+  title: 'Admin - Users'
+});
 </script>
 
 <template>
-  <UContainer class="relative max-h-full overflow-y-scroll">
-    <h2 class="pt-12 text-center text-5xl font-semibold">Manage Users</h2>
+  <UContainer class="relative mt-12 max-h-full overflow-y-scroll">
+    <h2 class="text-center text-5xl font-semibold">Manage Users</h2>
+
+    <div
+      class="mt-8 flex border-b border-gray-200 px-3 py-3.5 dark:border-gray-700">
+      <UInput
+        v-model="searchFilter"
+        class="min-w-[240px]"
+        placeholder="Search by name, ID or email..." />
+    </div>
 
     <UAlert v-if="error" :title="error.message" />
     <UTable
       v-else
-      :rows="data!"
+      :rows="filteredUsers"
       :columns="tableColumns"
-      :loading="status == 'pending'">
-      <template #actions-data="{ row }">
-        <UButton
-          icon="i-heroicons-pencil-square"
-          size="xs"
-          color="primary"
-          square
-          variant="outline"
-          class="mx-2"
-          @click="" />
-        <UButton
-          icon="i-heroicons-solid-user-remove"
-          size="xs"
-          color="primary"
-          square
-          variant="outline"
-          class="mx-2"
-          @click="" />
+      @select="handleSelect"
+      :loading="status == 'pending'"
+      :ui="{ th: { size: 'text-lg' } }">
+      <template #name-data="{ row }: { row: FlatUserProfile }">
+        <span class="flex items-center gap-2">
+          <p>{{ row.name }}</p>
+          <UBadge :color="badgeColors[row.role]" variant="solid">
+            {{ row.role }}
+          </UBadge>
+        </span>
+      </template>
+
+      <template #registered-data="{ row }: { row: FlatUserProfile }">
+        <UBadge :color="row.isRegistered ? 'green' : 'red'" variant="solid">
+          {{ row.isRegistered ? 'Yes' : 'No' }}
+        </UBadge>
+      </template>
+
+      <template #linked-data="{ row }: { row: FlatUserProfile }">
+        <UBadge :color="row.hasLinkedQR ? 'green' : 'red'" variant="solid">
+          {{ row.hasLinkedQR ? 'Yes' : 'No' }}
+        </UBadge>
       </template>
     </UTable>
-    <UModal v-model="isAddUserPopupOpen">
-      <UContainer class="mb-4 grid grid-flow-row justify-center p-10">
-        <UForm
-          :schema="schema"
-          :state="userDetails"
-          class="p-4"
-          @submit="handleSubmit">
-          <UFormGroup label="Name" name="name">
-            <UInput v-model="userDetails.name" />
-          </UFormGroup>
-          <UFormGroup label="Email" name="email">
-            <UInput v-model="userDetails.email" />
-          </UFormGroup>
-          <UFormGroup label="Role" name="role" class="justify-center p-1">
-            <DropdownInput v-model="userDetails.role" :items="roleItems" />
-          </UFormGroup>
-          <UButton type="submit" class="justify-center p-4">Submit</UButton>
-        </UForm>
-      </UContainer>
-    </UModal>
+
+    <USlideover v-model="showUserDetails">
+      <div class="flex w-full flex-col items-start gap-4 p-4">
+        <h2 class="self-center text-2xl font-bold">
+          {{ selectedUser!.name }}
+        </h2>
+
+        <div>
+          <h3 class="text-lg font-semibold">Details</h3>
+          <ul class="ml-4 list-inside list-disc">
+            <li>
+              <span class="font-semibold">ID:</span> {{ selectedUser!.id }}
+            </li>
+            <li>
+              <span class="font-semibold">Email:</span>
+              {{ selectedUser!.email }}
+            </li>
+            <li>
+              <span class="font-semibold">Role:</span> {{ selectedUser!.role }}
+            </li>
+            <li>
+              <span class="mr-0.5 font-semibold">Registered: </span>
+              <UBadge
+                :color="selectedUser!.isRegistered ? 'green' : 'red'"
+                variant="solid">
+                {{ selectedUser!.isRegistered ? 'Yes' : 'No' }}
+              </UBadge>
+            </li>
+          </ul>
+        </div>
+
+        <UDivider />
+
+        <div v-if="selectedUser!.isRegistered">
+          <h3 class="text-lg font-semibold">Other Details</h3>
+          <ul class="ml-4 list-inside list-disc">
+            <li>
+              <span class="font-semibold">Photos Opt Out: </span>
+              {{ selectedUser!.photosOptOut ? 'Yes' : 'No' }}
+            </li>
+            <li>
+              <span class="font-semibold">Dietary Restrictions: </span>
+              {{
+                selectedUser!.dietaryRestrictions?.join(',') ??
+                'Dietary Restrictions is null'
+              }}
+            </li>
+            <li>
+              <span class="font-semibold">Pronouns: </span>
+              {{ selectedUser!.pronouns }}
+            </li>
+            <li>
+              <span class="font-semibold">Meals: </span>
+              {{ selectedUser!.meals?.join(',') ?? 'Meals array is null' }}
+            </li>
+            <li>
+              <span class="font-semibold">CV Uploaded: </span>
+              {{ selectedUser!.cvUploaded ? 'Yes' : 'No' }}
+            </li>
+          </ul>
+
+          <UDivider class="mt-4" />
+        </div>
+
+        <div v-if="selectedUser!.hasLinkedQR">
+          <h3 class="text-lg font-semibold">QR Code Linked!</h3>
+          <ul class="ml-4 list-inside list-disc">
+            <li>
+              <span class="font-semibold">UUID: </span>
+              {{ selectedUser!.qrUuid ?? 'UUID is undefined' }}
+            </li>
+          </ul>
+
+          <UButton
+            color="red"
+            v-if="selfProfile?.role == 'god'"
+            @click="unlinkQRCode(selectedUser!)">
+            Unlink QR Code
+          </UButton>
+
+          <UDivider class="mt-4" />
+        </div>
+
+        <div>
+          <h3 class="text-lg font-semibold">Other Actions</h3>
+          <div class="mt-2 flex flex-wrap gap-4">
+            <UButton @click="notFunctional">Send Reset Password</UButton>
+            <UButton @click="notFunctional">Unset a Meal</UButton>
+            <UButton @click="notFunctional">Delete CV</UButton>
+          </div>
+        </div>
+      </div>
+    </USlideover>
   </UContainer>
 </template>

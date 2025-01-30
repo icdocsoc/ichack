@@ -22,6 +22,7 @@ import { Result } from 'typescript-result';
 import { sendEmail } from '../email';
 import nunjucks from 'nunjucks';
 import { emailTemplate, icticket } from './assets/register';
+import { qrs } from '../qr/schema';
 
 nunjucks.configure({ autoescape: true });
 
@@ -79,21 +80,14 @@ const profile = factory
     return ctx.json(user[0]!, 200);
   })
   .get('/all', grantAccessTo('admin'), async ctx => {
-    const allusers = await db
-      .select({
-        id: users.id,
-        name: users.name,
-        email: users.email,
-        role: users.role,
-        photos_opt_out: profiles.photos_opt_out,
-        dietary_restrictions: profiles.dietary_restrictions,
-        pronouns: profiles.pronouns,
-        meals: profiles.meals
-      })
-      .from(profiles)
-      .rightJoin(users, eq(users.id, profiles.id));
+    const allUsers = await db
+      .select()
+      .from(users)
+      .leftJoin(profiles, eq(users.id, profiles.id))
+      .leftJoin(qrs, eq(qrs.userId, users.id));
 
-    return ctx.json(allusers, 200);
+    // returns type UserNullableProfile[]
+    return ctx.json(allUsers, 200);
   })
   .get(
     '/search',

@@ -17,3 +17,7 @@ export const qrSchema = createInsertSchema(qrs, {
 })
   .pick({ uuid: true })
   .strict();
+
+export const selectQrSchema = createSelectSchema(qrs, {
+  uuid: schema => schema.uuid()
+});

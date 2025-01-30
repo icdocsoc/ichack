@@ -16,12 +16,12 @@ import app from '../../app';
 import { eq, sql } from 'drizzle-orm';
 import { roles, type Role } from '../../types';
 import { users, userSession } from '../../auth/schema';
-import { profiles, type Profile } from '../../profile/schema';
+import { profiles, type UserAndProfile } from '../../profile/schema';
 
 const sessionIds: Partial<Record<Role, string>> = {};
 const userIds: Partial<Record<Role, string>> = {};
 
-let hackerProfile: Profile;
+let hackerProfile: UserAndProfile;
 
 const client = testClient(app);
 
@@ -187,9 +187,9 @@ describe('QR Module > DELETE /:uuid', () => {
     });
 
     for (const role of roles) {
-      const res = await client.qr[':uuid'].$delete(
+      const res = await client.qr[':id'].$delete(
         {
-          param: { uuid: insertedUuid }
+          param: { id: hackerProfile.id }
         },
         {
           headers: {
@@ -200,7 +200,18 @@ describe('QR Module > DELETE /:uuid', () => {
 
       if (role == 'god') {
         expect(res.status).toBe(200);
-        expect(res.json()).resolves.toEqual({});
+
+        const query = await db
+          .select()
+          .from(qrs)
+          .where(eq(qrs.uuid, insertedUuid));
+        expect(query.length).toBe(0);
+
+        // Reinsert the qr code for the next test
+        await db.insert(qrs).values({
+          userId: hackerProfile.id,
+          uuid: insertedUuid
+        });
       } else {
         //@ts-ignore middleware returns 403
         expect(res.status).toBe(403);

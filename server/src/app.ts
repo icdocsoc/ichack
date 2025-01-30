@@ -1,4 +1,4 @@
-import logger from './logger';
+import logger, { apiLogger } from './logger';
 import sessionMiddleware from './auth/sessionMiddleware';
 import auth from './auth';
 import announcement from './announcement';
@@ -36,11 +36,12 @@ const app = factory
   )
   .route('', api)
   .onError((err, c) => {
+    apiLogger.error(c, 'Error Response', `MAYDAY MAYDAY, ${err.message}`);
     if (err instanceof HTTPException) {
       return err.getResponse();
     }
 
-    return c.text('Internal Server Error', 500);
+    return c.text("Interal Server Error. We're looking into it", 500);
   });
 
 export default app;

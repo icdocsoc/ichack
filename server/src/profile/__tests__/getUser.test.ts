@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, test } from 'bun:test';
-import { profiles, type Profile, type SelectedProfile } from '../schema';
+import { profiles, type UserAndProfile, type RawProfile } from '../schema';
 import { db } from '../../drizzle';
 import { users, userSession } from '../../auth/schema';
 import { createUserWithSession } from '../../testHelpers';
@@ -19,10 +19,10 @@ const expectedSkeleton = {
   cvUploaded: false,
   discord_id: null
 };
-const expectedSearch: Partial<Record<Role, Profile>> = {};
+const expectedSearch: Partial<Record<Role, UserAndProfile>> = {};
 const sortById = (
-  a: SelectedProfile | Profile,
-  b: SelectedProfile | Profile
+  a: RawProfile | UserAndProfile,
+  b: RawProfile | UserAndProfile
 ) => (a.id > b.id ? 1 : -1);
 
 beforeAll(async () => {
@@ -101,7 +101,7 @@ describe('Profiles module > GET /:id', () => {
       }
     );
 
-    const resUser = (await res.json()) as SelectedProfile;
+    const resUser = (await res.json()) as RawProfile;
 
     expect(res.status).toBe(200);
     expect(resUser).toEqual(expectedSearch['hacker']!);
@@ -181,7 +181,7 @@ describe('Profiles module > GET /search', () => {
       }
     );
 
-    const resUser = (await res.json()) as SelectedProfile[];
+    const resUser = (await res.json()) as RawProfile[];
 
     expect(res.status).toBe(200);
     expect(resUser.length).toBe(1);
@@ -202,7 +202,7 @@ describe('Profiles module > GET /search', () => {
       }
     );
 
-    const resUser = (await res.json()) as SelectedProfile[];
+    const resUser = (await res.json()) as RawProfile[];
 
     expect(res.status).toBe(200);
     expect(resUser.length).toBe(1);

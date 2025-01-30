@@ -1,3 +1,4 @@
+import { z } from 'zod';
 import { db } from '../drizzle';
 import factory from '../factory';
 import { getProfileFromId } from '../profile';
@@ -47,12 +48,12 @@ const qr = factory
     }
   )
   .delete(
-    '/:uuid',
+    '/:id',
     grantAccessTo('god'),
-    simpleValidator('param', qrSchema),
+    simpleValidator('param', z.object({ id: z.string() })),
     async ctx => {
-      const { uuid } = ctx.req.valid('param');
-      const result = await db.delete(qrs).where(eq(qrs.uuid, uuid)).returning();
+      const { id } = ctx.req.valid('param');
+      const result = await db.delete(qrs).where(eq(qrs.userId, id)).returning();
 
       if (result.length === 0) return ctx.text('UUID not found', 404);
       return ctx.json({}, 200);

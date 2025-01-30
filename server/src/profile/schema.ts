@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { selectUserSchema, users } from '../auth/schema';
 import { passwordPattern } from '../auth/types';
 import { newDemographSchema } from '../demograph/schema';
+import { selectQrSchema } from '../qr/schema';
 
 export const profiles = pgTable('profiles', {
   id: text('id')
@@ -19,6 +20,17 @@ export const profiles = pgTable('profiles', {
 });
 
 const selectProfileSchema = createSelectSchema(profiles);
+export type RawProfile = z.infer<typeof selectProfileSchema>;
+
+const userProfileSchema = z.intersection(selectProfileSchema, selectUserSchema);
+export type UserAndProfile = z.infer<typeof userProfileSchema>;
+
+const adminSelectProfileSchema = z.object({
+  users: selectUserSchema,
+  profiles: selectProfileSchema.nullable(),
+  qr: selectQrSchema.nullable()
+});
+export type AdminSelectProfile = z.infer<typeof adminSelectProfileSchema>;
 
 const insertProfileSchema = selectProfileSchema
   .extend({
@@ -58,10 +70,6 @@ export const updateProfileSchema = selectProfileSchema
   .omit({ id: true, meals: true })
   .strict()
   .partial();
-
-export type SelectedProfile = z.infer<typeof selectProfileSchema>;
-const profileSchema = z.intersection(selectProfileSchema, selectUserSchema);
-export type Profile = z.infer<typeof profileSchema>;
 
 export const updateMealSchema = z
   .object({

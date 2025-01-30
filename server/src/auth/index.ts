@@ -17,6 +17,7 @@ import { grantAccessTo } from '../security';
 import { z } from 'zod';
 import { simpleValidator } from '../validators';
 import { HTTPException } from 'hono/http-exception';
+import { profiles } from '../profile/schema';
 import { sendEmail } from '../email';
 import { forgotPassTemplate, ichackLogo } from './forgotPass';
 import nunjucks from 'nunjucks';
@@ -153,14 +154,15 @@ const auth = factory
       }
 
       await db.transaction(async tx => {
+        // // Cascading the delete to other tables
         await tx
           .delete(userSession)
-          .where(eq(userSession.userId, id)) // the session exists, that's how we got here.
+          .where(eq(userSession.userId, id))
           .returning();
 
         await tx.delete(userToken).where(eq(userToken.userId, id)).returning();
 
-        // TODO delete profile table
+        await tx.delete(profiles).where(eq(profiles.id, id)).returning();
 
         try {
           await tx.delete(users).where(eq(users.id, id)).returning();
@@ -311,6 +313,10 @@ const auth = factory
       return c.json({}, 200);
     }
   )
+  /**
+   * Changes the password of the user.
+   * Supplies the old password and the new password.
+   */
   .put(
     '/changePassword',
     grantAccessTo('authenticated'),
@@ -364,6 +370,10 @@ const auth = factory
       return c.json({}, 200);
     }
   )
+  /**
+   * Returns the user's details if the token is valid.
+   * user details include name, email, and role.
+   */
   .get(
     '/register',
     grantAccessTo('all'),

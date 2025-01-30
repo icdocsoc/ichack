@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, test } from 'bun:test';
-import { profiles, type SelectedProfile } from '../schema';
+import { profiles, type RawProfile } from '../schema';
 import { roles, type Role } from '../../types';
 import { testClient } from 'hono/testing';
 import app from '../../app';
@@ -20,7 +20,7 @@ const expectedSkeleton = {
   password: 'securepass',
   cvUploaded: false
 };
-const expectedUsers: Partial<Record<Role, SelectedProfile>> = {};
+const expectedUsers: Partial<Record<Role, RawProfile>> = {};
 
 beforeAll(async () => {
   // Insert sample users into the database & sign in as one

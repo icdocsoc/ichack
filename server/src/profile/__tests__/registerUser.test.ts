@@ -6,7 +6,7 @@ import {
   expect,
   test
 } from 'bun:test';
-import { profiles, type Profile, type SelectedProfile } from '../schema';
+import { profiles, type UserAndProfile, type RawProfile } from '../schema';
 import { db } from '../../drizzle';
 import { users, userSession, userToken } from '../../auth/schema';
 import { createUserWithSession, tomorrow, yesterday } from '../../testHelpers';
@@ -28,8 +28,8 @@ const expectedSkeleton = {
   cvUploaded: false,
   discord_id: null
 };
-const expectedGet: Partial<Record<Role, SelectedProfile>> = {};
-const expectedSearch: Partial<Record<Role, Profile>> = {};
+const expectedGet: Partial<Record<Role, RawProfile>> = {};
+const expectedSearch: Partial<Record<Role, UserAndProfile>> = {};
 
 beforeEach(async () => {
   // Insert sample users into the database & sign in as one
