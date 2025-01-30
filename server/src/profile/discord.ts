@@ -4,7 +4,7 @@ import buildUrl from 'build-url-ts';
 import { Result } from 'typescript-result';
 
 const baseUrl = Bun.env.BASE_URL;
-const internalDiscordUrl = `${baseUrl}/profile/discord`;
+const internalDiscordUrl = `${baseUrl}/api/profile/discord`;
 
 const discord = {
   clientId: process.env.DISCORD_CLIENT_ID,
@@ -46,7 +46,6 @@ export class DiscordRepository {
         scope: discord.scopes.join(' '),
         redirect_uri: internalDiscordUrl,
         prompt: 'consent',
-        integration_type: 1,
         state: this.hash
       }
     })!; // This function never returns an undefined value: https://github.com/meabed/build-url-ts/issues/503
@@ -58,20 +57,26 @@ export class DiscordRepository {
     return this.state === this.hash && this.code != undefined;
   }
 
-  async addUserToServer(): Promise<Result<'added' | 'already_present', Error>> {
+  async addUserToServer(
+    name: string,
+    role: 'hacker' | 'volunteer'
+  ): Promise<Result<string | 'already_present', Error>> {
     assert.ok(this.areStateAndCodeValid());
 
     const data = {
       grant_type: 'authorization_code',
-      code: this.code,
-      redirect_uri: internalDiscordUrl
+      code: this.code!,
+      redirect_uri: internalDiscordUrl,
+      client_id: discord.clientId!,
+      client_secret: discord.clientSecret!,
+      scope: discord.scopes.join(' ')
     };
+
     const tokenReq = await fetch('https://discord.com/api/v10/oauth2/token', {
       method: 'POST',
-      body: JSON.stringify(data),
+      body: new URLSearchParams(data).toString(),
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        Authorization: btoa(`${discord.clientId}:${discord.clientSecret}`)
+        'Content-Type': 'application/x-www-form-urlencoded'
       }
     });
     const token = await tokenReq.json();
@@ -84,13 +89,26 @@ export class DiscordRepository {
     });
     const discordUser = await userReq.json();
 
+    const roles: string[] = [];
+    if (role === 'hacker') {
+      roles.push(process.env.DISCORD_HACKER_ROLE_ID!);
+    } else if (role === 'volunteer') {
+      roles.push(process.env.DISCORD_VOLUNTEER_ROLE_ID!);
+    }
+
     const addToServerReq = await fetch(
       `${discord.apiBase}/guilds/${discord.serverId}/members/${discordUser.id}`,
       {
         method: 'PUT',
         headers: {
-          Authorization: `${token.token_type} ${token.access_token}`
-        }
+          authorization: `Bot ${process.env.DISCORD_BOT_TOKEN}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          access_token: token.access_token,
+          nick: name,
+          roles
+        })
       }
     );
 
@@ -98,12 +116,27 @@ export class DiscordRepository {
 
     switch (status) {
       case 201:
-        return Result.ok('added');
+        return Result.ok(discordUser.id as string);
       case 204:
         return Result.ok('already_present');
       default:
         const failure = await addToServerReq.text();
         return Result.error(new Error(failure));
     }
+  }
+
+  static async removeUser(userId: string) {
+    const res = await fetch(
+      `${discord.apiBase}/guilds/${discord.serverId}/members/${userId}`,
+      {
+        method: 'DELETE',
+        headers: {
+          authorization: `Bot ${process.env.DISCORD_BOT_TOKEN}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    return res.status;
   }
 }

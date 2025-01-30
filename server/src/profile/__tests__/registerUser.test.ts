@@ -25,7 +25,8 @@ const expectedSkeleton = {
   dietary_restrictions: [],
   pronouns: null,
   meals: [false, false, false],
-  cvUploaded: false
+  cvUploaded: false,
+  discord_id: null
 };
 const expectedGet: Partial<Record<Role, SelectedProfile>> = {};
 const expectedSearch: Partial<Record<Role, Profile>> = {};
@@ -279,7 +280,7 @@ describe('Profiles module > POST /register', () => {
   });
 });
 
-describe('Profile Modules > GET /register/stats', () => {
+describe('Profiles Modules > GET /register/stats', () => {
   test('can get registration stats', async () => {
     const res = await baseRoute.register.stats.$get(undefined, {
       headers: {

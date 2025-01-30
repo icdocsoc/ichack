@@ -53,7 +53,8 @@ beforeAll(async () => {
     dietary_restrictions: [],
     cvUploaded: false,
     pronouns: 'they/them',
-    meals: [false, false, false]
+    meals: [false, false, false],
+    discord_id: null
   };
 
   await db.insert(profiles).values(hackerProfile);

@@ -16,7 +16,8 @@ const expectedSkeleton = {
   dietary_restrictions: [],
   pronouns: null,
   meals: [false, false, false],
-  cvUploaded: false
+  cvUploaded: false,
+  discord_id: null
 };
 const expectedSearch: Partial<Record<Role, Profile>> = {};
 const sortById = (

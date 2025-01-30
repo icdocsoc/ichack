@@ -40,6 +40,8 @@ const statsQuery = db
   .where(eq(users.role, sql.placeholder('role')))
   .prepare('role');
 
+const baseUrl = process.env.BASE_URL!;
+
 export const getProfileFromId = db
   .select({
     id: users.id,
@@ -50,7 +52,8 @@ export const getProfileFromId = db
     dietary_restrictions: profiles.dietary_restrictions,
     pronouns: profiles.pronouns,
     meals: profiles.meals,
-    cvUploaded: profiles.cvUploaded
+    cvUploaded: profiles.cvUploaded,
+    discord_id: profiles.discord_id
   })
   .from(profiles)
   .innerJoin(users, eq(users.id, profiles.id))
@@ -110,7 +113,8 @@ const profile = factory
           dietary_restrictions: profiles.dietary_restrictions,
           pronouns: profiles.pronouns,
           meals: profiles.meals,
-          cvUploaded: profiles.cvUploaded
+          cvUploaded: profiles.cvUploaded,
+          discord_id: profiles.discord_id
         })
         .from(profiles)
         .innerJoin(users, eq(users.id, profiles.id))
@@ -316,18 +320,55 @@ const profile = factory
         return ctx.text('Invalid request.', 400);
       }
 
-      const result = await discordRepo.addUserToServer();
+      const dbRes = await db
+        .select({ name: users.name, role: users.role })
+        .from(users)
+        .where(eq(users.id, session.userId));
+
+      const discordRole =
+        dbRes[0]!.role === 'god' || dbRes[0]!.role === 'admin'
+          ? 'volunteer'
+          : dbRes[0]!.role;
+
+      const result = await discordRepo.addUserToServer(
+        dbRes[0]!.name,
+        discordRole
+      );
       if (result.isError()) {
         return ctx.text(result.error.message, 500);
       }
 
-      if (result.value == 'added') {
-        return ctx.text('Successfully added user to the server.', 201);
-      } else if (result.value == 'already_present') {
-        return ctx.text('User already in server.', 200);
+      if (result.value != 'already_present') {
+        await db
+          .update(profiles)
+          .set({ discord_id: result.value! })
+          .where(eq(profiles.id, session.userId));
+        // TODO: Update hackspace role
       }
+
+      // TODO: Add /profile
+      return ctx.redirect(`${baseUrl}`);
     }
   )
+  .delete('/discord', grantAccessTo('authenticated'), async ctx => {
+    const user = ctx.get('user')!;
+
+    const dbRes = await db
+      .select({ discord_id: profiles.discord_id })
+      .from(profiles)
+      .where(eq(profiles.id, user.id));
+
+    if (dbRes[0]!.discord_id != null) {
+      await DiscordRepository.removeUser(dbRes[0]!.discord_id);
+    }
+
+    await db
+      .update(profiles)
+      .set({ discord_id: null })
+      .where(eq(profiles.id, user.id));
+
+    return ctx.text('', 200);
+  })
   .post(
     '/register',
     grantAccessTo('all'),
@@ -472,7 +513,8 @@ const profile = factory
         dietary_restrictions: profiles.dietary_restrictions,
         pronouns: profiles.pronouns,
         meals: profiles.meals,
-        cvUploaded: profiles.cvUploaded
+        cvUploaded: profiles.cvUploaded,
+        discord_id: profiles.discord_id
       })
       .from(profiles)
       .innerJoin(users, eq(users.id, profiles.id))

@@ -14,7 +14,8 @@ export const profiles = pgTable('profiles', {
   dietary_restrictions: text('dietary_restrictions').array().notNull(),
   pronouns: text('pronouns'),
   meals: boolean('meals').array().default([false, false, false]).notNull(),
-  cvUploaded: boolean('cv_uploaded').notNull()
+  cvUploaded: boolean('cv_uploaded').notNull(),
+  discord_id: text('discord_id')
 });
 
 const selectProfileSchema = createSelectSchema(profiles);
@@ -28,7 +29,7 @@ const insertProfileSchema = selectProfileSchema
         'Passwords must be atleast 8 characters, one uppercase, one lowercase, and one digit.'
       )
   })
-  .omit({ id: true, meals: true, cvUploaded: true })
+  .omit({ id: true, meals: true, cvUploaded: true, discord_id: true })
   .strict();
 
 export const registerProfileSchema =
