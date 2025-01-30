@@ -1,34 +1,33 @@
 import { Result } from 'typescript-result';
-import type { CreateUserDetails, User, UserCredentials } from '~~/shared/types';
+import type { AdminMetadata } from '~~/shared/types';
 
 export default () => {
-  const deleteUser = (id: string): Promise<Result<void, Error>> =>
+  const client = useHttpClient();
+
+  const setMealNumber = (mealNumber: number): Promise<Result<void, Error>> =>
     Result.try(async () => {
-      const req = await $fetch(`/api/auth/${id}`, {
-        method: 'DELETE'
+      const res = await client.admin.mealNumber.$put({
+        json: { mealNumber }
       });
 
-      if (req.error) {
-        throw req.error;
+      if (!res.ok) {
+        const message = await res.text();
+        throw new Error(message);
       }
     });
 
-  const createUser = (
-    details: CreateUserDetails
-  ): Promise<Result<void, Error>> =>
+  const getMetaDataInfo = (): Promise<Result<AdminMetadata, Error>> =>
     Result.try(async () => {
-      const req = await $fetch('/api/auth/create', {
-        method: 'POST',
-        body: details
-      });
+      const res = await client.admin.$get();
 
-      if (req.error) {
-        throw req.error;
+      if (!res.ok) {
+        const message = await res.text();
+        throw new Error(message);
       }
+
+      const metadata = await res.json();
+      return metadata;
     });
 
-  return {
-    createUser,
-    deleteUser
-  };
+  return { setMealNumber, getMetaDataInfo };
 };

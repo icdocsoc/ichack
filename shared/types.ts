@@ -3,6 +3,7 @@ import { postLoginBody } from './schemas';
 import app from '~~/server/src/app';
 import { selectUserSchema } from '~~/server/src/auth/schema';
 import { eventSchema } from '~~/server/src/event/schema';
+import { metadataSchema } from '~~/server/src/admin/schema';
 import { registerProfileSchema } from './schemas';
 
 export {
@@ -21,3 +22,4 @@ export type { UserAndProfile as Profile } from '~~/server/src/profile/schema';
 export type Event = z.infer<typeof eventSchema>;
 export type EventLocation = Event['locations'][number];
 export type RegistrationDetails = z.infer<typeof registerProfileSchema>;
+export type AdminMetadata = z.infer<typeof metadataSchema>;

@@ -7,6 +7,7 @@ import app from '../../app';
 import { testClient } from 'hono/testing';
 import { roles, type Role } from '../../types';
 import { eq, sql } from 'drizzle-orm';
+import { adminMeta } from '../../admin/schema';
 
 const sessionIds: Partial<Record<Role, string>> = {};
 
@@ -27,6 +28,7 @@ beforeAll(async () => {
   await db.execute(sql`TRUNCATE ${users} CASCADE`);
   await db.execute(sql`TRUNCATE ${categories} CASCADE`);
   await db.execute(sql`TRUNCATE ${companies} CASCADE`);
+  await db.execute(sql`TRUNCATE ${adminMeta} CASCADE`);
 
   for (const role of roles) {
     const { sessionId } = await createUserWithSession(role, {
@@ -38,6 +40,7 @@ beforeAll(async () => {
   }
 
   await db.insert(companies).values({ name: kotlinCategory.owner });
+  await db.insert(adminMeta).values({ showCategories: true, mealNumber: -1 });
 });
 
 describe('Category Module > POST /', () => {

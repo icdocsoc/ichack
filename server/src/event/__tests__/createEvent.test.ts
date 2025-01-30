@@ -117,7 +117,7 @@ describe('Events Module > POST /', () => {
         },
         {
           headers: {
-            Cookie: `auth_session=${sessionIds.hacker}`
+            Cookie: `auth_session=${sessionIds[role]}`
           }
         }
       );

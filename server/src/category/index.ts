@@ -2,14 +2,10 @@ import { eq } from 'drizzle-orm';
 import { db } from '../drizzle';
 import factory from '../factory';
 import { grantAccessTo } from '../security';
-import {
-  sponsorCompany,
-  categories,
-  insertCategorySchema,
-  companies
-} from './schema';
+import { categories, insertCategorySchema, companies } from './schema';
 import { z } from 'zod';
 import { simpleValidator } from '../validators';
+import { adminMeta } from '../admin/schema';
 
 const createCategorySchema = insertCategorySchema.omit({ slug: true });
 const godUpdateCategorySchema = insertCategorySchema
@@ -32,7 +28,14 @@ const category = factory
    * Any authenticated user can get all categories
    */
   .get('/', grantAccessTo('authenticated'), async c => {
-    // TODO Restrict this based on time. Logic to be determined later
+    const user = c.get('user')!;
+
+    const meta = await db
+      .select({ showCategories: adminMeta.showCategories })
+      .from(adminMeta);
+
+    if (!meta[0]!.showCategories && user.role !== 'god')
+      return c.text('Categories not found', 404);
 
     const all = await db.select().from(categories);
     return c.json(all, 200);
@@ -45,7 +48,15 @@ const category = factory
     grantAccessTo('authenticated'),
     simpleValidator('param', z.object({ slug: z.string().regex(slugPattern) })),
     async c => {
+      const user = c.get('user')!;
+
+      const meta = await db
+        .select({ showCategories: adminMeta.showCategories })
+        .from(adminMeta);
+
       const { slug } = c.req.valid('param');
+      if (!meta[0]!.showCategories && user.role !== 'god')
+        return c.text(`Category with slug '${slug}' does not exist`, 404);
 
       const category = await db
         .select()
@@ -61,6 +72,8 @@ const category = factory
   )
   /**
    * Gods can create new categories where the slug is auto-generated
+   * This assumes that the long description is a URL to a markdown file
+   * already uploaded prior to this request.
    */
   .post(
     '/',
@@ -86,9 +99,7 @@ const category = factory
           slug
         });
         return c.json({}, 201);
-      } catch (e) {
-        // TODO Inspect the type of error in error handling
-        // @ts-ignore
+      } catch (e: any) {
         return c.text(e.message, 409);
       }
     }
@@ -131,9 +142,7 @@ const category = factory
           .set({ ...newCategory, slug: newSlug })
           .where(eq(categories.slug, slug));
         return c.json({}, 200);
-      } catch (e) {
-        // TODO Inspect the type of error in error handling
-        // @ts-ignore
+      } catch (e: any) {
         return c.text(e.message, 409);
       }
     }
@@ -159,9 +168,7 @@ const category = factory
         // slug is primary key. So, there can be only one category
 
         return c.json({}, 200);
-      } catch (e) {
-        // TODO Inspect the type of error in error handling
-        // @ts-ignore
+      } catch (e: any) {
         return c.text(e.message, 500);
       }
     }

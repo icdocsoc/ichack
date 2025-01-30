@@ -1,6 +1,7 @@
 import logger, { apiLogger } from './logger';
 import sessionMiddleware from './auth/sessionMiddleware';
 import auth from './auth';
+import admin from './admin';
 import announcement from './announcement';
 import category from './category';
 import event from './event';
@@ -15,6 +16,7 @@ import { testOrigin } from './security';
 
 const api = factory
   .createApp()
+  .route('/admin', admin)
   .route('/announcement', announcement)
   .route('/auth', auth)
   .route('/category', category)
