@@ -1,5 +1,5 @@
 import { pgTable, text } from 'drizzle-orm/pg-core';
-import { createInsertSchema } from 'drizzle-zod';
+import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { users } from '../auth/schema';
 
 export const companies = pgTable('companies', {
@@ -14,7 +14,10 @@ export const categories = pgTable('categories', {
     .references(() => companies.name),
   image: text('image').notNull(),
   shortDescription: text('short_description').notNull(),
-  longDescription: text('long_description').notNull()
+  longDescription:
+    text(
+      'long_description'
+    ).notNull() /* This is being abandoned by Directors. Simply use shortDescription. */
 });
 
 export const sponsorCompany = pgTable('sponsor_company', {
@@ -31,3 +34,5 @@ export const insertCategorySchema = createInsertSchema(categories, {
   image: schema => schema.url(),
   longDescription: schema => schema.url()
 }); // The slug is generated from the owner and title
+
+export const categorySchema = createSelectSchema(categories);
