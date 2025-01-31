@@ -83,6 +83,7 @@
     "tailwind-merge": "^2.5.5",
     "typescript-result": "^3.1.0",
     "vue": "latest",
+    "vue-qrcode-reader": "^5.7.0",
     "zod": "^3.23.8"
   }
 }

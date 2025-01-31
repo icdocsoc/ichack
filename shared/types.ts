@@ -9,6 +9,7 @@ import {
   createAnnouncementSchema,
   selectAnnouncementSchema
 } from '../server/src/announcement/schema';
+import type { qrSchema } from '~~/server/src/qr/schema';
 import { updateProfileSchema } from '~~/server/src/profile/schema';
 import { categorySchema } from '~~/server/src/category/schema';
 
@@ -39,4 +40,6 @@ export type CreateAnnouncementDetails = z.infer<
 export type AnnouncementDetails = z.infer<typeof selectAnnouncementSchema> & {
   synced: boolean;
 };
+
+export type QrCode = z.infer<typeof qrSchema>;
 export type UpdateProfile = z.infer<typeof updateProfileSchema>;
