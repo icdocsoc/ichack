@@ -1,0 +1,55 @@
+{
+  "formatVersion": 1,
+  "passTypeIdentifier": "pass.com.docsoc.ichack",
+  "teamIdentifier": "J9U67VUZ53",
+  "organizationName": "DoCSoc",
+  "description": "IC Hack Ticket",
+  "logoText": " ",
+  "foregroundColor": "rgb(0, 0, 0)",
+  "backgroundColor": "rgb(243, 243, 243)",
+  "labelColor": "rgb(119, 119, 119)",
+  "eventTicket": {
+    "headerFields": [
+      {
+        "key": "header0",
+        "label": "Date",
+        "value": "1–2 Feb"
+      }
+    ],
+    "primaryFields": [],
+    "secondaryFields": [],
+    "auxiliaryFields": [
+      {
+        "key": "auxiliary0",
+        "label": "Location",
+        "value": "Imperial College",
+        "textAlignment": "PKTextAlignmentLeft"
+      },
+      {
+        "key": "auxiliary1",
+        "label": "Entrance",
+        "value": "Main",
+        "textAlignment": "PKTextAlignmentLeft"
+      },
+      {
+        "key": "auxiliary2",
+        "label": "Time",
+        "value": "09:00",
+        "textAlignment": "PKTextAlignmentRight"
+      }
+    ],
+    "backFields": []
+  },
+  "authenticationToken": "219731872312897g31289yge9812gd89ygasdqsqdwq",
+  "webServiceURL": "https://my.ichack.org/api/pass",
+  "serialNumber": "60D21A3B-7022-42C7-AADB-712F402F470F",
+  "relevantDate": "2025-02-01T08:00:00Z",
+  "expirationDate": "2025-02-03T18:12:00Z",
+  "locations": [
+    {
+      "latitude": 51.4991057,
+      "longitude": -0.1770794
+    }
+  ],
+  "barcodes": []
+}

@@ -13,7 +13,7 @@ const MAX_PDF_SIZE = 5 * 1024 * 1024; // 5MB
 export const s3client = new S3Client({
   accessKeyId: process.env.STORAGE_ACCESS_KEY,
   secretAccessKey: process.env.STORAGE_SECRET_KEY,
-  bucket: process.env.STORAGE_BUCKET,
+  bucket: process.env.STORAGE_BUCKET_CV,
   endpoint: process.env.STORAGE_ENDPOINT
 });
 

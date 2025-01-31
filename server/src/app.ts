@@ -13,6 +13,7 @@ import { HTTPException } from 'hono/http-exception';
 import sudo from './sudo';
 import { cors } from 'hono/cors';
 import { testOrigin } from './security';
+import { pass } from './pass';
 
 const api = factory
   .createApp()
@@ -23,7 +24,8 @@ const api = factory
   .route('/event', event)
   .route('/profile', profile)
   .route('/team', team)
-  .route('/qr', qr);
+  .route('/qr', qr)
+  .route('/pass', pass);
 
 const app = factory
   .createApp()

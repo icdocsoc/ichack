@@ -43,6 +43,13 @@
       "when": 1738300152243,
       "tag": "0005_more-announcements-fields",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1738346312212,
+      "tag": "0006_wallet-passes",
+      "breakpoints": true
     }
   ]
 }
