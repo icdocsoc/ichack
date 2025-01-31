@@ -1,4 +1,4 @@
-import { describe, test, expect, beforeAll } from 'bun:test';
+import { describe, test, expect, beforeAll, jest } from 'bun:test';
 import { db } from '../../drizzle';
 import { users } from '../../auth/schema';
 import { announcements } from '../schema';
@@ -29,12 +29,21 @@ beforeAll(async () => {
     id: 1,
     title: "Terra's challenge has been changed",
     description: 'From healthcare to Military AI',
-    createdAt: new Date()
+    location: 'The Universe',
+    pinUntil: null,
+    messageId: 123456789012345678n,
+    created: new Date()
   });
+
+  global.fetch = jest.fn() as jest.Mock;
 });
 
 describe('Announcement Module > PUT /:id', () => {
   test('Successfully edits an announcement', async () => {
+    (fetch as jest.Mock).mockResolvedValueOnce(
+      new Response(null, { status: 200 })
+    );
+
     const res = await client.announcement[':id'].$put(
       {
         param: {
@@ -61,10 +70,10 @@ describe('Announcement Module > PUT /:id', () => {
       .where(eq(announcements.id, 1));
 
     expect(announcement.length).toBe(1);
-    expect(announcement[0].description).toBe(
+    expect(announcement[0]!.description).toBe(
       'From healthcare to Military AI but also Space'
     );
-    expect(announcement[0].title).toBe(
+    expect(announcement[0]!.title).toBe(
       "Terra's challenge has been changed again!"
     );
   });

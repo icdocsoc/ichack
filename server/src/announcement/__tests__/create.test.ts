@@ -1,4 +1,4 @@
-import { describe, test, expect, beforeAll, jest } from 'bun:test';
+import { describe, test, expect, beforeAll, jest, beforeEach } from 'bun:test';
 import { db } from '../../drizzle';
 import { users } from '../../auth/schema';
 import { announcements } from '../schema';
@@ -7,6 +7,7 @@ import { testClient } from 'hono/testing';
 import app from '../../app';
 import { eq, sql } from 'drizzle-orm';
 import { lucia } from '../../auth/lucia';
+import type { CreateAnnouncementDetails } from '~~/shared/types';
 
 let adminSession: string;
 let adminId: string;
@@ -24,6 +25,7 @@ beforeAll(async () => {
   });
   adminId = userId;
   adminSession = sessionId;
+  global.fetch = jest.fn() as jest.Mock;
 });
 
 describe('Announcement Module > POST /', () => {
@@ -31,11 +33,22 @@ describe('Announcement Module > POST /', () => {
     // Mock the date
     jest.setSystemTime(today);
 
-    const newAnnouncement = {
+    const newAnnouncement: CreateAnnouncementDetails = {
       title: 'Test Announcement',
       description: 'This is a test announcement',
+      location: 'Nowhere',
       pinUntil: tomorrow
     };
+
+    (fetch as jest.Mock).mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          id: '123456789012345678'
+        }),
+        { status: 200 }
+      )
+    );
+
     const res = await client.announcement.$post(
       {
         json: newAnnouncement
@@ -61,11 +74,12 @@ describe('Announcement Module > POST /', () => {
     expect(announcement[0]).toEqual({
       ...newAnnouncement,
       id: expect.any(Number),
-      createdAt: expect.any(Date)
+      created: expect.any(Date),
+      messageId: 123456789012345678n
     });
 
     // Verify the createdAt is within 10 seconds of the current time
-    expect(announcement[0]!.createdAt).toEqual(today);
+    expect(announcement[0]!.created).toEqual(today);
 
     jest.clearAllMocks();
   });
@@ -83,7 +97,9 @@ describe('Announcement Module > POST /', () => {
       {
         json: {
           title: 'Test Announcement',
-          description: 'This is a test announcement'
+          description: 'This is a test announcement',
+          location: 'Nowhere',
+          pinUntil: null
         }
       },
       {
@@ -106,7 +122,9 @@ describe('Announcement Module > POST /', () => {
       {
         json: {
           title: 'Test Announcement',
-          description: 'This is a test announcement'
+          description: 'This is a test announcement',
+          location: 'Nowhere',
+          pinUntil: null
         }
       },
       {
@@ -132,7 +150,9 @@ describe('Announcement Module > POST /', () => {
           // @ts-ignore for this test
           id: 1,
           title: 'Test Announcement',
-          description: 'This is a test announcement'
+          description: 'This is a test announcement',
+          location: 'Nowhere',
+          pinUntil: null
         }
       },
       {
@@ -151,8 +171,10 @@ describe('Announcement Module > POST /', () => {
         json: {
           title: 'Test Announcement',
           description: 'This is a test announcement',
+          location: 'Nowhere',
+          pinUntil: tomorrow,
           // @ts-expect-error for this test
-          createdAt: tomorrow
+          created: tomorrow
         }
       },
       {
@@ -164,6 +186,6 @@ describe('Announcement Module > POST /', () => {
 
     // @ts-ignore this can return 400
     expect(res2.status).toBe(400);
-    expect(res2.text()).resolves.toBe("Property 'createdAt' is not allowed");
+    expect(res2.text()).resolves.toBe("Property 'created' is not allowed");
   });
 });

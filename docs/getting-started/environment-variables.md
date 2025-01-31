@@ -19,6 +19,9 @@ PGCA=
 DISCORD_CLIENT_ID= # anything, you'll know if you're testing this
 DISCORD_SERVER_ID= # see above
 DISCORD_CLIENT_SECRET= # see above
+
+DISCORD_ANNOUNCEMENT_WEBHOOK= # URL to a discord webhook for announcements channel
+DISCORD_HACKER_ROLE_ID= # Role ID snowflake of @hackers role in server
 ```
 
 ## Test setup (`.env.test`)
@@ -34,4 +37,6 @@ PGCA=
 DISCORD_CLIENT_ID=
 DISCORD_SERVER_ID=
 DISCORD_CLIENT_SECRET=
+DISCORD_ANNOUNCEMENT_WEBHOOK=
+DISCORD_HACKER_ROLE_ID=
 ```

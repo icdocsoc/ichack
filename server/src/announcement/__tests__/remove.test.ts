@@ -1,4 +1,4 @@
-import { describe, test, expect, beforeAll } from 'bun:test';
+import { describe, test, expect, beforeAll, jest } from 'bun:test';
 import { db } from '../../drizzle';
 import { users } from '../../auth/schema';
 import { announcements } from '../schema';
@@ -29,12 +29,21 @@ beforeAll(async () => {
     id: 1,
     title: "Terra's challenge has been changed",
     description: 'From healthcare to Military AI',
-    createdAt: new Date()
+    location: 'The Universe',
+    pinUntil: null,
+    messageId: 12345678901246578n,
+    created: new Date()
   });
+
+  global.fetch = jest.fn() as jest.Mock;
 });
 
 describe('Announcement Module > DELETE /:id', () => {
   test('Successfully deletes an announcement', async () => {
+    (fetch as jest.Mock).mockResolvedValueOnce(
+      new Response(null, { status: 204 })
+    );
+
     const res = await client.announcement[':id'].$delete(
       {
         param: {

@@ -1,22 +1,28 @@
-import { pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core';
+import { pgTable, serial, text, timestamp, bigint } from 'drizzle-orm/pg-core';
 import { createInsertSchema } from 'drizzle-zod';
 import { z } from 'zod';
 
 export const announcements = pgTable('announcements', {
-  id: serial('id').primaryKey(),
+  id: serial('id').notNull().primaryKey(),
   title: text('title').notNull(),
+  location: text('location').notNull(),
   description: text('description').notNull(),
-  createdAt: timestamp('created_at').notNull(),
-  pinUntil: timestamp('pin_until')
+  created: timestamp('created_at').notNull().defaultNow(),
+  pinUntil: timestamp('pin_until'),
+  messageId: bigint('message_id', { mode: 'bigint' })
 });
 
-export const insertAnnouncementSchema = createInsertSchema(announcements, {
+export const selectAnnouncementSchema = createInsertSchema(announcements, {
   /* Issue described at https://github.com/drizzle-team/drizzle-orm/issues/3842 */
-  createdAt: z.coerce.date(),
-  pinUntil: z.coerce.date().optional()
-})
+  created: z.coerce.date(),
+  pinUntil: z.coerce.date().nullable()
+}).omit({
+  messageId: true
+});
+
+export const createAnnouncementSchema = selectAnnouncementSchema
   .omit({
     id: true,
-    createdAt: true
+    created: true
   })
   .strict();

@@ -5,6 +5,10 @@ import { selectUserSchema } from '~~/server/src/auth/schema';
 import { eventSchema } from '~~/server/src/event/schema';
 import { metadataSchema } from '~~/server/src/admin/schema';
 import { registerProfileSchema } from './schemas';
+import type {
+  createAnnouncementSchema,
+  selectAnnouncementSchema
+} from '../server/src/announcement/schema';
 
 export {
   tShirtSizes,
@@ -23,3 +27,11 @@ export type Event = z.infer<typeof eventSchema>;
 export type EventLocation = Event['locations'][number];
 export type RegistrationDetails = z.infer<typeof registerProfileSchema>;
 export type AdminMetadata = z.infer<typeof metadataSchema>;
+
+export type AnnouncementId = number;
+export type CreateAnnouncementDetails = z.infer<
+  typeof createAnnouncementSchema
+>;
+export type AnnouncementDetails = z.infer<typeof selectAnnouncementSchema> & {
+  synced: boolean;
+};
