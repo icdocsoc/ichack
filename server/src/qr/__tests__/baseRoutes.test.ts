@@ -180,6 +180,45 @@ describe('QR Module > POST /', () => {
   });
 });
 
+describe('QR Module > GET /', () => {
+  test('should return user profile for authenticated linked user', async () => {
+    await db.execute(sql`TRUNCATE ${qrs} CASCADE`);
+
+    const insertedUuid = '00000000-0000-0000-0000-000000000071';
+    await db.insert(qrs).values({
+      userId: hackerProfile.id,
+      uuid: insertedUuid
+    });
+
+    const res = await client.qr.$get(undefined, {
+      headers: {
+        Cookie: `auth_session=${sessionIds.hacker!}`
+      }
+    });
+
+    expect(res.status).toBe(200);
+  });
+
+  test('should return 404 for unlinked user', async () => {
+    await db.execute(sql`TRUNCATE ${qrs} CASCADE`);
+
+    const res = await client.qr.$get(undefined, {
+      headers: {
+        Cookie: `auth_session=${sessionIds.hacker!}`
+      }
+    });
+
+    expect(res.status).toBe(404);
+    expect(res.text()).resolves.toBe('UUID not found');
+  });
+
+  test('should return 403 for unauthenticated user', async () => {
+    const res = await client.qr.$get();
+
+    expect(res.status).toBe(403);
+  });
+});
+
 // GET (param)
 describe('QR Module > GET /:uuid', () => {
   test('Everyone but hacker can scan any qr code to get the profile', async () => {

@@ -47,7 +47,7 @@ import AppleWalletButton from '~~/packages/admin/components/AppleWalletButton.vu
 import GoogleWalletButton from '~~/packages/admin/components/GoogleWalletButton.vue';
 
 definePageMeta({
-  middleware: 'require-auth'
+  middleware: ['require-auth']
 });
 
 const profileStore = useProfileStore();

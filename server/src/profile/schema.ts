@@ -67,7 +67,7 @@ export const updateProfileSchema = selectProfileSchema
   .extend({
     cv: z.instanceof(File)
   })
-  .omit({ id: true, meals: true })
+  .omit({ id: true, meals: true, discord_id: true })
   .strict()
   .partial();
 

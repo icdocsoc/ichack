@@ -41,6 +41,27 @@ const qr = factory
       }
     }
   )
+  /**
+   * An authenticated user can check if they have a qr code linked to their account
+   * false -> 404 with message
+   * true -> 200
+   */
+  .get(
+    '/',
+    grantAccessTo(['authenticated'], { allowUnlinkedHackers: true }),
+    async ctx => {
+      const user = ctx.get('user')!;
+
+      const query = await db.select().from(qrs).where(eq(qrs.userId, user.id));
+
+      if (query.length === 0) return ctx.text('UUID not found', 404);
+      const userId = query[0]!.userId;
+
+      const res = await getProfileFromId.execute({ id: userId });
+      if (!res) return ctx.text('User profile not found', 404);
+      return ctx.json({}, 200);
+    }
+  )
   .get(
     // volunteer+ can scan any qr code to get the profile + modify stuff
     '/:uuid',

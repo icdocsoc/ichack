@@ -3,7 +3,8 @@ import type {
   Profile,
   RegistrationDetails,
   AdminSelectProfile,
-  Role
+  Role,
+  UpdateProfile
 } from '#shared/types';
 
 export type FlatUserProfile = {
@@ -125,6 +126,23 @@ export default () => {
       }
     });
 
+  const updateProfile = (
+    newProfile: UpdateProfile
+  ): Promise<Result<void, Error>> => {
+    return Result.try(async () => {
+      const res = await client.profile.$put({
+        json: newProfile
+      });
+
+      if (!res.ok) {
+        const errorMessage = await res.text();
+        throw new Error(errorMessage);
+      }
+
+      return Result.ok();
+    });
+  };
+
   // Only gods will be able to do this because the route requires the use of the
   // sudo middleware
   const deleteCV = async (userId: string): Promise<Result<void, Error>> =>
@@ -150,6 +168,7 @@ export default () => {
     register,
     getRegistrationStats,
     unsetMeal,
-    deleteCV
+    deleteCV,
+    updateProfile
   };
 };
