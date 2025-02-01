@@ -12,7 +12,7 @@ const opened = defineModel<boolean>();
     class="blue-ic flex cursor-pointer items-center justify-between px-4 py-3"
     :class="opened ? 'border border-white bg-transparent' : background"
     @click="opened = !opened">
-    <p class="max-w-min text-3xl font-bold"><slot></slot></p>
+    <div class="max-w-min text-3xl font-bold"><slot></slot></div>
     <p
       class="font-ichack text-3xl transition-transform"
       :class="{ 'rotate-90': opened }">
