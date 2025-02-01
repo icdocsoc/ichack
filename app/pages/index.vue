@@ -1,70 +1,131 @@
-<template>
-  <div class="mt-5 flex h-[80vh] flex-col place-items-center justify-center">
-    <div class="max-w-[32rem]">
-      <img class="mx-auto w-[50px]" src="~/assets/icon_cube.svg" />
-      <h1
-        class="font-ichack mt-7 text-center text-[clamp(2rem,6vw,2.5rem)] md:text-4xl">
-        You're almost there!
-      </h1>
-      <p
-        class="mt-5 text-center text-[clamp(1.2rem,3vw,1.25rem)] text-gray-200 md:text-xl">
-        Link your wristband for your IC Hack '25 to get started.
-      </p>
-      <div class="h-5"></div>
-      <Discord
-        :linked-discord="profile.discord_id != null"
-        @unlinked="profile.discord_id = null" />
-
-      <div class="flex w-full justify-center">
-        <NuxtLink
-          class="max-w-fit rounded-xl bg-white px-2 py-2 text-lg font-bold text-black"
-          to="/link">
-          Link Your Wristband
-        </NuxtLink>
-      </div>
-
-      <div class="h-[30px] md:h-[70px]"></div>
-      <img class="mx-auto w-[500px]" src="~/assets/divider3.svg" />
-      <p class="mt-7 text-center text-gray-200 md:text-xl">
-        Add your IC Hack '25 event ticket to your digital wallet to be ready for
-        the big day!
-      </p>
-    </div>
-    <div class="h-10"></div>
-    <div class="flex flex-row items-center space-x-10">
-      <AppleWalletButton
-        :name="profile.name"
-        :role="capitalize(profile.role) || 'Hacker'"
-        :qr-text="profile.id" />
-      <GoogleWalletButton
-        :name="profile.name"
-        :role="capitalize(profile.role) || 'Hacker'"
-        :qr-text="profile.id" />
-    </div>
-    <div class="h-5"></div>
-    <NuxtLink
-      class="mt-2 max-w-fit rounded-xl bg-white px-2 py-2 text-lg font-bold text-black"
-      to="/ticket">
-      Your Ticket
-    </NuxtLink>
-    <!-- <p class="mt-3 max-w-[32rem] text-center text-sm text-gray-400">
-      Don't worry if you don't have a digital wallet set up - you'll be able to
-      access your entry ticket right here on the day.
-    </p> -->
-  </div>
-  <div class="h-20"></div>
-</template>
-
 <script setup lang="ts">
-import AppleWalletButton from '~~/packages/admin/components/AppleWalletButton.vue';
-import GoogleWalletButton from '~~/packages/admin/components/GoogleWalletButton.vue';
+import qtr from '@ui25/assets/qtr_blue.svg';
+import scr from '@ui25/assets/scr_red.svg';
+import jcr from '@ui25/assets/jcr_yellow.svg';
 
-definePageMeta({
-  middleware: ['require-auth'],
-  layout: 'no-sidebar'
+const showAdminButtons = ref(false);
+const store = useProfileStore();
+
+const showJoinHackspace = ref(false);
+
+const showHackspaceScores = ref(true);
+
+const showSchedule = ref(false);
+const { data: events } = useAsyncData('get_all_events', async () => {
+  const { getEvents } = useEvents();
+  const result = await getEvents();
+  const events = result.getOrThrow();
+  const now = new Date();
+  return events.filter(event => new Date(event.startsAt) > now);
 });
 
-const profileStore = useProfileStore();
-const profile = profileStore.profile!;
-const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
+const showCategories = ref(false);
+const { data: categories } = useAsyncData('get_all_categories', async () => {
+  const { getAllCategories } = useCategories();
+  const result = await getAllCategories();
+  return result.getOrThrow();
+});
+const backgroundColors = ['bg-red-ic', 'bg-yellow-ic', 'bg-blue-ic'];
+
+definePageMeta({
+  middleware: ['require-auth', 'require-link']
+});
+useHead({
+  title: 'Hacker Dashboard'
+});
 </script>
+
+<template>
+  <div class="flex flex-col gap-5">
+    <div v-if="store.profile?.role !== 'hacker'">
+      <DashboardButton v-model="showAdminButtons" background="bg-red-ic">
+        Admin Panels
+      </DashboardButton>
+      <div
+        v-if="showAdminButtons"
+        class="mt-4 flex justify-between gap-4 pb-4 max-lg:flex-col">
+        <NuxtLink
+          v-if="store.profile?.role !== 'volunteer'"
+          to="/admin"
+          class="w-full">
+          <DashboardHackspaceButton
+            room="Admin Panel"
+            :logo="jcr"
+            class="w-full" />
+        </NuxtLink>
+        <NuxtLink to="/volunteer" class="w-full">
+          <DashboardHackspaceButton
+            room="Volunteer Panel"
+            :logo="jcr"
+            class="w-full" />
+        </NuxtLink>
+      </div>
+    </div>
+
+    <!-- <div>
+      <DashboardButton background="bg-red-ic" v-model="showJoinHackspace">
+        Join a Hackerspace
+      </DashboardButton>
+      <div
+        class="mt-4 flex justify-between gap-4 pb-4 max-lg:flex-col"
+        v-if="showJoinHackspace">
+        <DashboardHackspaceButton
+          room="Junior Common Room"
+          :logo="jcr"
+          class="w-full" />
+        <DashboardHackspaceButton
+          room="Senior Common Room"
+          :logo="scr"
+          class="w-full" />
+        <DashboardHackspaceButton
+          room="Queen's Tower Rooms"
+          :logo="qtr"
+          class="w-full" />
+      </div>
+    </div> -->
+
+    <div>
+      <DashboardButton background="bg-red-ic" v-model="showHackspaceScores">
+        Hackspace Leaderboard
+      </DashboardButton>
+      <DashboardHackspace v-if="showHackspaceScores" class="mt-10 w-full" />
+    </div>
+
+    <div>
+      <DashboardButton v-model="showSchedule" background="bg-yellow-ic">
+        <div class="flex min-w-max flex-col items-start">
+          <p>Schedule</p>
+          <p class="text-lg font-normal" v-if="events?.[0]">
+            Up Next: {{ events?.[0]?.title }}
+          </p>
+        </div>
+      </DashboardButton>
+      <div class="flex" v-if="showSchedule && events">
+        <DashboardSchedule
+          class="relative mt-4 w-full max-w-[60lvw]"
+          :events="events!" />
+        <img
+          src="@ui25/assets/ducks.svg"
+          class="mx-auto my-5 h-20 self-center px-3 max-lg:hidden" />
+      </div>
+    </div>
+
+    <div>
+      <DashboardButton
+        v-if="categories"
+        background="bg-blue-ic"
+        v-model="showCategories">
+        Explore Categories
+      </DashboardButton>
+      <div
+        class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3"
+        v-if="showCategories && categories">
+        <CategoryCard
+          v-for="(category, index) in categories"
+          :key="category.slug"
+          :background="backgroundColors[index % 3]!"
+          :category="category" />
+      </div>
+    </div>
+  </div>
+</template>
