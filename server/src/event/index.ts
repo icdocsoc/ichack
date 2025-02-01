@@ -1,10 +1,17 @@
 import factory from '../factory';
 import { grantAccessTo } from '../security';
 import { db } from '../drizzle';
-import { events, createEventSchema, updateEventBody } from './schema';
-import { asc, eq } from 'drizzle-orm';
+import {
+  events,
+  createEventSchema,
+  updateEventBody,
+  createEventCheckInSchema,
+  eventCheckIn
+} from './schema';
+import { and, asc, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { simpleValidator } from '../validators';
+import { users } from '../auth/schema';
 
 const event = factory
   .createApp()
@@ -95,6 +102,41 @@ const event = factory
 
       return ctx.json({}, 200);
     }
-  );
+  )
+  .post(
+    '/check-in',
+    grantAccessTo(['volunteer', 'admin']),
+    simpleValidator('json', createEventCheckInSchema),
+    async ctx => {
+      const body = ctx.req.valid('json');
+      // check if user has already checked in
+      const alreadyCheckedIn = await db
+        .select()
+        .from(eventCheckIn)
+        .where(
+          and(
+            eq(eventCheckIn.eventId, body.eventId),
+            eq(eventCheckIn.userId, body.userId)
+          )
+        );
+      if (alreadyCheckedIn.length > 0)
+        return ctx.text('Already checked in.', 400);
+      // check both event and user exist
+      const eventExists = await db
+        .select({ id: events.id })
+        .from(events)
+        .where(eq(events.id, body.eventId));
+      if (eventExists.length === 0)
+        return ctx.text('Event does not exist.', 404);
+      const userExists = await db
+        .select({ id: users.id })
+        .from(users)
+        .where(eq(users.id, body.userId));
+      if (userExists.length === 0) return ctx.text('User does not exist.', 404);
 
+      await db.insert(eventCheckIn).values(body);
+
+      return ctx.json(null, 201);
+    }
+  );
 export default event;

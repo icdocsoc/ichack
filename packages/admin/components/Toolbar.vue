@@ -20,6 +20,11 @@ const menu = [
   ],
   [
     {
+      label: 'Volunteer Dashboard',
+      to: '/volunteer',
+      icon: 'heroicons:user-circle'
+    },
+    {
       label: 'Logout',
       icon: 'websymbol:logout',
       async click() {

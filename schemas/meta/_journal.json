@@ -57,6 +57,13 @@
       "when": 1738360941082,
       "tag": "0007_hackspace",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1738373358176,
+      "tag": "0008_events-check-in",
+      "breakpoints": true
     }
   ]
 }

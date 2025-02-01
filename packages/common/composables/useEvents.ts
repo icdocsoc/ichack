@@ -25,7 +25,26 @@ export default function () {
     });
   };
 
+  const checkIn = async (
+    eventId: number,
+    userId: string
+  ): Promise<Result<void, Error>> => {
+    return Result.try(async () => {
+      const res = await client.event['check-in'].$post({
+        json: {
+          eventId: eventId,
+          userId: userId
+        }
+      });
+      if (!res.ok) {
+        throw new Error(await res.text());
+      }
+      return Result.ok();
+    });
+  };
+
   return {
-    getEvents
+    getEvents,
+    checkIn
   };
 }

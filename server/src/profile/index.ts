@@ -24,7 +24,7 @@ import { sendEmail } from '../email';
 import nunjucks from 'nunjucks';
 import { emailTemplate, icticket } from './assets/register';
 import { qrs } from '../qr/schema';
-import { adminMeta } from '../admin/schema';
+import { adminMeta, NO_MEAL } from '../admin/schema';
 import { userHackspace } from '../hackspace/schema';
 
 nunjucks.configure({ autoescape: true });
@@ -272,15 +272,24 @@ const profile = factory
       // Toggle meal number `num`
       const { userId } = ctx.req.valid('json');
 
-      const mealNumQuery = await db
-        .select({ mealNum: adminMeta.mealNumber })
+      // check if user has already had meal
+      const mealNumRes = await db
+        .select({ mealNumber: adminMeta.mealNumber })
         .from(adminMeta);
-      const mealNum = mealNumQuery[0]!.mealNum;
+      const mealNum = mealNumRes[0]!.mealNumber;
+      if (mealNum == NO_MEAL) return ctx.text('No meal is being served.', 400);
 
+      const user = await db
+        .select({ meals: profiles.meals })
+        .from(profiles)
+        .where(eq(profiles.id, userId));
+      if (user.length < 1) return ctx.text('User not found.', 404);
+      if (user[0]!.meals[mealNum])
+        return ctx.text('User has already had meal.', 400);
       // Postgres is 1 indexed :|
       const updatedMeals = await db.execute(sql`
         UPDATE profiles
-        SET meals[${mealNum + 1}] = true
+        SET meals[${mealNum}] = true
         WHERE id = ${userId}`);
 
       if (updatedMeals.rowCount == null) {

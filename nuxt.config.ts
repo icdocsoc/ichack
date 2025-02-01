@@ -26,7 +26,12 @@ export default defineNuxtConfig({
     }
   ],
 
-  extends: ['packages/admin', 'packages/common', 'packages/ui25'],
+  extends: [
+    'packages/admin',
+    'packages/common',
+    'packages/ui25',
+    'packages/volunteer'
+  ],
 
   app: {
     rootAttrs: {

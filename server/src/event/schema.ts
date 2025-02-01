@@ -1,13 +1,16 @@
 import {
   boolean,
+  integer,
   pgEnum,
   pgTable,
+  primaryKey,
   serial,
   text,
   timestamp
 } from 'drizzle-orm/pg-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
+import { users } from '../auth/schema';
 
 export const locations = [
   'HXLY', // huxley
@@ -36,6 +39,25 @@ export const events = pgTable('events', {
   public: boolean('public').notNull(),
   locations: locationEnum('locations').array().notNull()
 });
+
+export const eventCheckIn = pgTable(
+  'event_check_in',
+  {
+    eventId: integer('event_id')
+      .notNull()
+      .references(() => events.id),
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id)
+  },
+  table => [
+    {
+      pk: primaryKey({ columns: [table.eventId, table.userId] })
+    }
+  ]
+);
+
+export const createEventCheckInSchema = createInsertSchema(eventCheckIn);
 
 export const createEventSchema = createInsertSchema(events, {
   title: schema => schema.nonempty(),

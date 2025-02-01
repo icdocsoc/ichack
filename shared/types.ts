@@ -58,3 +58,9 @@ export type AnnouncementDetails = z.infer<typeof selectAnnouncementSchema> & {
 
 export type QrCode = z.infer<typeof qrSchema>;
 export type UpdateProfile = z.infer<typeof updateProfileSchema>;
+export enum Scanfor {
+  MEAL = 'meal',
+  EVENT = 'event',
+  PROFILE = 'profile',
+  REGISTER = 'register'
+}

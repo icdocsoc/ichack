@@ -25,13 +25,23 @@ export const useQR = () => {
         const errorMessage = await result.text();
         throw new Error(errorMessage);
       }
-
       return Result.ok();
+    });
+  };
+
+  const getQr = (uuid: string): Promise<Result<Profile, Error>> => {
+    return Result.try(async () => {
+      const res = await client.qr[':uuid'].$get({
+        param: { uuid: uuid }
+      });
+      if (!res.ok) throw new Error(await res.text());
+      return await res.json();
     });
   };
 
   return {
     deleteQR,
-    getOwnQr
+    getOwnQr,
+    getQr
   };
 };

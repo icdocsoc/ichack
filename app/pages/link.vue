@@ -57,7 +57,7 @@
 </template>
 
 <script lang="ts" setup>
-definePageMeta({ middleware: 'require-auth' });
+definePageMeta({ middleware: 'require-auth', layout: 'no-sidebar' });
 
 import { usePermission } from '@vueuse/core';
 import { ref, watch } from 'vue';

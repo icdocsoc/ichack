@@ -4,6 +4,8 @@ import { users, userToken } from '../server/src/auth/schema';
 import { generateIdFromEntropySize } from 'lucia';
 import { hashOptions } from '../server/src/auth/lucia';
 import { profiles } from '~~/server/src/profile/schema';
+import { qrs } from '~~/server/src/qr/schema';
+import { adminMeta } from '~~/server/src/admin/schema';
 
 const godUser1 = {
   id: generateIdFromEntropySize(16),
@@ -29,6 +31,11 @@ const hackerUser = {
   role: 'hacker'
 } as const;
 
+const hackerUserQr = {
+  userId: hackerUser.id,
+  uuid: '12345678-1234-1234-1234-123456789012'
+};
+
 const hackerProfile = {
   id: hackerUser.id,
   photos_opt_out: false,
@@ -41,7 +48,7 @@ const registerUser = {
   id: generateIdFromEntropySize(16),
   name: 'Jay Silver',
   email: 'jay@ic.ac.uk',
-  password: null,
+  password: await hash('Pass#1234', hashOptions),
   role: 'hacker'
 } as const;
 
@@ -57,4 +64,5 @@ const registerToken = {
 await db.insert(users).values([godUser1, hackerUser, registerUser]);
 await db.insert(profiles).values([godProfile, hackerProfile]);
 await db.insert(userToken).values([registerToken]);
-console.log(`registration token: ${registerToken.id}`);
+await db.insert(qrs).values([hackerUserQr]);
+await db.insert(adminMeta).values({ mealNumber: 0, showCategories: false });

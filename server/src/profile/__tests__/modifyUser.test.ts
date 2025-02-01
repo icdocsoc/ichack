@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, test } from 'bun:test';
+import { beforeAll, beforeEach, describe, expect, test } from 'bun:test';
 import { profiles, type RawProfile } from '../schema';
 import { roles, type Role } from '../../types';
 import { testClient } from 'hono/testing';
@@ -111,7 +111,17 @@ describe('Profiles module > PUT /', () => {
   });
 });
 
-describe('Profile module > PUT /meals', () => {
+describe('Profile smodule > PUT /meals', () => {
+  beforeEach(async () => {
+    await db.update(profiles).set({
+      meals: [false, false, false]
+    });
+
+    await db.update(adminMeta).set({
+      mealNumber: 0
+    });
+  });
+
   test('volunteer can update meals', async () => {
     // { userId: string }
     let res = await baseRoute.meal.$put(
@@ -156,6 +166,68 @@ describe('Profile module > PUT /meals', () => {
       // @ts-ignore error message is from middleware
       'You do not have access to PUT /api/profile/meal'
     );
+  });
+
+  test('someone attempting to get a second meal fails', async () => {
+    await db.update(profiles).set({
+      meals: [true, false, false]
+    });
+
+    let res = await baseRoute.meal.$put(
+      {
+        json: {
+          userId: expectedUsers.hacker!.id
+        }
+      },
+      {
+        headers: {
+          Cookie: `auth_session=${sessionIds.volunteer}`
+        }
+      }
+    );
+
+    expect(res.status).toBe(400);
+    expect(res.text()).resolves.toBe('User has already had meal.');
+  });
+
+  test('non existent user trying to get a meal fails', async () => {
+    let res = await baseRoute.meal.$put(
+      {
+        json: {
+          userId: '00000000-0000-0000-0000-000000000000'
+        }
+      },
+      {
+        headers: {
+          Cookie: `auth_session=${sessionIds.volunteer}`
+        }
+      }
+    );
+
+    expect(res.status).toBe(404);
+    expect(res.text()).resolves.toBe('User not found.');
+  });
+
+  test('if meal is not being served, user cannot get meal', async () => {
+    await db.update(adminMeta).set({
+      mealNumber: -1
+    });
+
+    let res = await baseRoute.meal.$put(
+      {
+        json: {
+          userId: expectedUsers.hacker!.id
+        }
+      },
+      {
+        headers: {
+          Cookie: `auth_session=${sessionIds.volunteer}`
+        }
+      }
+    );
+
+    expect(res.status).toBe(400);
+    expect(res.text()).resolves.toBe('No meal is being served.');
   });
 });
 
