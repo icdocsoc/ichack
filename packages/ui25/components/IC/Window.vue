@@ -97,7 +97,7 @@ function handleMinimize() {
 }
 
 function handleClose() {
-  if (!closable) return;
+  if (!closeable) return;
   handleMinimize();
   open.value = false;
 

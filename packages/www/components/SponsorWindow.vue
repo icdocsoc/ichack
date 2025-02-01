@@ -4,7 +4,7 @@
     :color="`${colors[type].window}`"
     :border="`${colors[type].border}`"
     :titleTheme="`${colors[type].title}`"
-    :closeable="false"
+    :closeable="true"
     background="bg-black">
     <template v-if="type == 'title'" #controls>
       <div class="self-stretch overflow-hidden">
