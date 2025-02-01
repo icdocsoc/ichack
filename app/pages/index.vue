@@ -11,7 +11,7 @@
         Link your wristband for your IC Hack '25 to get started.
       </p>
       <div class="h-5"></div>
-      <Discordf
+      <Discord
         :linked-discord="profile.discord_id != null"
         @unlinked="profile.discord_id = null" />
 
