@@ -16,7 +16,9 @@ type Props = {
   size: 'large' | 'medium' | 'small';
 };
 
-const displayValue = computed(() => (value < 10 ? '0' + value : value));
+const displayValue = computed(() =>
+  0 < value && value < 10 ? '0' + value : value
+);
 const displayValueClass = computed(() => {
   switch (size) {
     case 'large':
