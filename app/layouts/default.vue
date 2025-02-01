@@ -15,7 +15,7 @@
         </main>
 
         <!-- TODO: Announcement panel, profile/teams mini panel -->
-        <div class="w-80 hidden space-y-4 lg:block">
+        <div class="hidden w-80 space-y-4 lg:block">
           <!-- Announcements -->
           <NotifStack />
           <!-- Teams Panel -->
