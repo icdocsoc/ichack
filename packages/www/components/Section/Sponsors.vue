@@ -60,7 +60,11 @@ const sponsorLinks: Record<string, string> = {
   intersystems: 'https://www.intersystems.com/',
   qrt: 'https://www.qube-rt.com/',
   ttd: 'https://www.thetradedesk.com/',
-  wintermute: 'https://wintermute.com/'
+  wintermute: 'https://wintermute.com/',
+  anna: 'https://anna.money/',
+  fiverings: 'https://fiverings.com/',
+  hadean: 'https://hadean.com/',
+  jumptrading: 'https://www.jumptrading.com/'
 };
 
 const goldSponsors = import.meta.glob('@ui25/assets/sponsors/gold/*.svg', {
