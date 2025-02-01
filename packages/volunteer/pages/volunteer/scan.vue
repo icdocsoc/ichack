@@ -76,6 +76,8 @@ const pauseScanning = ref<boolean>(false);
 const showNextBtn = ref<boolean>(false);
 const eventChosen = ref<Event>();
 
+const { validateUserHackspace } = useHackspace();
+
 const {
   data,
   status: st,
@@ -94,14 +96,18 @@ const {
       const prof = res.value;
       switch (scanType) {
         case Scanfor.MEAL:
+          const validHackspaceRes = await validateUserHackspace(prof.id);
+          if (!validHackspaceRes.isOk()) throw validHackspaceRes.error;
           const meal = await client.profile.meal.$put({
             json: { userId: prof.id }
           });
           if (!meal.ok) throw new Error(await meal.text());
+
           return prof;
         case Scanfor.EVENT:
           if (!eventChosen.value || eventChosen.value == undefined)
             throw new Error('Event Not Found!');
+
           const ev = await checkIn(eventChosen.value!.id, prof.id);
           if (!ev.isOk()) throw ev.error;
 

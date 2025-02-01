@@ -41,6 +41,17 @@ export default () => {
       }
     });
 
+  const validateUserHackspace = (userid: string) =>
+    Result.try(async () => {
+      const res = await client.hackspace.users[':id'].$get({
+        param: { id: userid }
+      });
+      if (!res.ok) throw new Error(await res.text());
+      const json = await res.json();
+      if (!json.hackspace)
+        throw new Error('User not in a hackspace! please ask them to join one');
+    });
+
   const updateHackspace = (hackspace: Hackspace) =>
     Result.try(async () => {
       const res = await client.hackspace.$put({ json: { hackspace } });
@@ -55,6 +66,7 @@ export default () => {
     getHackspaceChallenges,
     getHackspaceScores,
     joinHackspace,
-    updateHackspace
+    updateHackspace,
+    validateUserHackspace
   };
 };

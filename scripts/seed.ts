@@ -6,6 +6,7 @@ import { hashOptions } from '../server/src/auth/lucia';
 import { profiles } from '~~/server/src/profile/schema';
 import { qrs } from '~~/server/src/qr/schema';
 import { adminMeta } from '~~/server/src/admin/schema';
+import { userHackspace } from '~~/server/src/hackspace/schema';
 
 const godUser1 = {
   id: generateIdFromEntropySize(16),

@@ -237,4 +237,35 @@ export const hackspace = factory
 
       return ctx.body('', 201);
     }
+  )
+  .get(
+    '/users/:id',
+    grantAccessTo(['admin', 'volunteer']),
+    simpleValidator(
+      'param',
+      z.object({
+        id: z.string()
+      })
+    ),
+    async ctx => {
+      const { id } = ctx.req.valid('param');
+
+      const user = await db
+        .select({
+          id: users.id,
+          name: users.name,
+          email: users.email,
+          hackspace: userHackspace.hackspace,
+          points: userHackspace.points
+        })
+        .from(userHackspace)
+        .rightJoin(users, eq(userHackspace.userId, users.id))
+        .where(eq(users.id, id));
+
+      if (user.length == 0) {
+        return ctx.body('User does not exist.', 404);
+      }
+
+      return ctx.json(user[0]!, 200);
+    }
   );
