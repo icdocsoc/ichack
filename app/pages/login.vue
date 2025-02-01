@@ -152,9 +152,9 @@ const handleLogin = async () => {
         case 'god':
           navigateTo('/admin');
           break;
-        // case 'volunteer':
-        //   navigateTo('/volunteer');
-        //   break;
+        case 'volunteer':
+          navigateTo('/volunteer');
+          break;
         default:
           navigateTo('/');
       }
