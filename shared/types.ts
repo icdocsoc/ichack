@@ -1,5 +1,7 @@
 import { z } from 'zod';
+
 import { postLoginBody } from './schemas';
+
 import app from '~~/server/src/app';
 import { selectUserSchema } from '~~/server/src/auth/schema';
 import { eventSchema } from '~~/server/src/event/schema';
@@ -23,14 +25,25 @@ export { roles } from '~~/server/src/types';
 export type { AdminSelectProfile } from '~~/server/src/profile/schema';
 export type { Role } from '~~/server/src/types';
 
-export type UserCredentials = z.infer<typeof postLoginBody>;
 export type PerryApi = typeof app;
+
+export type UserCredentials = z.infer<typeof postLoginBody>;
 export type User = z.infer<typeof selectUserSchema>;
-export type { UserAndProfile as Profile } from '~~/server/src/profile/schema';
 export type Event = z.infer<typeof eventSchema>;
 export type EventLocation = Event['locations'][number];
 export type RegistrationDetails = z.infer<typeof registerProfileSchema>;
 export type Challenge = z.infer<typeof createChallenge>;
+
+export type {
+  TeamIdName,
+  UserTeamStatus,
+  TeamMember,
+  TeamInvite,
+  WholeTeamData,
+  Team
+} from '~~/server/src/team/schema';
+export type { UserAndProfile as Profile } from '~~/server/src/profile/schema';
+
 export type AdminMetadata = z.infer<typeof metadataSchema>;
 
 export type Category = z.infer<typeof categorySchema>;

@@ -7,9 +7,10 @@ import { users } from '../auth/schema';
 import { apiLogger } from '../logger';
 import { z } from 'zod';
 import { simpleValidator } from '../validators';
+import teamAdmin from './admin';
 
 // TODO: Move to `admin` table.
-const MAX_TEAM_SIZE = 6;
+export const MAX_TEAM_SIZE = 6;
 
 const userIdSchema = z
   .object({
@@ -28,7 +29,6 @@ const selectTeamLinkFromMember = db
   .where(eq(teamMembers.userId, sql.placeholder('userId')))
   .prepare('selectTeamFromMember');
 
-// I don't like this.
 const selectTeamFromLeader = db
   .select({
     id: teams.id,
@@ -587,10 +587,15 @@ const team = factory
       .where(eq(teamMembers.userId, user.id))
       .returning();
     if (team.length < 1) {
+      apiLogger.error(
+        ctx,
+        'POST /team/leave',
+        `Failed to remove user ${user.id} from team. as they were not in a team.`
+      );
       return ctx.text('You are not in a team', 400);
     }
 
     return ctx.body(null, 204);
-  });
-
+  })
+  .route('/admin', teamAdmin);
 export default team;

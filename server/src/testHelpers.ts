@@ -4,6 +4,7 @@
 
 import { users, userSession } from './auth/schema';
 import { db } from './drizzle';
+import { qrs } from './qr/schema';
 import type { Role } from './types';
 
 export const today = new Date();
@@ -39,6 +40,21 @@ export const createUser = async (
     ...body
   };
   await db.insert(users).values(user);
+  return userId;
+};
+
+export const createUserWithQr = async (
+  role: Role,
+  body: { name: string; email: string; password: string | null }
+): Promise<string> => {
+  const userId = `${role}_user_${Math.random()}`;
+  const user = {
+    id: userId,
+    role: role,
+    ...body
+  };
+  await db.insert(users).values(user);
+  await db.insert(qrs).values({ userId, uuid: userId });
   return userId;
 };
 

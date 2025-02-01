@@ -7,6 +7,7 @@ import category from './category';
 import event from './event';
 import profile from './profile';
 import team from './team';
+import teamAdmin from './team/admin';
 import qr from './qr';
 import factory from './factory';
 import { HTTPException } from 'hono/http-exception';

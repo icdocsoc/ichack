@@ -61,18 +61,47 @@ export const updateTeamSchema = createSelectSchema(teams)
   .partial()
   .strict();
 
-export const returnedTeamSchema = createSelectSchema(teams).extend({
+export const returnedTeamSchema = z.object({
+  teamData: createSelectSchema(teams),
   members: z.array(
     z.object({
-      id: z.string(),
-      name: z.string(),
-      leader: z.boolean()
+      userId: z.string(),
+      memberName: z.string(),
+      isLeader: z.boolean()
     })
   ),
-  invited: z.array(
+  invites: z.array(
     z.object({
-      id: z.string(),
-      name: z.string()
+      userId: z.string(),
+      invitedUserName: z.string()
     })
   )
 });
+
+/* return types for queries */
+export type UserTeamStatus = {
+  teamId: number;
+  teamName: string;
+  userId: string;
+  userName: string;
+  status: 'leader' | 'invited' | 'member';
+};
+
+export type TeamIdName = {
+  teamId: number;
+  teamName: string;
+};
+
+export type TeamMember = {
+  userId: string;
+  memberName: string;
+  isLeader: boolean;
+};
+
+export type TeamInvite = {
+  userId: string;
+  invitedUserName: string;
+};
+
+export type WholeTeamData = z.infer<typeof returnedTeamSchema>;
+export type Team = z.infer<typeof updateTeamSchema>;

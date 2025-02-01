@@ -62,6 +62,9 @@ POST /acceptInvite --> {teamId: string} removes all invites of the hacker and ad
 POST /removeInvite --> {teamId: string} removes that entry from team_invites table. "hacker"
 POST /removeUser/:userId --> Leader can remove a user from a team. "hacker"
 POST /removeUser --> authenticated hacker can remove themselves from the team. "hacker"
+GET /admin/searchTeam --> Returns a list of team names with a partial match to the team name input. "admin"
+GET /admin/searchTeam/byPerson --> Returns a list of teams along with the associated members' names and status, based on a partial match to the person's name input. "admin"
+GET /admin/getTeamData --> Returns all data for a team, including members and invites, based on the team ID. "admin"
 
 ## QR (/qr)
 
