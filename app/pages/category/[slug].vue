@@ -9,15 +9,16 @@
 
     <div class="flex flex-col">
       <span class="bg-blue-ic self-start px-4 py-3 font-bold">Description</span>
-      <div class="max-w-[50rem] border border-white p-4">
-        {{ data?.shortDescription }}
-      </div>
+      <div
+        class="mardown max-w-[50rem] border border-white p-4"
+        v-html="description"></div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import type { Category } from '#shared/types';
+import { marked } from 'marked';
 
 // Get the slug from URL and fetch the category details
 const route = useRoute();
@@ -37,6 +38,11 @@ if (error.value) {
     statusMessage: error.value.message
   });
 }
+
+const description = ref<string>('');
+onMounted(async () => {
+  description.value = await marked(data.value?.shortDescription || '');
+});
 
 // NOTE: the following is decrepecated as per Directors' decision.
 // shortDescription is the only available description for now.

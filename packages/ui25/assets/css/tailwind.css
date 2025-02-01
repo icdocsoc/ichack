@@ -28,3 +28,7 @@
     @apply -right-4;
   }
 }
+
+.markdown ul {
+  @apply ml-4 list-disc;
+}

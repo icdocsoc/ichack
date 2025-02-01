@@ -36,7 +36,7 @@ useHead({
 </script>
 
 <template>
-  <div class="flex flex-col gap-5">
+  <div class="flex flex-col gap-5 pb-10">
     <div v-if="store.profile?.role !== 'hacker'">
       <DashboardButton v-model="showAdminButtons" background="bg-red-ic">
         Admin Panels
