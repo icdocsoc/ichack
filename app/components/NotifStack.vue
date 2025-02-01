@@ -72,8 +72,6 @@ onMounted(async () => {
   }, 10000);
 });
 
-const specialId = 123; // Replace with the ID you want to style differently
-
 const route = useRoute();
 
 watch(route, () => {

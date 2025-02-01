@@ -19,6 +19,7 @@
           <!-- Announcements -->
           <NotifStack />
           <!-- Teams Panel -->
+          <TeamPreview :team="team" />
 
           <!-- Profile -->
           <div class="w-80 p-4 outline outline-1 outline-white">
@@ -58,8 +59,6 @@ const profileStore = useProfileStore();
 const profile = profileStore.profile!;
 const selectedAnnouncement = ref(-1);
 
-async function handleLogout() {
-  await client.auth.logout.$post();
-  await navigateTo('/');
-}
+const { getOwnTeam } = useTeams();
+const team = (await getOwnTeam()).getOrNull();
 </script>

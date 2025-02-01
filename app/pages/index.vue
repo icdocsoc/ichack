@@ -40,6 +40,9 @@ useHead({
     <NuxtLink to="/profile" class="lg:hidden">
       <DashboardHackspaceButton room="Go to your Profile" logo="" />
     </NuxtLink>
+    <NuxtLink to="/team" class="lg:hidden">
+      <DashboardHackspaceButton room="Go to your Team" logo="" />
+    </NuxtLink>
 
     <div v-if="store.profile?.role !== 'hacker'">
       <DashboardButton v-model="showAdminButtons" background="bg-red-ic">
