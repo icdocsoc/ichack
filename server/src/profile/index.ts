@@ -101,7 +101,7 @@ const profile = factory
   })
   .get(
     '/search',
-    grantAccessTo(['volunteer']),
+    grantAccessTo(['volunteer', 'admin']),
     simpleValidator('query', searchUserSchema),
     async ctx => {
       const { name, email } = ctx.req.valid('query');
@@ -197,7 +197,8 @@ const profile = factory
     '/subscribe',
     grantAccessTo(['authenticated'], { allowUnlinkedHackers: true }),
     async ctx => {
-      // WS for profile details
+      // TODO for '26 WS for profile details
+      // good luck jay. You have my support.
     }
   )
   .get('/cv/all', grantAccessTo(['god']), async ctx => {
@@ -265,7 +266,7 @@ const profile = factory
   )
   .put(
     '/meal',
-    grantAccessTo(['volunteer']),
+    grantAccessTo(['volunteer', 'admin']),
     simpleValidator('json', updateMealSchema),
     async ctx => {
       // { userId: string, num: number }
@@ -309,7 +310,7 @@ const profile = factory
   )
   .delete(
     '/meal',
-    grantAccessTo(['admin', 'god']),
+    grantAccessTo(['admin']),
     simpleValidator('json', deleteMealSchema),
     async ctx => {
       // This mealNum is 0-indexed, to be consistent with the PUT /profiles/meal
