@@ -38,6 +38,12 @@ export default defineNuxtConfig({
         to: 'https://docs.google.com/document/d/1AQVJObyH_-aUKdx4p9MP1atXwxqjn03aW-P0T4GPe0g/edit',
         statusCode: 301
       }
+    },
+    '/sneakySecrets/duck_supremacy': {
+      redirect: {
+        to: 'https://docs.google.com/forms/d/1IYE4pNWwF4-Z868vlHAt5re8eNtr4TnrzQZXSYTwiu0/edit',
+        statusCode: 301
+      }
     }
   },
 
