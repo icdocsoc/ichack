@@ -52,7 +52,7 @@ describe('Profiles module > GET /discord/:id', async () => {
     expect(res).toEqual({
       id: hackerId,
       name: 'Jay',
-      hackspace: 'QTR'
+      hackspace: null
     });
   });
 

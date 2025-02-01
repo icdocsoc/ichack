@@ -12,6 +12,7 @@ import { and, asc, eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { simpleValidator } from '../validators';
 import { users } from '../auth/schema';
+import { userHackspace } from '../hackspace/schema';
 
 const event = factory
   .createApp()
@@ -134,7 +135,24 @@ const event = factory
         .where(eq(users.id, body.userId));
       if (userExists.length === 0) return ctx.text('User does not exist.', 404);
 
-      await db.insert(eventCheckIn).values(body);
+      // Get hackspace
+      const hackspaces = await db
+        .select()
+        .from(userHackspace)
+        .where(eq(userHackspace.userId, body.userId));
+
+      await db.transaction(async tx => {
+        if (hackspaces.length === 1) {
+          await tx
+            .update(userHackspace)
+            .set({
+              points: hackspaces[0]!.points + 5
+            })
+            .where(eq(userHackspace.userId, body.userId));
+        }
+
+        await tx.insert(eventCheckIn).values(body);
+      });
 
       return ctx.json(null, 201);
     }

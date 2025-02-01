@@ -433,10 +433,11 @@ const profile = factory
         .select({
           id: profiles.id,
           name: users.name,
-          hackspace: sql<string>`'QTR'`
+          hackspace: userHackspace.hackspace
         })
         .from(profiles)
         .innerJoin(users, eq(users.id, profiles.id))
+        .leftJoin(userHackspace, eq(users.id, userHackspace.userId))
         .where(eq(profiles.discord_id, discordId));
 
       if (dbRes.length < 1) {

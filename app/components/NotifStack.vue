@@ -5,7 +5,7 @@
     </div>
 
     <!-- Notif list -->
-    <div class="flex w-full flex-col gap-2 text-lg">
+    <div class="flex max-h-80 w-full flex-col gap-2 overflow-scroll text-lg">
       <div
         v-if="!error"
         v-for="announcement in sortedAnnouncements"
