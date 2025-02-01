@@ -60,5 +60,10 @@ const profile = profileStore.profile!;
 const selectedAnnouncement = ref(-1);
 
 const { getOwnTeam } = useTeams();
-const team = (await getOwnTeam()).getOrNull();
+const { data: team } = await useAsyncData(
+  'fetch_own_team_default',
+  async () => {
+    return (await getOwnTeam()).getOrThrow();
+  }
+);
 </script>

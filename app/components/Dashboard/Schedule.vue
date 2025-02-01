@@ -13,16 +13,6 @@ defineProps<Prop>();
     <div class="bg-white max-lg:w-2 lg:h-2"></div>
     <div
       class="no-scrollbar flex flex-initial gap-2 overflow-x-scroll max-lg:flex-col">
-      <!-- <div
-        v-for="event in events"
-        :key="event.id"
-        class="flex justify-between gap-4 border border-white px-3 py-2">
-        <p class="flex-1 text-ellipsis text-xl">{{ event.title }}</p>
-        <div class="flex items-center gap-2">
-          <img src="@ui25/assets/clock.svg" alt="" />
-          <p>{{ format(event.startsAt, 'HH:mm') }}</p>
-        </div>
-      </div> -->
       <div
         v-for="event in events"
         :key="event.id"

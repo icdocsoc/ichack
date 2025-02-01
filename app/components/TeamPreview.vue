@@ -19,7 +19,7 @@
 import type { ReturnedTeam } from '~~/shared/types';
 
 type Props = {
-  team: ReturnedTeam | null;
+  team?: ReturnedTeam | null;
 };
 
 const { team } = defineProps<Props>();
