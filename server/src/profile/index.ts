@@ -599,7 +599,7 @@ const profile = factory
       200
     );
   })
-  .get('/:id', grantAccessTo(['volunteer']), async ctx => {
+  .get('/:id', grantAccessTo(['admin', 'volunteer']), async ctx => {
     const userId = ctx.req.param('id');
 
     const user = await db
