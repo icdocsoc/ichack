@@ -60,6 +60,8 @@ const customLogger = (
   const { method, path } = c.req;
   const status = c.res.status;
 
+  if (path == '/announcement') return;
+
   console.log(
     `${level.background(` ${level.word} `)} [${formatUser(user)}] [${formatDate(date)}] [${tag}] "${method} ${path}" -> ${status}: ${messages.join(' ')}`
   );

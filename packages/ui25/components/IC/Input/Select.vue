@@ -7,7 +7,8 @@
       :placeholder="placeholder"
       class="focus:outline-blue-ic w-full rounded bg-black px-2 py-3 outline outline-1 outline-white transition-all"
       :class="placeholderColor"
-      @change="placeholderColor = ''">
+      @change="placeholderColor = ''"
+      :disabled="frozen">
       <option value="" hidden disabled>{{ placeholder }}</option>
       <option
         v-for="option in options"
@@ -36,6 +37,7 @@ type Props = {
   required?: boolean;
   defaultValue?: string;
   other?: boolean;
+  frozen?: boolean;
 };
 
 const props = defineProps<Props>();

@@ -15,7 +15,7 @@ import type { qrSchema } from '~~/server/src/qr/schema';
 import type { createChallenge } from '~~/server/src/hackspace/schema';
 import { updateProfileSchema } from '~~/server/src/profile/schema';
 import { categorySchema } from '~~/server/src/category/schema';
-
+import type { returnedTeamSchema } from '~~/server/src/team/schema';
 export {
   tShirtSizes,
   genders,
@@ -47,6 +47,7 @@ export type { UserAndProfile as Profile } from '~~/server/src/profile/schema';
 export type AdminMetadata = z.infer<typeof metadataSchema>;
 
 export type Category = z.infer<typeof categorySchema>;
+export type ReturnedTeam = z.infer<typeof returnedTeamSchema>;
 
 export type AnnouncementId = number;
 export type CreateAnnouncementDetails = z.infer<

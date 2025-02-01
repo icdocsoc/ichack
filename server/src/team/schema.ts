@@ -12,7 +12,7 @@ import { createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
 
 // I believe this should cover every country and region code.
-const phoneRegex = /\+[0-9]{7,15}/;
+export const phoneRegex = /\+[0-9]{7,15}/;
 
 export const teams = pgTable('teams', {
   id: serial('id').primaryKey(),
@@ -55,28 +55,31 @@ export const teamMembers = pgTable('team_members', {
 export const updateTeamSchema = createSelectSchema(teams)
   .extend({
     phone: z.string().regex(phoneRegex),
-    phone2: z.string().regex(phoneRegex)
+    phone2: z.string().regex(phoneRegex).or(z.literal('')),
+    submissionLink: z.string().url()
   })
   .omit({ id: true })
   .partial()
   .strict();
 
-export const returnedTeamSchema = z.object({
-  teamData: createSelectSchema(teams),
-  members: z.array(
-    z.object({
-      userId: z.string(),
-      memberName: z.string(),
-      isLeader: z.boolean()
-    })
-  ),
-  invites: z.array(
-    z.object({
-      userId: z.string(),
-      invitedUserName: z.string()
-    })
-  )
-});
+export const returnedTeamSchema = z.intersection(
+  createSelectSchema(teams),
+  z.object({
+    members: z.array(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        leader: z.boolean()
+      })
+    ),
+    invited: z.array(
+      z.object({
+        id: z.string(),
+        name: z.string()
+      })
+    )
+  })
+);
 
 /* return types for queries */
 export type UserTeamStatus = {
