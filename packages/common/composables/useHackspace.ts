@@ -1,4 +1,5 @@
 import { Result } from 'typescript-result';
+import type { Hackspace } from '~~/server/src/types';
 
 export default () => {
   const client = useHttpClient();
@@ -30,5 +31,30 @@ export default () => {
       return await res.json();
     });
 
-  return { getHackspaceChallenges, getHackspaceScores };
+  const joinHackspace = (hackspace: Hackspace) =>
+    Result.try(async () => {
+      const res = await client.hackspace.$post({ json: { hackspace } });
+
+      if (!res.ok) {
+        const message = await res.text();
+        throw new Error(message);
+      }
+    });
+
+  const updateHackspace = (hackspace: Hackspace) =>
+    Result.try(async () => {
+      const res = await client.hackspace.$put({ json: { hackspace } });
+
+      if (!res.ok) {
+        const message = await res.text();
+        throw new Error(message);
+      }
+    });
+
+  return {
+    getHackspaceChallenges,
+    getHackspaceScores,
+    joinHackspace,
+    updateHackspace
+  };
 };

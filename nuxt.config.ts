@@ -37,5 +37,17 @@ export default defineNuxtConfig({
     head: {
       titleTemplate: 'My IC Hack | %s'
     }
+  },
+
+  tailwindcss: {
+    config: {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Poppins', 'sans-serif']
+          }
+        }
+      }
+    }
   }
 });

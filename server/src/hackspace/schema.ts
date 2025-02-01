@@ -6,7 +6,7 @@ import {
   text,
   pgEnum
 } from 'drizzle-orm/pg-core';
-import { createInsertSchema } from 'drizzle-zod';
+import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { hackspaces } from '../types';
 import { z } from 'zod';
 import { users } from '../auth/schema';
@@ -45,4 +45,9 @@ export const validateHackspace = z.object({ hackspace: z.enum(hackspaces) });
 export const updateUserSchema = z.object({
   hackspace: z.enum(hackspaces).optional(),
   points: z.number().optional()
+});
+
+export const selectUserHackspaceSchema = z.object({
+  id: z.string(),
+  hackspace: z.enum(hackspaces).nullable()
 });

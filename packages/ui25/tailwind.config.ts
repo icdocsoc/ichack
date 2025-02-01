@@ -15,7 +15,6 @@ export default {
         'bronze-ic': '#B78B70'
       },
       fontFamily: {
-        sans: ['Archivo', 'sans-serif'],
         archivo: ['Archivo', 'sans-serif'],
         ichack: ['IC Hack', 'sans-serif'],
         gohu: ['Gohu', 'monospace'],

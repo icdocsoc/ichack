@@ -5,6 +5,7 @@ import { selectUserSchema, users } from '../auth/schema';
 import { passwordPattern } from '../auth/types';
 import { newDemographSchema } from '../demograph/schema';
 import { selectQrSchema } from '../qr/schema';
+import { selectUserHackspaceSchema } from '../hackspace/schema';
 
 export const profiles = pgTable('profiles', {
   id: text('id')
@@ -22,7 +23,10 @@ export const profiles = pgTable('profiles', {
 const selectProfileSchema = createSelectSchema(profiles);
 export type RawProfile = z.infer<typeof selectProfileSchema>;
 
-const userProfileSchema = z.intersection(selectProfileSchema, selectUserSchema);
+const userProfileSchema = z.intersection(
+  z.intersection(selectProfileSchema, selectUserSchema),
+  selectUserHackspaceSchema
+);
 export type UserAndProfile = z.infer<typeof userProfileSchema>;
 
 const adminSelectProfileSchema = z.object({

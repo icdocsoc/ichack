@@ -6,12 +6,16 @@
     </div>
 
     <label
-      class="group relative grid cursor-pointer select-none place-items-center">
+      :class="[
+        'group relative grid select-none place-items-center',
+        fixed ? '' : 'cursor-pointer'
+      ]">
       <input
         type="checkbox"
         :name="name"
         :id="name"
-        class="peer absolute h-0 w-0 cursor-pointer opacity-0"
+        class="peer absolute h-0 w-0 opacity-0"
+        :disabled="fixed"
         :checked="selected"
         v-model="selected" />
       <span
@@ -30,6 +34,7 @@ type Props = {
   title: string;
   name: string;
   description?: string;
+  fixed?: boolean;
 };
 
 defineProps<Props>();

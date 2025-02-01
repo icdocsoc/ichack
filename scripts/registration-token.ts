@@ -49,14 +49,16 @@ for (const i in records) {
   const email = record.email;
   const role = record.role;
 
+  const data = {
+    name: name,
+    email: email,
+    role: role
+  };
+
   // Create user
   const resp = await fetch(`${url}/api/auth/create`, {
     method: 'POST',
-    body: JSON.stringify({
-      name: name,
-      email: email,
-      role: role
-    }),
+    body: JSON.stringify(data),
     headers: {
       'Content-Type': 'application/json',
       Cookie: `auth_session=${god_cookie}`

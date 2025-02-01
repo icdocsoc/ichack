@@ -39,5 +39,17 @@ export default defineNuxtConfig({
         statusCode: 301
       }
     }
+  },
+
+  tailwindcss: {
+    config: {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Archivo', 'sans-serif']
+          }
+        }
+      }
+    }
   }
 });

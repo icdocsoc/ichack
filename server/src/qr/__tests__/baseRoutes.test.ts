@@ -54,7 +54,8 @@ beforeAll(async () => {
     cvUploaded: false,
     pronouns: 'they/them',
     meals: [false, false, false],
-    discord_id: null
+    discord_id: null,
+    hackspace: null
   };
 
   await db.insert(profiles).values(hackerProfile);

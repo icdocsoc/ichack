@@ -121,15 +121,8 @@ const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
 // generate a qr code using the user's id
 definePageMeta({
-  middleware: [
-    'require-auth',
-    function checkHacker() {
-      const store = useProfileStore();
-      if (store.profile!.role !== 'hacker') {
-        return navigateTo('/');
-      }
-    }
-  ]
+  middleware: ['require-auth'],
+  layout: 'no-sidebar'
 });
 useHead({
   title: 'Your Ticket'

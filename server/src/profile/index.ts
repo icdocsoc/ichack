@@ -25,6 +25,7 @@ import nunjucks from 'nunjucks';
 import { emailTemplate, icticket } from './assets/register';
 import { qrs } from '../qr/schema';
 import { adminMeta } from '../admin/schema';
+import { userHackspace } from '../hackspace/schema';
 
 nunjucks.configure({ autoescape: true });
 
@@ -57,10 +58,12 @@ export const getProfileFromId = db
     pronouns: profiles.pronouns,
     meals: profiles.meals,
     cvUploaded: profiles.cvUploaded,
-    discord_id: profiles.discord_id
+    discord_id: profiles.discord_id,
+    hackspace: userHackspace.hackspace
   })
   .from(profiles)
   .innerJoin(users, eq(users.id, profiles.id))
+  .leftJoin(userHackspace, eq(users.id, userHackspace.userId))
   .where(eq(users.id, sql.placeholder('id')))
   .prepare('get_profile_from_id');
 
@@ -115,10 +118,12 @@ const profile = factory
           pronouns: profiles.pronouns,
           meals: profiles.meals,
           cvUploaded: profiles.cvUploaded,
-          discord_id: profiles.discord_id
+          discord_id: profiles.discord_id,
+          hackspace: userHackspace.hackspace
         })
         .from(profiles)
         .innerJoin(users, eq(users.id, profiles.id))
+        .leftJoin(userHackspace, eq(users.id, userHackspace.userId))
         .where(
           name == undefined
             ? ilike(users.email, `${email}%`)
@@ -599,10 +604,12 @@ const profile = factory
         pronouns: profiles.pronouns,
         meals: profiles.meals,
         cvUploaded: profiles.cvUploaded,
-        discord_id: profiles.discord_id
+        discord_id: profiles.discord_id,
+        hackspace: userHackspace.hackspace
       })
       .from(profiles)
       .innerJoin(users, eq(users.id, profiles.id))
+      .leftJoin(userHackspace, eq(users.id, userHackspace.userId))
       .where(eq(users.id, userId));
 
     if (user.length != 1) {

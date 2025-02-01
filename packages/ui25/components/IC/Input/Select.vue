@@ -65,6 +65,9 @@ const placeholderColor = ref('text-gray-400');
 onMounted(() => {
   if (props.defaultValue) {
     modelValue.value = props.defaultValue;
+  } else if (modelValue.value != '') {
+    placeholderColor.value = '';
+    selected.value = modelValue.value!;
   }
 });
 </script>
