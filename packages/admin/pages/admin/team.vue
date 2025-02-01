@@ -344,4 +344,11 @@ const transferLeader = async (newLeaderId: string) => {
   await fetchTeamDetails();
   successToast(`Team leader transferred to user with id ${newLeaderId}`);
 };
+
+definePageMeta({
+  middleware: ['require-auth', 'require-link']
+});
+useHead({
+  title: 'Teams'
+});
 </script>
