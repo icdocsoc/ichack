@@ -5,6 +5,13 @@ const hackspacePoints = ref({
   qtr: 0
 });
 
+const hackerspaceChallengeWinners = ref<
+  {
+    winner: 'jcr' | 'scr' | 'qtr';
+    challenge: string;
+  }[]
+>();
+
 const scaledNormalisation = computed(() => {
   const average =
     (hackspacePoints.value.jcr +
@@ -34,15 +41,35 @@ const scaledNormalisation = computed(() => {
   return adjusted;
 });
 
-onMounted(() => {
-  // TODO actually make the request
-  setTimeout(() => {
-    hackspacePoints.value = {
-      jcr: 0,
-      scr: 0,
-      qtr: 0
-    };
-  }, 200);
+const { getHackspaceScores, getHackspaceChallenges } = useHackspace();
+
+function getChallengeWinner(challenge: {
+  jcr: number;
+  scr: number;
+  qtr: number;
+  name: string;
+}): { winner: 'jcr' | 'scr' | 'qtr'; challenge: string } {
+  const max = Math.max(challenge.jcr, challenge.scr, challenge.qtr);
+  if (max === challenge.jcr) {
+    return { winner: 'jcr', challenge: challenge.name };
+  } else if (max === challenge.scr) {
+    return { winner: 'scr', challenge: challenge.name };
+  } else {
+    return { winner: 'qtr', challenge: challenge.name };
+  }
+}
+
+onMounted(async () => {
+  const hscores = getHackspaceScores();
+  const hchallenges = await getHackspaceChallenges().getOrNull();
+  hackspacePoints.value = await hscores.getOrDefault({
+    jcr: 0,
+    scr: 0,
+    qtr: 0
+  });
+
+  hackerspaceChallengeWinners.value =
+    hchallenges?.map(getChallengeWinner) ?? [];
 });
 </script>
 
@@ -106,11 +133,31 @@ onMounted(() => {
       <div class="mt-5 flex flex-col gap-2">
         <!-- Make v-for from challenges!! -->
         <div
+          class="flex items-center justify-between border border-white px-3 py-2"
+          v-if="hackerspaceChallengeWinners?.length === 0">
+          <p class="text-xl font-semibold">
+            Stay tuned to find out the winners!
+          </p>
+        </div>
+        <div
+          v-for="challenge in hackerspaceChallengeWinners"
+          v-else
+          :key="challenge.challenge"
           class="flex items-center justify-between border border-white px-3 py-2">
           <p class="text-xl font-semibold">
-            Stay tuned to see challenge winners!
+            {{ challenge.challenge }}
           </p>
-          <!-- <img src="@ui25/assets/qtr_white.svg" alt="" class="size-10" /> -->
+          <img
+            src="@ui25/assets/qtr_blue.svg"
+            alt=""
+            class="size-10"
+            v-if="challenge.winner === 'qtr'" />
+          <img
+            src="@ui25/assets/jcr_yellow.svg"
+            alt=""
+            class="size-10"
+            v-else-if="challenge.winner === 'jcr'" />
+          <img src="@ui25/assets/scr_red.svg" alt="" class="size-10" v-else />
         </div>
       </div>
     </div>
