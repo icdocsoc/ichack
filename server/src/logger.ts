@@ -70,6 +70,10 @@ export default () =>
     await next();
 
     const res = c.res.clone();
+    const path = c.req.path;
+    if (path.includes('announcement') && 200 <= res.status && res.status < 300)
+      return;
+
     const message = await res.text();
     if (c.res.status >= 500) {
       apiLogger.error(c, 'Response', message);
