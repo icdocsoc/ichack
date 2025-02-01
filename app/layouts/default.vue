@@ -15,14 +15,14 @@
         </main>
 
         <!-- TODO: Announcement panel, profile/teams mini panel -->
-        <div class="hidden lg:block">
+        <div class="hidden space-y-4 lg:block">
           <!-- Announcements -->
-
+          <NotifStack />
           <!-- Teams Panel -->
 
           <!-- Profile -->
-          <div class="max-w-80 p-4 outline outline-white">
-            <div class="flex w-full items-center space-x-4">
+          <div class="w-80 p-4 outline outline-1 outline-white">
+            <div class="flex w-full items-center space-x-4 pb-4">
               <img
                 src="@ui25/assets/mugshot.svg"
                 class="size-16 bg-white p-4" />
@@ -34,9 +34,9 @@
             <Hackspace
               v-if="profile.hackspace"
               :hackspace="profile.hackspace"
-              class="w-full py-4" />
+              class="w-full pb-4" />
 
-            <NuxtLink class="w-full cursor-pointer bg-white pb-4" to="/profile">
+            <NuxtLink class="w-full cursor-pointer bg-white" to="/profile">
               <p
                 class="bg-white py-2 text-center text-xl font-semibold text-black">
                 Profile
@@ -56,6 +56,7 @@ const client = useHttpClient();
 const route = useRoute();
 const profileStore = useProfileStore();
 const profile = profileStore.profile!;
+const selectedAnnouncement = ref(-1);
 
 async function handleLogout() {
   await client.auth.logout.$post();
