@@ -192,7 +192,8 @@ const adminInfo = (await getMetaDataInfo()).value!;
 const hackspaceEditable = ref(adminInfo.mealNumber < 1);
 
 definePageMeta({
-  heading: 'Profile'
+  heading: 'Profile',
+  middleware: ['require-auth', 'require-link']
 });
 
 useHead({
