@@ -11,6 +11,11 @@ const menu = [
       icon: 'heroicons:megaphone'
     },
     { label: 'Events', to: '/admin/events', icon: 'heroicons:calendar' },
+    {
+      label: 'Hackspaces',
+      to: '/admin/hackspaces',
+      icon: 'heroicons:exclamation-triangle'
+    },
     { label: 'Team', to: '/admin/team', icon: 'heroicons:users' }
   ],
   [

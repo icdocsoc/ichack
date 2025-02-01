@@ -13,6 +13,7 @@ import { HTTPException } from 'hono/http-exception';
 import sudo from './sudo';
 import { cors } from 'hono/cors';
 import { testOrigin } from './security';
+import { hackspace } from './hackspace';
 import { pass } from './pass';
 
 const api = factory
@@ -25,6 +26,7 @@ const api = factory
   .route('/profile', profile)
   .route('/team', team)
   .route('/qr', qr)
+  .route('/hackspace', hackspace)
   .route('/pass', pass);
 
 const app = factory

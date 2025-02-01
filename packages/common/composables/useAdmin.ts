@@ -1,4 +1,5 @@
 import { Result } from 'typescript-result';
+import type { Hackspace } from '~~/server/src/types';
 import type { AdminMetadata } from '~~/shared/types';
 
 export default () => {
@@ -29,5 +30,96 @@ export default () => {
       return metadata;
     });
 
-  return { setMealNumber, getMetaDataInfo };
+  const updateHackspaceChallenge = (
+    name: string,
+    qtr?: number,
+    scr?: number,
+    jcr?: number
+  ) =>
+    Result.try(async () => {
+      const res = await client.hackspace.challenge.$put({
+        json: { name, qtr, scr, jcr }
+      });
+
+      if (!res.ok) {
+        const message = await res.text();
+        throw new Error(message);
+      }
+
+      return res;
+    });
+
+  const createHackspaceChallenge = (
+    name: string,
+    qtr?: number,
+    scr?: number,
+    jcr?: number
+  ) =>
+    Result.try(async () => {
+      const res = await client.hackspace.challenge.$post({
+        json: { name, qtr, scr, jcr }
+      });
+
+      if (!res.ok) {
+        const message = await res.text();
+        throw new Error(message);
+      }
+
+      return res;
+    });
+
+  const deleteHackspaceChallenge = (name: string) =>
+    Result.try(async () => {
+      const res = await client.hackspace.challenge.$delete({
+        json: { name }
+      });
+
+      if (!res.ok) {
+        const message = await res.text();
+        throw new Error(message);
+      }
+
+      return res;
+    });
+
+  const getHackspaceUsers = () =>
+    Result.try(async () => {
+      const res = await client.hackspace.users.$get(undefined);
+
+      if (!res.ok) {
+        const message = await res.text();
+        throw new Error(message);
+      }
+
+      return res.json();
+    });
+
+  const updateHackspaceUser = (
+    id: string,
+    hackspace?: Hackspace,
+    points?: number
+  ) =>
+    Result.try(async () => {
+      const res = await client.hackspace.users[':id'].$put({
+        json: { hackspace, points },
+        param: { id }
+      });
+
+      if (!res.ok) {
+        const message = await res.text();
+        throw new Error(message);
+      }
+
+      return res;
+    });
+
+  return {
+    setMealNumber,
+    getMetaDataInfo,
+    updateHackspaceChallenge,
+    createHackspaceChallenge,
+    deleteHackspaceChallenge,
+    getHackspaceUsers,
+    updateHackspaceUser
+  };
 };

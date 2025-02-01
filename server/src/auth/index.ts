@@ -189,7 +189,7 @@ const auth = factory
    */
   .post(
     '/forgotPassword',
-    grantAccessTo('all'),
+    grantAccessTo(['all']),
     simpleValidator('json', z.object({ email: z.string().email() })),
     async c => {
       const { email } = c.req.valid('json');

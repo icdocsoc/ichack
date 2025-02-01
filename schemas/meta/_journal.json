@@ -50,6 +50,13 @@
       "when": 1738346312212,
       "tag": "0006_wallet-passes",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1738360941082,
+      "tag": "0007_hackspace",
+      "breakpoints": true
     }
   ]
 }

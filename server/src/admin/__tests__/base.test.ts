@@ -95,7 +95,6 @@ describe('Admin Module > GET /', () => {
         }
       });
 
-      console.log(await res.text());
       expect(res.status).toBe(200);
       // expect(res.json()).resolves.toEqual(row);
     }
