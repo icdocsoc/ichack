@@ -41,8 +41,9 @@
         <button v-if="!editingTeam" title="Edit team name">
           <img
             src="@ui25/assets/edit.svg"
+            v-if="leader"
             alt="Edit profile"
-            @click="editingTeam = true" />
+            @click="handleEditTeam" />
         </button>
         <div class="h-fit space-y-2 md:space-x-5 md:space-y-0" v-else>
           <button class="max-w-fit">
@@ -459,6 +460,7 @@ function handleCancelTeamName() {
 }
 
 async function handleEditTeam() {
+  if (!leader.value) return;
   editingTeam.value = true;
 }
 
