@@ -37,6 +37,10 @@ useHead({
 
 <template>
   <div class="flex flex-col gap-5 pb-10">
+    <NuxtLink to="/profile" class="lg:hidden">
+      <DashboardHackspaceButton room="Go to your Profile" logo="" />
+    </NuxtLink>
+
     <div v-if="store.profile?.role !== 'hacker'">
       <DashboardButton v-model="showAdminButtons" background="bg-red-ic">
         Admin Panels
