@@ -1,6 +1,7 @@
 import { pgTable, text } from 'drizzle-orm/pg-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { users } from '../auth/schema';
+import { hackspaceEnum } from '../hackspace/schema';
 
 export const companies = pgTable('companies', {
   name: text('name').notNull().primaryKey()
@@ -35,4 +36,12 @@ export const insertCategorySchema = createInsertSchema(categories, {
   longDescription: schema => schema.url()
 }); // The slug is generated from the owner and title
 
+export const judgingTable = pgTable('judging', {
+  category: text('category')
+    .primaryKey()
+    .references(() => categories.slug),
+  hackspace: hackspaceEnum('hackspace')
+});
+
 export const categorySchema = createSelectSchema(categories);
+export const updateJudgingSchema = createInsertSchema(judgingTable);

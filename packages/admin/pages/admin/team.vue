@@ -1,136 +1,133 @@
 <template>
-  <NuxtLayout name="admin">
-    <UContainer class="relative max-h-full overflow-y-scroll">
-      <h2 class="text-center text-5xl font-semibold">Manage Teams</h2>
-      <UForm @submit="handleSearchTeams" :state="formState">
-        <UFormGroup label="Search By" name="searchType">
-          <URadioGroup
-            v-model="formState.searchType"
-            :options="searchOptions" />
-        </UFormGroup>
-        <UFormGroup :label="queryLabel" name="query">
-          <UInput v-model="formState.query" :placeholder="queryPlaceholder" />
-        </UFormGroup>
-        <UButton type="submit">Search</UButton>
-      </UForm>
-      <UTable
-        :rows="results"
-        :columns="columns"
-        :loading="status == 'pending'"
-        :single-select="true"
-        @select="handleSelectTeamRow"></UTable>
-    </UContainer>
-    <USlideover v-model="isOpen">
-      <div class="flex-1 p-4">
-        <UButton
-          color="gray"
-          variant="ghost"
-          size="sm"
-          icon="i-heroicons-x-mark-20-solid"
-          class="absolute end-5 top-5 z-10 flex sm:hidden"
-          square
-          padded
-          @click="isOpen = false" />
-        <div
-          class="flex items-center justify-between border-b border-gray-300 p-4">
-          <h2>{{ teamData?.teamName ?? 'team name...' }}</h2>
-          <UButton @click="isOpen = false">Close</UButton>
-        </div>
-        <div class="p-4">
-          <div class="mb-4 rounded-lg border border-gray-300 p-4">
-            <div class="space-y-2">
-              <p>
-                <strong>Sponsor Category:</strong>
-                {{ teamData?.sponsorCategory ?? 'Not Chosen!' }}
-              </p>
-              <p>
-                <strong>Docsoc Category:</strong>
-                {{ teamData?.docsocCategory ?? 'Not Chosen!' }}
-              </p>
-              <div>
-                <strong>Submission Link:</strong>
-                <a
-                  v-if="teamData?.submissionLink"
-                  :href="teamData.submissionLink"
-                  class="text-blue-400 underline">
-                  Submission Link
-                </a>
-                <p v-else>Does not exist :/</p>
-              </div>
-              <p>
-                <strong>Phone:</strong>
-                {{ teamData?.phone ?? 'Does not exist :/' }}
-              </p>
-              <p>
-                <strong>Phone 2:</strong>
-                {{ teamData?.phone2 ?? 'Does not exist :/' }}
-              </p>
+  <UContainer class="relative max-h-full overflow-y-scroll">
+    <h2 class="text-center text-5xl font-semibold">Manage Teams</h2>
+    <UForm @submit="handleSearchTeams" :state="formState">
+      <UFormGroup label="Search By" name="searchType">
+        <URadioGroup v-model="formState.searchType" :options="searchOptions" />
+      </UFormGroup>
+      <UFormGroup :label="queryLabel" name="query">
+        <UInput v-model="formState.query" :placeholder="queryPlaceholder" />
+      </UFormGroup>
+      <UButton type="submit">Search</UButton>
+    </UForm>
+    <UTable
+      :rows="results"
+      :columns="columns"
+      :loading="status == 'pending'"
+      :single-select="true"
+      @select="handleSelectTeamRow"></UTable>
+  </UContainer>
+  <USlideover v-model="isOpen">
+    <div class="flex-1 p-4">
+      <UButton
+        color="gray"
+        variant="ghost"
+        size="sm"
+        icon="i-heroicons-x-mark-20-solid"
+        class="absolute end-5 top-5 z-10 flex sm:hidden"
+        square
+        padded
+        @click="isOpen = false" />
+      <div
+        class="flex items-center justify-between border-b border-gray-300 p-4">
+        <h2>{{ teamData?.teamName ?? 'team name...' }}</h2>
+        <UButton @click="isOpen = false">Close</UButton>
+      </div>
+      <div class="p-4">
+        <div class="mb-4 rounded-lg border border-gray-300 p-4">
+          <div class="space-y-2">
+            <p>
+              <strong>Sponsor Category:</strong>
+              {{ teamData?.sponsorCategory ?? 'Not Chosen!' }}
+            </p>
+            <p>
+              <strong>Docsoc Category:</strong>
+              {{ teamData?.docsocCategory ?? 'Not Chosen!' }}
+            </p>
+            <div>
+              <strong>Submission Link:</strong>
+              <a
+                v-if="teamData?.submissionLink"
+                :href="teamData.submissionLink"
+                class="text-blue-400 underline">
+                Submission Link
+              </a>
+              <p v-else>Does not exist :/</p>
             </div>
+            <p>
+              <strong>Phone:</strong>
+              {{ teamData?.phone ?? 'Does not exist :/' }}
+            </p>
+            <p>
+              <strong>Phone 2:</strong>
+              {{ teamData?.phone2 ?? 'Does not exist :/' }}
+            </p>
           </div>
-          <div class="mb-4 rounded-lg border border-gray-300 p-4">
-            <h3>Members</h3>
-            <p v-if="!members">No members!</p>
-            <ul v-else>
-              <li
-                class="group flex items-center justify-between"
-                v-for="member in members"
-                :key="member.userId">
-                <div>
-                  <span v-if="member.isLeader" class="mr-2">👑</span>
-                  <span>{{ member.memberName }}</span>
-                </div>
-                <div class="flex gap-2">
-                  <UButton
-                    @click="kickMember(member.userId)"
-                    color="red"
-                    class="hidden text-white group-hover:inline-block">
-                    Kick
-                  </UButton>
-                  <UButton
-                    v-if="!member.isLeader"
-                    @click="transferLeader(member.userId)"
-                    class="hidden text-white group-hover:inline-block">
-                    Transfer
-                  </UButton>
-                </div>
-              </li>
-            </ul>
-          </div>
-          <div class="mb-4 rounded-lg border border-gray-300 p-4">
-            <h3>Invites</h3>
-            <p v-if="!invites">No Invites!</p>
-            <ul v-else>
-              <li
-                class="group flex items-center justify-between"
-                v-for="invite in invites"
-                :key="invite.userId">
-                <span>{{ invite.invitedUserName }}</span>
-                <div class="flex gap-2">
-                  <UButton
-                    @click="removeInvite(invite.userId)"
-                    color="red"
-                    class="hidden text-white group-hover:inline-block">
-                    Remove
-                  </UButton>
-                  <UButton
-                    @click="acceptInvite(invite.userId)"
-                    class="hidden text-white group-hover:inline-block">
-                    Accept Invite
-                  </UButton>
-                </div>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <SearchBar v-model="chosenUser" />
-            <UButton :disabled="members.length === 6" @click="addUser">
-              Add Member
-            </UButton>
-          </div>
+        </div>
+        <div class="mb-4 rounded-lg border border-gray-300 p-4">
+          <h3>Members</h3>
+          <p v-if="!members">No members!</p>
+          <ul v-else>
+            <li
+              class="group flex items-center justify-between"
+              v-for="member in members"
+              :key="member.userId">
+              <div>
+                <span v-if="member.isLeader" class="mr-2">👑</span>
+                <span>{{ member.memberName }}</span>
+              </div>
+              <div class="flex gap-2">
+                <UButton
+                  @click="kickMember(member.userId)"
+                  color="red"
+                  class="hidden text-white group-hover:inline-block">
+                  Kick
+                </UButton>
+                <UButton
+                  v-if="!member.isLeader"
+                  @click="transferLeader(member.userId)"
+                  class="hidden text-white group-hover:inline-block">
+                  Transfer
+                </UButton>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="mb-4 rounded-lg border border-gray-300 p-4">
+          <h3>Invites</h3>
+          <p v-if="!invites">No Invites!</p>
+          <ul v-else>
+            <li
+              class="group flex items-center justify-between"
+              v-for="invite in invites"
+              :key="invite.userId">
+              <span>{{ invite.invitedUserName }}</span>
+              <div class="flex gap-2">
+                <UButton
+                  @click="removeInvite(invite.userId)"
+                  color="red"
+                  class="hidden text-white group-hover:inline-block">
+                  Remove
+                </UButton>
+                <UButton
+                  @click="acceptInvite(invite.userId)"
+                  class="hidden text-white group-hover:inline-block">
+                  Accept Invite
+                </UButton>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <SearchBar v-model="chosenUser" />
+          <UButton :disabled="members.length === 6" @click="addUser">
+            Add Member
+          </UButton>
         </div>
       </div>
-    </USlideover>
-  </NuxtLayout>
+    </div>
+  </USlideover>
+
   <UNotifications />
 </template>
 
@@ -346,7 +343,8 @@ const transferLeader = async (newLeaderId: string) => {
 };
 
 definePageMeta({
-  middleware: 'require-auth'
+  middleware: ['require-auth'],
+  layout: 'admin'
 });
 useHead({
   title: 'Teams'

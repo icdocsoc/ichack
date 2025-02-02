@@ -32,8 +32,34 @@ export default function useCategories() {
     });
   }
 
+  const getJudging = async () =>
+    Result.try(async () => {
+      const res = await client.category.judging.$get();
+
+      if (!res.ok) {
+        const message = await res.text();
+        throw new Error(message);
+      }
+
+      return await res.json();
+    });
+
+  const getAllJudging = async () =>
+    Result.try(async () => {
+      const res = await client.category.judging.all.$get();
+
+      if (!res.ok) {
+        const message = await res.text();
+        throw new Error(message);
+      }
+
+      return await res.json();
+    });
+
   return {
     getCategory,
-    getAllCategories
+    getAllCategories,
+    getJudging,
+    getAllJudging
   };
 }

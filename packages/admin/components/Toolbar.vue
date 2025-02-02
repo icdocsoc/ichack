@@ -16,7 +16,8 @@ const menu = [
       to: '/admin/hackspaces',
       icon: 'heroicons:exclamation-triangle'
     },
-    { label: 'Team', to: '/admin/team', icon: 'heroicons:users' }
+    { label: 'Team', to: '/admin/team', icon: 'heroicons:users' },
+    { label: 'Judging', to: '/admin/judging', icon: 'heroicons:star' }
   ],
   [
     {

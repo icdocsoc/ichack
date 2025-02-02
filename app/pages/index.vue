@@ -2,11 +2,31 @@
 import qtr from '@ui25/assets/qtr_blue.svg';
 import scr from '@ui25/assets/scr_red.svg';
 import jcr from '@ui25/assets/jcr_yellow.svg';
+const { getJudging } = useCategories();
 
 const showAdminButtons = ref(false);
 const store = useProfileStore();
 
 const showJoinHackspace = ref(false);
+
+const showJudging = ref(false);
+const { data: judgingData, refresh: refreshJudging } = useAsyncData(
+  'get_judging_categories',
+  async () => {
+    const result = await getJudging();
+    return result.getOrThrow();
+  }
+);
+
+onMounted(() => {
+  const intervalId = setInterval(async () => {
+    await refreshJudging();
+  }, 10000);
+
+  onBeforeUnmount(() => {
+    clearInterval(intervalId);
+  });
+});
 
 const showHackspaceScores = ref(true);
 
@@ -96,6 +116,21 @@ useHead({
         Hackspace Leaderboard
       </DashboardButton>
       <DashboardHackspace v-if="showHackspaceScores" class="mt-10 w-full" />
+    </div>
+
+    <div v-if="judgingData">
+      <DashboardButton background="bg-blue-ic" v-model="showJudging">
+        Judging
+      </DashboardButton>
+      <div class="flex items-center gap-5" v-if="showJudging">
+        <div v-for="category in judgingData" :key="category.title">
+          <JudgingCategory
+            :title="category.title"
+            :slug="category.slug"
+            v-model="category.hackspace"
+            :isAdmin="false" />
+        </div>
+      </div>
     </div>
 
     <div>

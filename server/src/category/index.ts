@@ -1,11 +1,18 @@
-import { eq } from 'drizzle-orm';
+import { eq, or } from 'drizzle-orm';
 import { db } from '../drizzle';
 import factory from '../factory';
 import { grantAccessTo } from '../security';
-import { categories, insertCategorySchema, companies } from './schema';
+import {
+  categories,
+  insertCategorySchema,
+  companies,
+  judgingTable,
+  updateJudgingSchema
+} from './schema';
 import { z } from 'zod';
 import { simpleValidator } from '../validators';
 import { adminMeta } from '../admin/schema';
+import { teamMembers, teams } from '../team/schema';
 
 const createCategorySchema = insertCategorySchema.omit({ slug: true });
 const godUpdateCategorySchema = insertCategorySchema
@@ -40,6 +47,83 @@ const category = factory
     const all = await db.select().from(categories);
     return c.json(all, 200);
   })
+  .get('/judging', grantAccessTo(['authenticated']), async ctx => {
+    const user = ctx.get('user')!;
+    const team = await db
+      .select({
+        sponsorCategory: teams.sponsorCategory,
+        docsocCategory: teams.docsocCategory
+      })
+      .from(teamMembers)
+      .innerJoin(teams, eq(teamMembers.teamId, teams.id))
+      .where(eq(teamMembers.userId, user.id));
+
+    if (
+      team.length == 0 ||
+      !team[0]!.sponsorCategory ||
+      !team[0]!.docsocCategory
+    )
+      return ctx.text(
+        'User is not in a team or did not select categories.',
+        404
+      );
+
+    const res = await db
+      .select({
+        company: categories.owner,
+        title: categories.title,
+        slug: categories.slug,
+        hackspace: judgingTable.hackspace
+      })
+      .from(judgingTable)
+      .innerJoin(categories, eq(judgingTable.category, categories.slug))
+      .where(
+        or(
+          eq(judgingTable.category, team[0]!.sponsorCategory!),
+          eq(judgingTable.category, team[0]!.docsocCategory!)
+        )
+      );
+
+    return ctx.json(res, 200);
+  })
+  .get('/judging/all', grantAccessTo(['authenticated']), async ctx => {
+    const res = await db
+      .select({
+        title: categories.title,
+        company: categories.owner,
+        category: categories.title,
+        slug: categories.slug,
+        hackspace: judgingTable.hackspace
+      })
+      .from(judgingTable)
+      .rightJoin(categories, eq(judgingTable.category, categories.slug));
+
+    return ctx.json(res, 200);
+  })
+  .put(
+    '/judging',
+    grantAccessTo(['admin']),
+    simpleValidator('json', updateJudgingSchema),
+    async ctx => {
+      const body = ctx.req.valid('json');
+
+      try {
+        await db
+          .insert(judgingTable)
+          .values(body)
+          .onConflictDoUpdate({
+            target: judgingTable.category,
+            set: {
+              hackspace: body.hackspace
+            }
+          });
+
+        return ctx.json({}, 200);
+      } catch {
+        return ctx.text('Category does not exist.', 404);
+      }
+    }
+  )
   /**
    * Any authenticated user can get a single category by slug
    */
@@ -173,5 +257,4 @@ const category = factory
       }
     }
   );
-
 export default category;

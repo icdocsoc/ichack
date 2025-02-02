@@ -78,6 +78,13 @@
       "when": 1738478522206,
       "tag": "0010_extra-teams-fields",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1738491678034,
+      "tag": "0011_judging",
+      "breakpoints": true
     }
   ]
 }

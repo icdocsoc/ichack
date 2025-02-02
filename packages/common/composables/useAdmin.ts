@@ -113,6 +113,18 @@ export default () => {
       return res;
     });
 
+  const updateJudging = (category: string, hackspace: Hackspace | null) =>
+    Result.try(async () => {
+      const res = await client.category.judging.$put({
+        json: { category, hackspace }
+      });
+
+      if (!res.ok) {
+        const message = await res.text();
+        throw new Error(message);
+      }
+    });
+
   const setCanSubmit = (canSubmit: boolean) =>
     Result.try(async () => {
       const res = await client.admin.allowSubmissions.$put({
@@ -133,6 +145,7 @@ export default () => {
     deleteHackspaceChallenge,
     getHackspaceUsers,
     updateHackspaceUser,
+    updateJudging,
     setCanSubmit
   };
 };
