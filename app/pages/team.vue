@@ -14,7 +14,7 @@
       </div>
     </div>
 
-    You do not have a team yet.
+    <p>You do not have a team yet.</p>
 
     <button
       v-if="canSubmit"
@@ -41,6 +41,9 @@
           v-if="editingTeam"
           v-model="tempTeam!.teamName"
           class="p box-border border-[1px] border-black bg-white text-3xl font-semibold text-black"></ICInput>
+
+        <p class="text-3xl font-semibold text-black">Team #{{ team!.id }}</p>
+
         <button v-if="!editingTeam" title="Edit team name">
           <img
             src="@ui25/assets/edit.svg"
@@ -71,13 +74,17 @@
             <ICTeamMember
               class="max-w-80"
               v-for="(member, i) in team!.members"
+              :editing="editingTeam"
               :name="member.name"
               :color="colors[i % 3]!"
-              :leader="member.leader" />
+              :leader="member.leader"
+              @cross="handleRemoveTeammate(member.id)" />
           </div>
         </div>
 
-        <h2 class="text-2xl font-semibold">Pending Invites</h2>
+        <h2 class="text-2xl font-semibold" v-if="team!.invited.length > 0">
+          Pending Invites
+        </h2>
         <div class="flex flex-wrap gap-2" v-if="team!.invited.length > 0">
           <ICTeamMember
             class="w-fit"
@@ -115,12 +122,12 @@
 
           <div class="space-y-6">
             <div>
-              <h3>Phone Number:</h3>
+              <h3>Phone Number (UK number preferred):</h3>
               <ICInput
                 v-if="!editingTeam"
                 :frozen="true"
                 v-model="team!.phone"
-                placeholder="Please input your phone number." />
+                placeholder="+44..." />
               <ICInput v-else v-model="tempTeam.phone" placeholder="+44..." />
             </div>
 
@@ -129,22 +136,55 @@
               <ICInput
                 v-if="!editingTeam"
                 :frozen="true"
-                placeholder="Input your backup phone number."
+                placeholder="+44..."
                 v-model="team!.phone2" />
               <ICInput v-else v-model="tempTeam.phone2" placeholder="+44..." />
             </div>
 
+            <div class="max-w-fit">
+              <h3>Hackspace:</h3>
+              <ICInputSelect
+                name="hackspace"
+                v-if="!editingTeam"
+                :frozen="true"
+                placeholder="Hackspace"
+                :options="hackspaceOptions"
+                v-model="team!.hackspace" />
+              <ICInputSelect
+                v-else
+                name="hackspaceTmp"
+                placeholder="Hackspace"
+                :options="hackspaceOptions"
+                v-model="tempTeam.hackspace" />
+            </div>
+
             <div>
-              <h3>Submission Link:</h3>
+              <h3>Table number:</h3>
               <ICInput
                 v-if="!editingTeam"
                 :frozen="true"
-                placeholder="https://devpost.com/..."
+                v-model="team!.tableNumber" />
+              <ICInput v-else v-model="tempTeam.tableNumber" />
+            </div>
+
+            <div>
+              <h3>
+                <a
+                  href="https://ic-hack-25.devpost.com/"
+                  target="_blank"
+                  class="underline"
+                  >Submission Link:</a
+                >
+              </h3>
+              <ICInput
+                v-if="!editingTeam"
+                :frozen="true"
+                placeholder="https://ic-hack-25.devpost.com/..."
                 v-model="team!.submissionLink" />
               <ICInput
                 v-else
                 v-model="tempTeam.submissionLink"
-                placeholder="https://devpost.com/..."
+                placeholder="https://ic-hack-25.devpost.com/..."
                 pattern="urlRegex" />
             </div>
 
@@ -185,6 +225,42 @@
                 placeholder="Please select a category"
                 :options="mapCategories(sponsor_categories)" />
             </div>
+
+            <div>
+              <ICInputCheckbox
+                :fixed="!editingTeam"
+                title="Have you used Intersystems IRIS Vector Search in your project?"
+                description="Tick yes to enter for Intersystems' challenge."
+                name="terms"
+                v-model="tempTeam.intersystems" />
+            </div>
+
+            <div>
+              <h3
+                v-if="!editingTeam"
+                :class="[
+                  'text-xl font-bold',
+                  missingRequirements.length > 0
+                    ? 'text-red-ic'
+                    : 'text-green-400'
+                ]">
+                You have {{ missingRequirements.length > 0 ? 'not' : '' }} met
+                all the requirements to submit.
+              </h3>
+              <ul v-if="missingRequirements.length > 0 && !editingTeam">
+                Your team will not be submitted for judging. You are missing:
+                <li
+                  v-for="req in missingRequirements"
+                  :key="req"
+                  class="ml-8 list-disc">
+                  {{ req }}
+                </li>
+              </ul>
+              <p v-else>
+                Your team will automatically be submitted for judging at the
+                deadline.
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -208,7 +284,7 @@ import TeamInvite from '~~/packages/ui25/components/IC/TeamInvite.vue';
 
 const colors = ['bg-red-ic', 'bg-blue-ic', 'bg-yellow-ic'];
 
-definePageMeta({ middleware: 'require-auth' });
+definePageMeta({ middleware: ['require-auth', 'require-link'] });
 
 const { data: canSubmit } = await useAsyncData('can_submit', async () => {
   const { getMetaDataInfo } = useAdmin();
@@ -223,6 +299,12 @@ const mapCategories = (values: readonly Category[]) =>
       value: v.slug
     };
   });
+
+const hackspaceOptions = [
+  { displayName: "Queen's Tower Room", value: 'qtr' },
+  { displayName: 'Senior Common Room', value: 'scr' },
+  { displayName: 'Junior Common Room', value: 'jcr' }
+];
 
 const {
   getOwnTeam,
@@ -239,16 +321,25 @@ const {
   disbandTeam
 } = useTeams();
 
-const urlRegex =
-  /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/;
-
+const urlRegex = /https:\/\/ic-hack-25.devpost.com\/.+/;
 const store = useProfileStore();
 const profile = store.profile!;
 
 const errorMessage = ref('');
+const missingRequirements = computed(() => {
+  const reqs = [];
+
+  if (!tempTeam.phone) reqs.push('phone number');
+  if (!tempTeam.hackspace) reqs.push('hackspace');
+  if (!tempTeam.tableNumber) reqs.push('table number');
+  if (!tempTeam.submissionLink) reqs.push('submission link');
+  if (!tempTeam.docsocCategory) reqs.push('DoCSoc category');
+  if (!tempTeam.sponsorCategory) reqs.push('sponsor category');
+
+  return reqs;
+});
 
 const editingTeam = ref(false);
-const isInvitingTeam = ref(false);
 const maxTeammates = computed(
   () =>
     (team.value?.members.length ?? 0) + (team.value?.members.length ?? 0) >= 6
@@ -276,8 +367,6 @@ const submissionOutline = computed(() =>
       : 'outline-red-700'
 );
 
-const searchPerson = ref('');
-
 // TODO: Should this be fetched from some api route?
 const editable = ref(true);
 
@@ -299,8 +388,6 @@ const docsoc_categories =
   all_categories.value?.filter(c => c?.owner == 'DoCSoc') ?? [];
 const sponsor_categories =
   all_categories.value?.filter(c => c?.owner != 'DoCSoc') ?? [];
-
-const profileColours = ['bg-red-ic', 'bg-blue-ic', 'bg-yellow-ic'];
 
 const {
   data: team,
@@ -344,7 +431,10 @@ const tempTeam = reactive({
   sponsorCategory: team.value?.sponsorCategory ?? undefined,
   submissionLink: team.value?.submissionLink ?? undefined,
   phone: team.value?.phone ?? undefined,
-  phone2: team.value?.phone2 ?? undefined
+  phone2: team.value?.phone2 ?? undefined,
+  intersystems: team.value?.intersystems ?? undefined,
+  tableNumber: team.value?.tableNumber ?? undefined,
+  hackspace: team.value?.hackspace ?? undefined
 });
 
 async function handleCreateTeam() {
@@ -414,27 +504,26 @@ async function handleConfirmTeamName() {
   if (tempTeam.submissionLink == '') tempTeam.submissionLink = undefined;
 
   if (!phoneRegex.test(tempTeam.phone ?? '')) {
-    console.log('L bozo');
     errorMessage.value =
       "Please ensure you've provided a phone number, with the country code.";
     return;
   }
   if (tempTeam.phone2 && !phoneRegex.test(tempTeam.phone2)) {
-    console.log('L bozo 2');
     errorMessage.value =
       "Please ensure the backup phone number you've provided is correct, with the country code.";
     return;
   }
-  if (tempTeam.submissionLink && !urlRegex.test(tempTeam.submissionLink)) {
-    console.log('L bozo 3');
-    errorMessage.value = 'Please ensure your submission link is a proper URL.';
+  if (
+    tempTeam.submissionLink &&
+    !tempTeam.submissionLink.includes('ic-hack-25.devpost.com')
+  ) {
+    errorMessage.value =
+      'Please ensure your submission link is a proper Devpost URL. It should contain "ic-hack-25.devpost.com".';
     return;
   }
 
   editingTeam.value = false;
   inviteFilter.value = '';
-
-  console.log('W bozo');
 
   // Only make the request if something has changed.
   const noChanges = Object.keys(tempTeam).every(elem => {
@@ -467,7 +556,9 @@ function handleCancelTeamName() {
     sponsorCategory: team.value?.sponsorCategory ?? undefined,
     submissionLink: team.value?.submissionLink ?? undefined,
     phone: team.value?.phone ?? undefined,
-    phone2: team.value?.phone2 ?? undefined
+    phone2: team.value?.phone2 ?? undefined,
+    intersystems: team.value?.intersystems ?? undefined,
+    tableNumber: team.value?.tableNumber ?? undefined
   });
 }
 
@@ -491,10 +582,6 @@ async function handleRemoveTeammate(userId: string) {
 
 async function handleCancelInvite(teammate: string) {
   alert("apparently we don't have a way to do this");
-}
-
-async function startInviting() {
-  isInvitingTeam.value = true;
 }
 
 async function handleInvite(userId: string) {

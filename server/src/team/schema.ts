@@ -10,6 +10,7 @@ import { categories } from '../category/schema';
 import { users } from '../auth/schema';
 import { createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
+import { hackspaceEnum } from '../hackspace/schema';
 
 // I believe this should cover every country and region code.
 export const phoneRegex = /\+[0-9]{7,15}/;
@@ -21,7 +22,10 @@ export const teams = pgTable('teams', {
   docsocCategory: text('docsoc_category').references(() => categories.slug),
   submissionLink: text('submission_link'),
   phone: text('phone'),
-  phone2: text('phone2')
+  phone2: text('phone2'),
+  intersystems: boolean('intersystems').notNull().default(false),
+  hackspace: hackspaceEnum('hackspace'),
+  tableNumber: text('table_number')
 });
 
 export const teamInvites = pgTable(
@@ -56,7 +60,7 @@ export const updateTeamSchema = createSelectSchema(teams)
   .extend({
     phone: z.string().regex(phoneRegex),
     phone2: z.string().regex(phoneRegex).or(z.literal('')),
-    submissionLink: z.string().url()
+    submissionLink: z.string()
   })
   .omit({ id: true })
   .partial()

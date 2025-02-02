@@ -71,6 +71,13 @@
       "when": 1738459914256,
       "tag": "0009_disallow_submissions",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1738478522206,
+      "tag": "0010_extra-teams-fields",
+      "breakpoints": true
     }
   ]
 }

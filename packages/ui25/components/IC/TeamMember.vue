@@ -9,13 +9,15 @@
       :class="[color, 'size-16 self-center p-2']" />
 
     <p class="text-xl font-semibold">{{ leader ? '👑' : '' }} {{ name }}</p>
-    <!-- 
-    <div v-if="pending" class="flex items-center justify-center gap-8">
+
+    <div
+      v-if="!leader && editing"
+      class="flex items-center justify-center gap-8">
       <img
         class="cursor-pointer"
         src="@ui25/assets/cross.svg"
         @click="emit('cross')" />
-    </div> -->
+    </div>
   </div>
 </template>
 
@@ -25,6 +27,7 @@ type Props = {
   color: string;
   pending?: boolean;
   leader?: boolean;
+  editing?: boolean;
 };
 
 defineProps<Props>();
