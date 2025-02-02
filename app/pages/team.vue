@@ -235,20 +235,18 @@
                 v-model="tempTeam.intersystems" />
             </div>
 
-            <div>
-              <h3
-                v-if="!editingTeam"
-                :class="[
-                  'text-xl font-bold',
-                  missingRequirements.length > 0
-                    ? 'text-red-ic'
-                    : 'text-green-400'
-                ]">
-                You have {{ missingRequirements.length > 0 ? 'not' : '' }} met
+            <div
+              class="p-5"
+              :class="
+                missingRequirements.length > 0 ? 'bg-red-ic' : 'bg-green-400'
+              ">
+              <h3 v-if="!editingTeam" :class="['text-xl font-black']">
+                You have {{ missingRequirements.length > 0 ? 'NOT' : '' }} met
                 all the requirements to submit.
               </h3>
               <ul v-if="missingRequirements.length > 0 && !editingTeam">
-                Your team will not be submitted for judging. You are missing:
+                <strong>Your team will not be considered for judging.</strong>
+                You are missing:
                 <li
                   v-for="req in missingRequirements"
                   :key="req"
