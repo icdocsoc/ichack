@@ -12,7 +12,8 @@ export const adminMeta = pgTable('admin', {
    * If 1, Saturday dinner is being served.
    * If 2, Sunday breakfast is being served.
    */
-  mealNumber: integer('meal_number').notNull().default(NO_MEAL)
+  mealNumber: integer('meal_number').notNull().default(NO_MEAL),
+  allowSubmissions: boolean('allow_submissions').notNull().default(true)
 });
 
 export const metadataSchema = createSelectSchema(adminMeta);

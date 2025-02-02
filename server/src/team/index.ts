@@ -8,6 +8,7 @@ import { apiLogger } from '../logger';
 import { z } from 'zod';
 import { simpleValidator } from '../validators';
 import teamAdmin from './admin';
+import { adminMeta } from '../admin/schema';
 
 // TODO: Move to `admin` table.
 export const MAX_TEAM_SIZE = 6;
@@ -49,6 +50,14 @@ const selectTeamFromLeader = db
   .innerJoin(teams, eq(teams.id, teamMembers.teamId))
   .prepare('selectTeamFromLeader');
 
+const canEdit = async () => {
+  const adminMetaQuery = await db
+    .select({ allowSubmissions: adminMeta.allowSubmissions })
+    .from(adminMeta);
+  const { allowSubmissions } = adminMetaQuery[0]!;
+  return allowSubmissions;
+};
+
 const team = factory
   .createApp()
   .post(
@@ -56,6 +65,8 @@ const team = factory
     simpleValidator('json', z.object({ teamName: z.string() })),
     grantAccessTo(['hacker']),
     async ctx => {
+      if (!(await canEdit())) return ctx.text('Submissions are closed.', 403);
+
       // Creates a team in the DB using supplied team, and user who requested as leader.
       const user = ctx.get('user')!;
       const body = ctx.req.valid('json');
@@ -100,6 +111,8 @@ const team = factory
     grantAccessTo(['hacker']),
     simpleValidator('json', updateTeamSchema),
     async ctx => {
+      if (!(await canEdit())) return ctx.text('Submissions are closed.', 403);
+
       // A leader can update anything but ID
       const body = ctx.req.valid('json');
       const user = ctx.get('user')!;
@@ -184,6 +197,8 @@ const team = factory
     simpleValidator('json', userIdSchema),
     grantAccessTo(['hacker']),
     async ctx => {
+      if (!(await canEdit())) return ctx.text('Submissions are closed.', 403);
+
       const oldLeader = ctx.get('user')!;
       const { userId: newLeaderId } = ctx.req.valid('json');
 
@@ -319,6 +334,8 @@ const team = factory
     grantAccessTo(['hacker']),
     simpleValidator('json', userIdSchema),
     async ctx => {
+      if (!(await canEdit())) return ctx.text('Submissions are closed.', 403);
+
       // Leader can invite a user
       const { userId } = ctx.req.valid('json');
 
@@ -412,6 +429,8 @@ const team = factory
     grantAccessTo(['hacker']),
     simpleValidator('json', teamIdSchema),
     async ctx => {
+      if (!(await canEdit())) return ctx.text('Submissions are closed.', 403);
+
       // Remove all invites, and accept invite
       const { teamId } = ctx.req.valid('json');
 
@@ -535,6 +554,8 @@ const team = factory
     grantAccessTo(['hacker']),
     simpleValidator('param', userIdSchema),
     async ctx => {
+      if (!(await canEdit())) return ctx.text('Submissions are closed.', 403);
+
       // Removes user from team
       const { userId: userIdToRemove } = ctx.req.param();
       const teamLeader = ctx.get('user')!;
@@ -572,6 +593,8 @@ const team = factory
     }
   )
   .post('/removeUser', grantAccessTo(['hacker']), async ctx => {
+    if (!(await canEdit())) return ctx.text('Submissions are closed.', 403);
+
     // Aka '/leave'; remove yourself.
     const user = ctx.get('user')!;
 

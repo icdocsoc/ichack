@@ -30,7 +30,7 @@ const mealOptions = [
     value: 2
   }
 ];
-const { getMetaDataInfo, setMealNumber } = useAdmin();
+const { getMetaDataInfo, setMealNumber, setCanSubmit } = useAdmin();
 const { data: metaInfo, error: gettingMealError } = await useAsyncData(
   'getMealNumber',
   async () => {
@@ -38,7 +38,7 @@ const { data: metaInfo, error: gettingMealError } = await useAsyncData(
     return result.getOrThrow();
   }
 );
-const selectedMealNumber = ref(-1);
+const selectedMealNumber = ref(metaInfo.value?.mealNumber || NO_MEAL);
 const handleSetMeal = async () => {
   const confirm = window.confirm(
     `Set the meal to '${mealOptions[selectedMealNumber.value + 1]?.name}'?`
@@ -50,6 +50,22 @@ const handleSetMeal = async () => {
     alert('Failed to set meal number');
   } else {
     alert('Successfully set meal number');
+  }
+};
+
+const canSubmit = ref(metaInfo.value?.allowSubmissions || false);
+const handleUpdateSubmissions = async () => {
+  const confirm = window.confirm(
+    `Set the allow submissions to '${!canSubmit.value}'?`
+  );
+  if (!confirm) return;
+
+  const result = await setCanSubmit(!canSubmit.value);
+  if (result.isError()) {
+    alert('Failed to update submissions');
+  } else {
+    alert('Successfully updated submissions');
+    canSubmit.value = !canSubmit.value;
   }
 };
 
@@ -127,5 +143,15 @@ useHead({
         </div>
       </UCard>
     </NuxtLink>
+
+    <UCard>
+      <h3 class="text-center text-3xl">Teams Can Submit</h3>
+      <UBadge
+        class="cursor-pointer"
+        :color="canSubmit ? 'green' : 'red'"
+        @click="handleUpdateSubmissions">
+        {{ canSubmit ? 'Yes' : 'No' }}
+      </UBadge>
+    </UCard>
   </div>
 </template>

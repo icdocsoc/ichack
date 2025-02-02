@@ -113,6 +113,18 @@ export default () => {
       return res;
     });
 
+  const setCanSubmit = (canSubmit: boolean) =>
+    Result.try(async () => {
+      const res = await client.admin.allowSubmissions.$put({
+        json: { allowSubmissions: canSubmit }
+      });
+
+      if (!res.ok) {
+        const message = await res.text();
+        throw new Error(message);
+      }
+    });
+
   return {
     setMealNumber,
     getMetaDataInfo,
@@ -120,6 +132,7 @@ export default () => {
     createHackspaceChallenge,
     deleteHackspaceChallenge,
     getHackspaceUsers,
-    updateHackspaceUser
+    updateHackspaceUser,
+    setCanSubmit
   };
 };

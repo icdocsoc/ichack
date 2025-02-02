@@ -72,6 +72,16 @@ const admin = factory
 
       return c.body(null, 204);
     }
-  );
+  )
+  .put(
+    '/allowSubmissions',
+    simpleValidator('json', z.object({ allowSubmissions: z.boolean() })),
+    async ctx => {
+      const { allowSubmissions } = ctx.req.valid('json');
 
+      await db.update(adminMeta).set({ allowSubmissions });
+
+      return ctx.body(null, 204);
+    }
+  );
 export default admin;

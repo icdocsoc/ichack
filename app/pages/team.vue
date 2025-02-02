@@ -16,7 +16,10 @@
 
     You do not have a team yet.
 
-    <button @click="handleCreateTeam" class="flex w-fit flex-row items-stretch">
+    <button
+      v-if="canSubmit"
+      @click="handleCreateTeam"
+      class="flex w-fit flex-row items-stretch">
       <div
         class="inline-block size-full bg-white px-4 py-5 font-semibold text-black">
         Create a new team
@@ -28,7 +31,7 @@
     </button>
   </div>
 
-  <div v-else class="mt-6 flex flex-col gap-4 lg:items-start">
+  <div v-else class="mb-3 mt-6 flex flex-col gap-4 lg:items-start">
     <div class="w-full border-2 border-white">
       <div class="flex items-center justify-between bg-white p-3">
         <p v-if="!editingTeam" class="p-3 text-3xl font-semibold text-black">
@@ -41,7 +44,7 @@
         <button v-if="!editingTeam" title="Edit team name">
           <img
             src="@ui25/assets/edit.svg"
-            v-if="leader"
+            v-if="leader && canSubmit"
             alt="Edit profile"
             @click="handleEditTeam" />
         </button>
@@ -188,6 +191,7 @@
     </div>
 
     <button
+      v-if="canSubmit"
       class="bg-red-ic mb-4 self-start px-4 py-2 font-semibold"
       @click="handleDestroyTeam">
       {{ leader ? 'Disband' : 'Leave' }} Team
@@ -205,6 +209,12 @@ import TeamInvite from '~~/packages/ui25/components/IC/TeamInvite.vue';
 const colors = ['bg-red-ic', 'bg-blue-ic', 'bg-yellow-ic'];
 
 definePageMeta({ middleware: 'require-auth' });
+
+const { data: canSubmit } = await useAsyncData('can_submit', async () => {
+  const { getMetaDataInfo } = useAdmin();
+  const res = await getMetaDataInfo();
+  return res.getOrThrow().allowSubmissions;
+});
 
 const mapCategories = (values: readonly Category[]) =>
   values.map(v => {
@@ -422,6 +432,7 @@ async function handleConfirmTeamName() {
   }
 
   editingTeam.value = false;
+  inviteFilter.value = '';
 
   console.log('W bozo');
 
@@ -449,6 +460,7 @@ async function handleConfirmTeamName() {
 function handleCancelTeamName() {
   // reset all temp values to default values
   editingTeam.value = false;
+  inviteFilter.value = '';
   Object.assign(tempTeam, {
     teamName: team.value?.teamName ?? '',
     docsocCategory: team.value?.docsocCategory ?? undefined,

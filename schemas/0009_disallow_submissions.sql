@@ -1,0 +1,1 @@
+ALTER TABLE "admin" ADD COLUMN "allow_submissions" boolean DEFAULT true NOT NULL;

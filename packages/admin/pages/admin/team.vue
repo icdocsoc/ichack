@@ -346,7 +346,7 @@ const transferLeader = async (newLeaderId: string) => {
 };
 
 definePageMeta({
-  middleware: ['require-auth', 'require-link']
+  middleware: 'require-auth'
 });
 useHead({
   title: 'Teams'
