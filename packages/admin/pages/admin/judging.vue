@@ -2,6 +2,7 @@
   <div class="flex flex-wrap gap-x-3 pl-3">
     <div v-for="category in data" :key="category.category">
       <JudgingCategory
+        :company="category.company"
         :title="category.title"
         v-model="category.hackspace"
         :slug="category.slug"

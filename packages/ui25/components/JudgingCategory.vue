@@ -1,7 +1,7 @@
 <template>
   <div class="mt-4">
     <div class="w-100 border-2 border-white bg-black p-4 text-center text-lg">
-      <p class="font-bold">{{ title }}</p>
+      <p class="font-bold">{{ company }} - {{ title }}</p>
       <p class="">Current Room</p>
       <div class="flex items-center justify-center gap-3 pt-4">
         <div
@@ -33,6 +33,7 @@ const selectedRoom = ref<UpperCaseRoom>(
 );
 
 type Props = {
+  company: string;
   title: string;
   slug: string;
   isAdmin: boolean;

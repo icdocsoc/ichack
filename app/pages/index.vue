@@ -125,6 +125,7 @@ useHead({
       <div class="flex items-center gap-5" v-if="showJudging">
         <div v-for="category in judgingData" :key="category.title">
           <JudgingCategory
+            :company="category.company"
             :title="category.title"
             :slug="category.slug"
             v-model="category.hackspace"
