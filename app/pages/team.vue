@@ -179,12 +179,12 @@
               <ICInput
                 v-if="!editingTeam"
                 :frozen="true"
-                placeholder="https://ic-hack-25.devpost.com/..."
+                placeholder="devpost.com/..."
                 v-model="team!.submissionLink" />
               <ICInput
                 v-else
                 v-model="tempTeam.submissionLink"
-                placeholder="https://ic-hack-25.devpost.com/..."
+                placeholder="devpost.com/..."
                 pattern="urlRegex" />
             </div>
 
@@ -513,10 +513,10 @@ async function handleConfirmTeamName() {
   }
   if (
     tempTeam.submissionLink &&
-    !tempTeam.submissionLink.includes('ic-hack-25.devpost.com')
+    !tempTeam.submissionLink.includes('devpost.com')
   ) {
     errorMessage.value =
-      'Please ensure your submission link is a proper Devpost URL. It should contain "ic-hack-25.devpost.com".';
+      'Please ensure your submission link is a proper Devpost URL. It should contain "devpost.com".';
     return;
   }
 
