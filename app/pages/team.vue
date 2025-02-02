@@ -207,7 +207,7 @@
                 :options="mapCategories(docsoc_categories)" />
             </div>
 
-            <div>
+            <div v-if="showSponsorCategory">
               <h3>Sponsor Category:</h3>
               <ICInputSelect
                 class="w-fit"
@@ -290,6 +290,8 @@ const { data: canSubmit } = await useAsyncData('can_submit', async () => {
   return res.getOrThrow().allowSubmissions;
 });
 
+const showSponsorCategory = ref(true);
+
 const mapCategories = (values: readonly Category[]) =>
   values.map(v => {
     return {
@@ -332,7 +334,11 @@ const missingRequirements = computed(() => {
   if (!tempTeam.tableNumber) reqs.push('table number');
   if (!tempTeam.submissionLink) reqs.push('submission link');
   if (!tempTeam.docsocCategory) reqs.push('DoCSoc category');
-  if (!tempTeam.sponsorCategory) reqs.push('sponsor category');
+  if (
+    !tempTeam.sponsorCategory &&
+    tempTeam?.docsocCategory !== 'docsoc-non-technical-pitch'
+  )
+    reqs.push('sponsor category');
 
   return reqs;
 });
@@ -433,6 +439,17 @@ const tempTeam = reactive({
   intersystems: team.value?.intersystems ?? undefined,
   tableNumber: team.value?.tableNumber ?? undefined,
   hackspace: team.value?.hackspace ?? undefined
+});
+
+watchEffect(() => {
+  if (tempTeam.docsocCategory === 'docsoc-non-technical-pitch') {
+    tempTeam.sponsorCategory = undefined;
+    showSponsorCategory.value = false;
+    errorMessage.value =
+      'You have selected the DoCSoc Non-Technical Pitch category. You will not be able to select a sponsor category.';
+  } else {
+    showSponsorCategory.value = true;
+  }
 });
 
 async function handleCreateTeam() {
