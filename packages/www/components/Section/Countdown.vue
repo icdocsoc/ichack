@@ -25,6 +25,10 @@
         :value="seconds"
         unit="seconds"
         size="small" />
+
+      <p class="col-span-2 text-end md:col-span-3">
+        ...Since the Hackathon ended
+      </p>
     </div>
   </section>
 </template>
@@ -42,11 +46,12 @@ const minutes = computed(() => Math.floor(epochLeft.value / (1000 * 60)) % 60);
 const seconds = computed(() => Math.floor(epochLeft.value / 1000) % 60);
 
 onMounted(() => {
-  const until = new Date(Date.UTC(2025, 1, 2, 12)); // Feb 1, 2025, 9:00 AM; Start of Day 1 of the event
-  epochLeft.value = until.getTime() - Date.now();
+  const until = new Date(Date.UTC(2025, 1, 2, 12)); // Feb 2, 2025, 12:00 PM; End of the hackathon
+  const untilTime = until.getTime();
+  epochLeft.value = Math.abs(until.getTime() - Date.now());
 
   const interval = setInterval(() => {
-    epochLeft.value -= 1000;
+    epochLeft.value = Math.abs(untilTime - Date.now());
   }, 1000);
   onUnmounted(() => clearInterval(interval));
 });
