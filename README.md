@@ -37,15 +37,6 @@ This is the first time IC Hack tech systems will have extensive documentation. E
 
 ## Development rules
 
-### Working on issues
-
-We use ClickUp to keep track of the progress of the project. To pick up an issue:
-
-1. Assign yourself in any card from the "Backlog". This should automatically put your card under "Pending".
-1. Alternatively, create an issue and add yourself as the asignee and place it in the "Pending" list.
-1. Then [create a branch](#creating-a-branch) and [open a draft pr](#creating-a-pr).
-1. Once the PR is approved and merged, move the card to "Completed".
-
 ### Creating a branch
 
 No person can directly on the main branch. Hence you need to create a new branch to introduce any changes to the codebase.
@@ -58,17 +49,8 @@ No person can directly on the main branch. Hence you need to create a new branch
 You should create a PR **as soon as** you create a branch.
 
 1. If the PR is not ready, create a _Draft_ PR. This is so that others know what is being worked on and can provide some feedback before you are knee deep into the feature.
-1. The actual commit messages within your PR **does not follow** any conventional naming pattern. However, your PR title must follow `type: description` format, similar to your branch name.
+1. The actual commit messages within your PR **does not follow** any conventional naming pattern. However, your PR title must follow `type(scope): description` format, similar to your branch name.
 1. If any of the repo admins approve your PR and you need to need to update your branch, consider rebase to avoid making another commit for the admins to review again.
-
-#### PR <> ClickUp Integration
-
-1. When you create a comment, in the description include the following text: `Link CU-86bzr6uwe`, you will find your taskId in the ClickUp Card you are working.
-1. You can use special commit messages to change the status of your card. E.g. a commit message can be, `updated the readme #86bzr6uwe[in review]`.
-   1. Use `#<taskId>[in progress]` to move your card into "In Progress".
-   1. Use `#<taskId>[in review]` to move your card into "In Review".
-   1. Use `#<taskId>[blocked]` to move your card into "Blocked".
-1. When merging, your commit description should include `#<taskId>[completed]` to move your card into "Completed".
 
 ## Our Team
 
@@ -83,6 +65,13 @@ You should create a PR **as soon as** you create a branch.
 
 - [@Harini-Sritharar](https://github.com/Harini-Sritharar)
 - [@JoshXL23 | Joshua Gonsalves](https://github.com/JoshXL23)
+- [@georgedecesare](https://github.com/georgedecesare)
+
+#### Additional Credits
+
+- [@Who23 | Aditya Shrivastava](https://github.com/Who23) for registration scripts and users admin page
+- [@Saim-Khan1](https://github.com/Saim-Khan1) for implementing "Add to Google/Apple wallet" feature
+- [@invisi-splat | Bowen Zhu](https://github.com/invisi-splat) for working on hackspaces code.
 
 ## License
 

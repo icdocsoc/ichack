@@ -2,7 +2,7 @@
 
 Follow the [Nuxt](https://nuxt.com) documentation [here](https://nuxt.com/docs/getting-started/introduction). 
 
-Nuxt is a great Vue-based meta-framework to build full stack applications. It comes with a built-in [Nitro server](https://nitro.unjs.io/) (which we largely ignore because of the lack of features and poor documentation, we use Hono instead). Nuxt's documentation, however, was good and now it's even better; so have a thorough read of it (including some complex stuff like [Layers](https://nuxt.com/docs/getting-started/layers) and [configuration](https://nuxt.com/docs/api/nuxt-config)). Here, we are going to touch upon rendering modes:
+Nuxt is a great Vue-based meta-framework to build full stack applications. It comes with a built-in [Nitro server](https://nitro.unjs.io/) (which we largely ignore because of the lack of features and poor documentation, we use Hono instead). Nuxt's documentation, however, was good and now it's even better; so have a thorough read of it (including some complex stuff like [Layers](https://nuxt.com/docs/getting-started/layers) and [configuration](https://nuxt.com/docs/api/nuxt-config)). 
 
 ::: warning
 If you ever see an error like *"Hydration mismatch"* on your console, **DO NOT IGNORE IT AND AIM TO FIX IT ASAP!!**
@@ -23,7 +23,7 @@ Nishant and Jay worked with Nuxt 3 for IC Hack '24 and this made total sense to 
 Nuxt 4 is practically out at this time of writing. However, it is in beta build right now and we don't wish to experiment, especially since we were experimenting with the backend. Additionally, Nuxt 4 is not very different than Nuxt 3, apart from a few breaking changes. So it doesn't matter much anyway.
 
 ::: info
-With the [2nd architecture PR](../getting-started/project-timeline), we have migrated to Nuxt4.
+With the [2nd architecture PR](../getting-started/project-timeline), we migrated to Nuxt4.
 :::
 
 ## Bad things about Nuxt.

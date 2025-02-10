@@ -8,7 +8,7 @@ order: 2
 
 This is not an exhaustive list.
 
-- [Bun](../tech-stack/bun) v1.1.18
+- [Bun](../tech-stack/bun) v1.1.44
 - Node v22.2.0
 - [Docker](../technologies/docker) v26.1.3
 - [PostreSQL](../tech-stack/postgresql) v16.3
@@ -30,7 +30,7 @@ Execute `bun install` in the route directory.
 
 ### Setup the Database
 
-1. If the schema has been updated and your local instance of postgres is not synced with it, you can reset this by executing `bun reset-db`.
+1. If the schema has been updated and your local instance of postgres is not synced with it, you can reset this by executing `bun backend:push-schema`.
 2. Seed the database with some predefined entries by executing `bun run scripts/seed.ts` while the database is running. This file contains the email and password to login as a `god`.
 
 ### Environment Variables

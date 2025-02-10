@@ -6,6 +6,10 @@ order: 3
 
 Copy the `.env.template` file to `.env.local` and `.env.test` and fill in the values with the correct information. Ask the admins for credentials for staging and prod environemnts. Read [Bun's docs](https://bun.sh/docs/runtime/env) to understand the naming convention and how to force using one env file.
 
+::: warning
+This page is not up to date
+:::
+
 ## Dev setup (`.env.local`)
 
 ```bash

@@ -1,5 +1,5 @@
 # Server Sent Events
 
-::: warn
-this page is yet to finish
+::: warning
+IC Hack '25 never got to using this.
 :::

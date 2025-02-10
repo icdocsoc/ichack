@@ -1,5 +1,9 @@
 # Routes
 
+::: warning
+Formatting required for this page. See the src markdown file for now.
+:::
+
 ## Announcements (/annoucement)
 
 GET /sse --> SSE to get all annoucements. "authenticated"

@@ -21,7 +21,7 @@ features:
   - title: Backend in Hono
     details: Hono is a modern library for building REST servers.
     icon: 
-      src: https://hono.dev/images/logo-small.png
+      src: https://hono.dev/images/logo.svg
   - title: Monorepo with all the tools needed
     details: Includes the landing page, internal page, admin page, backend server.
     icon: 🔧

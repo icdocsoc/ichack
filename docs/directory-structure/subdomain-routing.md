@@ -1,7 +1,7 @@
 # Subdomain Routing 
 
 ::: info
-This is now deprecated
+This was deprecated by [PR#163](https://github.com/icdocsoc/ichack/pull/163)
 :::
 
 The application runs in the Server-side rendering (SSR) mode. This means the HTML document is rendered on the server, and sent to the browser. The JavaScript files soon follow along and the JavaScript code then renders it again on the client side, giving the page the interactivity. 

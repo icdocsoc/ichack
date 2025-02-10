@@ -8,4 +8,4 @@ This is a full [Cloud VM](../concepts/cloud-vm).
 
 ## Digital Ocean App Platform.
 
-This is their self-managed serverless provider.
+This is their self-managed [serverless](../concepts/serverless-computing) provider.

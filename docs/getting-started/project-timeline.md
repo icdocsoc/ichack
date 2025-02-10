@@ -10,13 +10,15 @@ The initial development started in **July 2024** with the Hono server. Minor ref
 
 ## Second Architecture
 
-Around **November 2024**, the codebase was completely refactored ([PR#54](https://github.com/icdocsoc/ichack/pull/54)) to support the serverless architecture of [Digital Ocean App Platform](../technologies/digital-ocean). The first architecture was a bit of a pain configuring the environment variables and on-boarding new users. This simplified the repository greatly and easier to deploy and manage.
+Around **November 2024**, the codebase was completely refactored ([PR#43](https://github.com/icdocsoc/ichack/pull/43)) to support the [serverless architecture](../concepts/serverless-computing) of [Digital Ocean App Platform](../technologies/digital-ocean). The first architecture was a bit of a pain configuring the environment variables and on-boarding new users. This simplified the repository greatly and easier to deploy and manage.
 
 As a result, we end up with the `website` application that is a single Nuxt4 application. This was connected to the Hono server with the `serverHandlers` property of `NuxtConfig`. The application smartly filtered pages and re-routed requests from `admin.ichack.org` and `my.ichack.org` accordingly from server middlewares and custom page routing defined in `apps/router.options.ts`.
 
 The other application was `landing` that existed as a layer. We leveraged the fact that a Nuxt layer can be a stand-alone application. This app was statically generated and the files were uploaded to [Cloudflare Pages](../technologies/cloudflare) via [GitHub Actions](../technologies/github-actions).
 
 `admin` and `my` remained as layers connected to the parent application for separation concerns. These layers extended `common` for the API requests they perform and `ui25` for the common UI components. As earlier, `admin` used [Nuxt UI v2](../technologies/nuxt-ui) and continued to do so.
+
+Soon, we realised we were building something great and massive. We renamed the repository from ichack25 to simply ichack ([PR#54](https://github.com/icdocsoc/ichack/pull/54)) for future years to build upon this for many years to come. :tada:
 
 ### Nuxt 3 --> Nuxt 4
 
